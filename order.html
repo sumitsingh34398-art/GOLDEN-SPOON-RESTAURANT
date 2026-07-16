@@ -7,11 +7,9 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('assets/background.jpg'); background-size: cover; color: #fff; display: flex; min-height: 100vh; }
-        
         .menu-section { width: 70%; padding: 50px; }
         h1 { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 40px; margin-bottom: 30px; text-transform: uppercase; }
         .back-btn { display: inline-block; margin-bottom: 30px; color: #d4af37; border: 1px solid #d4af37; padding: 8px 15px; text-decoration: none; border-radius: 4px; }
-        
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .card { background: rgba(0,0,0,0.8); border: 1px solid #333; padding: 15px; border-radius: 12px; text-align: center; }
         .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; border: 1px solid #444; }
@@ -19,12 +17,10 @@
         .card p { color: #d4af37; font-weight: bold; margin-bottom: 10px; }
         .controls { display: flex; justify-content: center; gap: 10px; align-items: center; }
         .btn-qty { background: #d4af37; border: none; padding: 5px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-
         .checkout-section { width: 30%; background: rgba(0,0,0,0.95); padding: 30px; border-left: 1px solid #333; }
         .checkout-section h2 { color: #d4af37; margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; }
         .input-group input { width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        
         #cartItems { margin: 20px 0; font-size: 14px; color: #ccc; }
         #cartTotal { font-size: 24px; color: #d4af37; margin: 20px 0; border-top: 1px solid #333; padding-top: 10px; }
         .place-order-btn { width: 100%; background: #d4af37; border: none; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 5px; }
@@ -43,7 +39,6 @@
     <div class="input-group"><input type="text" id="userName" placeholder="Full Name"></div>
     <div class="input-group"><input type="tel" id="userPhone" placeholder="Phone Number"></div>
     <div class="input-group"><input type="text" id="userAddress" placeholder="Delivery Address"></div>
-    
     <div id="cartItems"></div>
     <h3 id="cartTotal">Total: ₹0</h3>
     <button class="place-order-btn" onclick="placeOrder()">PLACE ORDER</button>
@@ -98,7 +93,6 @@
                 </div>
             </div>
         `).join('');
-        renderCart();
     }
 
     function renderCart() {
@@ -108,7 +102,6 @@
                 <span>${d.name} x ${d.qty}</span> <span>₹${d.price * d.qty}</span>
             </div>`
         ).join('');
-        
         total = dishes.reduce((sum, d) => sum + (d.price * d.qty), 0);
         document.getElementById('cartTotal').innerText = "Total: ₹" + total;
     }
@@ -117,30 +110,42 @@
         if (dishes[id].qty + val >= 0) {
             dishes[id].qty += val;
             renderMenu();
+            renderCart();
         }
     }
 
-    function placeOrder() {
+    async function placeOrder() {
         const name = document.getElementById('userName').value;
-        const modal = document.getElementById('orderModal');
-        const title = document.getElementById('modalTitle');
-        const msg = document.getElementById('modalMsg');
+        const phone = document.getElementById('userPhone').value;
+        const address = document.getElementById('userAddress').value;
 
-        modal.style.display = 'flex'; 
+        if (total > 0 && name !== "" && phone !== "" && address !== "") {
+            const orderData = { name, phone, address, items: dishes.filter(d => d.qty > 0), total };
+            
+            // 1. WhatsApp Logic
+            let message = `*New Order Received!*%0A%0A*Customer:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A%0A*Items:*%0A`;
+            orderData.items.forEach(d => message += `• ${d.name} (x${d.qty}) = ₹${d.price * d.qty}%0A`);
+            message += `%0A*Total: ₹${total}*`;
+            window.open(`https://wa.me/919602697303?text=${message}`, '_blank');
 
-        if(total > 0 && name !== "") {
-            title.innerText = "Order Confirmed!";
-            msg.innerText = "Thank you, " + name + "! Your premium meal is being prepared.";
+            // 2. Python Backend Logic
+            try {
+                await fetch('http://127.0.0.1:5000/save-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+            } catch (e) {
+                console.log("Python server offline, but WhatsApp sent.");
+            }
         } else {
-            title.innerText = "Incomplete Details";
-            msg.innerText = "Please select items and fill your name to place the order.";
+            document.getElementById('orderModal').style.display = 'flex';
+            document.getElementById('modalTitle').innerText = "Incomplete Details";
+            document.getElementById('modalMsg').innerText = "Please fill all details to place order.";
         }
     }
 
-    function closeModal() {
-        document.getElementById('orderModal').style.display = 'none';
-    }
-
+    function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
     renderMenu();
 </script>
 </body>
