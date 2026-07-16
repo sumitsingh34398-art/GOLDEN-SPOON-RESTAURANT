@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Premium Gallery | Golden Spoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('assets/background.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; color: #fff;
+        }
+
+        .back-btn { 
+            position: absolute; top: 30px; left: 30px; color: #d4af37; 
+            text-decoration: none; border: 1px solid #d4af37; padding: 10px 20px; 
+            font-size: 12px; letter-spacing: 2px; transition: 0.3s;
+        }
+        .back-btn:hover { background: #d4af37; color: #000; }
+
+        .gallery-container { 
+            width: 90%; max-width: 850px; border: 1px solid #d4af37; 
+            padding: 20px; text-align: center; background: rgba(0,0,0,0.7); 
+            position: relative;
+        }
+
+        .slider-image { width: 100%; height: 450px; object-fit: cover; border: 1px solid #d4af37; }
+
+        /* Professional Round Buttons */
+        .nav-btn { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(212, 175, 55, 0.9); color: #000; 
+            border: none; width: 50px; height: 50px; border-radius: 50%; 
+            cursor: pointer; font-size: 20px; font-weight: bold; transition: 0.3s;
+        }
+        .nav-btn:hover { background: #fff; transform: translateY(-50%) scale(1.1); }
+        .prev { left: -70px; }
+        .next { right: -70px; }
+        
+        .caption { margin-top: 20px; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #d4af37; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">&#8592; BACK TO HOME</a>
+
+    <div class="gallery-container">
+        <img id="galleryImg" src="assets/lamb-chops.jpg" class="slider-image">
+        <button class="nav-btn prev" onclick="changeImage(-1)">&#10094;</button>
+        <button class="nav-btn next" onclick="changeImage(1)">&#10095;</button>
+        <p id="caption" class="caption">Lamb Chops</p>
+    </div>
+
+    <script>
+        const images = [
+            { src: "images/industrial interior design.jpg", name: "industrial interior design" },
+            { src: "images/Cashier Desk System.jpg", name: "Cashier Desk System" },
+            { src: "images/Family Table.jpg", name: "Family Table" },
+            { src: "assets/lamb-chops.jpg", name: "Lamb Chops" },
+            { src: "assets/spaghetti.jpg", name: "Spaghetti" },
+            { src: "assets/grilled-salmon.jpg", name: "Grilled Salmon" },
+            { src: "assets/chocolate-dessert.jpg", name: "Chocolate Dessert" },
+            { src: "assets/mushroom-steak.jpg", name: "Mushroom Steak" },
+            { src: "assets/healthy-balanced-meal-grilled.jpg", name: "healthy-balanced-meal-grilled" },
+            { src: "assets/roasted-chicken-dinner.jpg", name: "roasted-chicken-dinner" },
+            { src: "assets/dradon fruit salad.jpg", name: "dradon fruit salad" },
+            { src: "assets/pani puri.jpg", name: "pani puri" },
+            { src: "assets/grilled-dorade-vernick-fish.jpg", name: "grilled-dorade-vernick-fish" }
+            
+        ];
+
+        let index = 0;
+        function changeImage(dir) {
+            index = (index + dir + images.length) % images.length;
+            document.getElementById('galleryImg').src = images[index].src;
+            document.getElementById('caption').innerText = images[index].name;
+            // Add a small fade effect
+            document.getElementById('galleryImg').style.opacity = 0.5;
+            setTimeout(() => { document.getElementById('galleryImg').style.opacity = 1; }, 200);
+        }
+    </script>
+</body>
+</html>

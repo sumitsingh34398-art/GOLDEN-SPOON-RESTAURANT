@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet Our Chef | Golden Spoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            color: #fff;
+            /* Background image setup */
+            background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('assets/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Professional Navbar */
+        .navbar { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 5%; background: rgba(0,0,0,0.95); border-bottom: 1px solid #d4af37;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo-container { font-family: 'Playfair Display', serif; font-size: 24px; color: #d4af37; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a { text-decoration: none; color: #fff; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; }
+        .nav-links a:hover { color: #d4af37; }
+
+        /* Main Chef Section */
+        .chef-main { display: flex; padding: 60px 5%; gap: 60px; align-items: flex-start; max-width: 1200px; margin: auto; }
+        .img-box { flex: 1; }
+        .img-box img { width: 100%; height: auto; border-radius: 8px; border: 2px solid #d4af37; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .info-box { flex: 1; }
+        
+        /* Typography */
+        .meet-title { color: #d4af37; letter-spacing: 6px; text-transform: uppercase; font-size: 14px; margin-bottom: 10px; }
+        .name-title { font-family: 'Playfair Display', serif; font-size: 60px; color: #fff; margin-bottom: 20px; }
+        .desc { color: #ccc; line-height: 1.8; margin-bottom: 25px; font-weight: 300; }
+        .chef-signature { font-family: 'Playfair Display', serif; font-size: 32px; color: #d4af37; }
+
+        /* Stats Grid */
+        .stats-grid { display: flex; gap: 40px; margin: 35px 0; border-top: 1px solid #444; border-bottom: 1px solid #444; padding: 25px 0; }
+        .stat-item { text-align: center; }
+        .stat-val { font-size: 28px; color: #d4af37; font-weight: bold; }
+        .stat-label { font-size: 11px; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+
+        /* Expertise Section */
+        .expertise-container { border: 1px solid #d4af37; padding: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; background: rgba(0,0,0,0.3); }
+        .exp-item h4 { color: #d4af37; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .exp-item p { font-size: 13px; color: #bbb; line-height: 1.5; }
+
+        /* Gallery Grid */
+        .gallery-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 5% 50px 5%; max-width: 1200px; margin: auto; }
+        .gal-item { width: 100%; aspect-ratio: 1/1; background: rgba(255,255,255,0.05); border: 1px solid #444; transition: 0.3s; }
+        .gal-item:hover { border-color: #d4af37; }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <nav class="navbar">
+        <div class="logo-container">GOLDEN SPOON</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="chef.html">Chef</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Chef Content -->
+    <div class="chef-main">
+        <div class="img-box">
+            <img src="assets/chef-photo.jpg" alt="Chef">
+        </div>
+        <div class="info-box">
+            <div class="meet-title">Meet Our</div>
+            <h1 class="name-title">CHEF</h1>
+            <p class="desc">Our chef brings passion, creativity, and years of experience to craft exceptional dishes that delight every palate. Every plate is a masterpiece made with love and the finest ingredients.</p>
+            <div class="chef-signature">Chef - Sumit Singh</div>
+            <div style="font-size: 15px; color: #d4af37; margin-bottom: 25px; letter-spacing: 1px;">Head Chef</div>
+
+            <div class="stats-grid">
+                <div class="stat-item"><div class="stat-val">15+</div><div class="stat-label">Years Experience</div></div>
+                <div class="stat-item"><div class="stat-val">100+</div><div class="stat-label">Signature Dishes</div></div>
+                <div class="stat-item"><div class="stat-val">20+</div><div class="stat-label">Awards Won</div></div>
+            </div>
+
+            <div class="expertise-container">
+                <div class="exp-item"><h4>EXPERTISE</h4><p>Specialized in European & Modern Fusion Cuisine.</p></div>
+                <div class="exp-item"><h4>PHILOSOPHY</h4><p>Believes in simplicity and fresh ingredients.</p></div>
+                <div class="exp-item"><h4>INSPIRATION</h4><p>Inspired by global flavors and heritage.</p></div>
+                <div class="exp-item"><h4>PASSION</h4><p>Cooking is an art and a way to connect.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Updated Bottom Gallery -->
+<div class="gallery-grid">
+    <div class="gal-item"><img src="assets/lamb-chops.jpg" alt="Lamb Chops" style="width:100%; height:100%; object-fit:cover;"></div>
+    <div class="gal-item"><img src="assets/spaghetti.jpg" alt="Spaghetti" style="width:100%; height:100%; object-fit:cover;"></div>
+    <div class="gal-item"><img src="assets/grilled-salmon.jpg" alt="Grilled Salmon" style="width:100%; height:100%; object-fit:cover;"></div>
+    <div class="gal-item"><img src="assets/chocolate-dessert.jpg" alt="Chocolate Dessert" style="width:100%; height:100%; object-fit:cover;"></div>
+    <div class="gal-item"><img src="assets/mushroom-steak.jpg" alt="Mushroom Steak" style="width:100%; height:100%; object-fit:cover;"></div>
+</div>
+
+</body>
+</html>

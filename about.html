@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Golden Spoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #000; color: #fff; }
+
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-around; align-items: center; padding: 30px 50px; width: 100%; position: absolute; z-index: 10; }
+        .logo-text { font-family: 'Playfair Display', serif; font-size: 26px; }
+        .sub-logo { font-size: 9px; color: #d4af37; letter-spacing: 4px; border-top: 1px solid #d4af37; margin-top: 5px; }
+        .nav-links { display: flex; list-style: none; gap: 20px; }
+        .nav-links a { text-decoration: none; color: #fff; font-size: 11px; letter-spacing: 2px; }
+        .nav-links a:hover { color: #d4af37; }
+        .book-btn { border: 1px solid #d4af37; background: transparent; color: #d4af37; padding: 10px 20px; cursor: pointer; transition: 0.3s; }
+        .book-btn:hover { background: #d4af37; color: #000; }
+
+        /* Hero Section */
+        .about-hero {
+            height: 60vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/background.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex; justify-content: center; align-items: center; text-align: center;
+        }
+        .about-content h1 { font-family: 'Playfair Display', serif; font-size: 70px; text-transform: uppercase; letter-spacing: 5px; }
+
+        /* Story Section */
+        .story-section {
+            padding: 80px 10%;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('assets/background.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+
+        /* Clean Premium Image Style */
+        .story-image-container {
+            flex: 0 0 400px;
+            height: 400px;
+            background: url('assets/about-grill.jpg');
+            background-size: contain; 
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #000; 
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .story-text { flex: 1; }
+        
+        /* Premium Big Title */
+        .story-title { 
+            color: #d4af37; 
+            font-size: 50px; 
+            margin-bottom: 25px; 
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 2px solid #d4af37;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        
+        .story-text h4 { color: #fff; font-size: 22px; margin-top: 20px; margin-bottom: 10px; font-family: 'Playfair Display', serif; }
+        .story-text p { line-height: 1.8; color: #ccc; margin-bottom: 15px; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-area">
+            <h2 class="logo-text">GOLDEN SPOON</h2>
+            <p class="sub-logo">RESTAURANT</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="about.html">ABOUT US</a></li>
+            <li><a href="menu.html">MENU</a></li>
+            <li><a href="chef.html">CHEF</a></li>
+            <li><a href="gallery.html">GALLERY</a></li>
+            <li><a href="reviews.html">REVIEWS</a></li>
+            <li><a href="reservation.html">RESERVATION</a></li>
+            <li><a href="contact.html">CONTACT US</a></li>
+        </ul>
+        <button class="book-btn">BOOK A TABLE</button>
+    </nav>
+
+    <section class="about-hero">
+        <div class="about-content"><h1>ABOUT US</h1></div>
+    </section>
+
+    <section class="story-section">
+        <div class="story-image-container"></div>
+        <div class="story-text">
+            <h2 class="story-title">Our Story</h2>
+            <h4>The Spark of Brotherhood</h4>
+            <p>Golden Spoon Restaurant began as a cozy family dream, brought to life by two adventurous brothers in the vibrant heart of Harare. Bound by a shared passion for outdoor cooking and a promise to use only the freshest local ingredients, we set out to create more than just a place to eat. We wanted to build a dining experience that bursts with the bold, unforgettable flavors of expertly grilled and smoked meats.</p>
+            
+            <h4>Flavors Built on Passion</h4>
+            <p>Every dish we serve carries the essence of that original spark. From the perfect sear on our grills to the deep, rich notes of our slow-smoked specialties, we pour our hearts into every recipe. We believe that good food has the power to bring people together, and we strive to make every meal a celebration of flavor and togetherness.</p>
+        </div>
+    </section>
+
+</body>
+</html>

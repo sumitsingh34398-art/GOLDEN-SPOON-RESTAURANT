@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | Golden Spoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #000; 
+            color: #fff; 
+        }
+
+        /* Navbar Styling */
+        .navbar { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 5%; background: rgba(0, 0, 0, 0.95); border-bottom: 1px solid #d4af37;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-family: 'Playfair Display', serif; font-size: 24px; color: #d4af37; }
+        .nav-links { list-style: none; display: flex; gap: 25px; }
+        .nav-links a { text-decoration: none; color: #fff; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #d4af37; }
+
+        /* Background and Page Content */
+        .page-content { 
+            padding: 50px 5%; 
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('assets/menu-bg.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .menu-wrapper { max-width: 1000px; margin: auto; }
+        
+        .section-header { 
+            text-align: center; color: #d4af37; font-family: 'Playfair Display', serif; 
+            font-size: 40px; text-transform: uppercase; margin: 60px 0 10px; 
+            border-bottom: 2px solid #d4af37; display: inline-block; width: 100%; padding-bottom: 10px;
+        }
+        
+        .sub-header { text-align: center; color: #d4af37; font-size: 14px; margin-bottom: 30px; letter-spacing: 2px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .item { display: flex; justify-content: space-between; margin-bottom: 25px; align-items: flex-start; }
+        
+        .name-desc { width: 85%; }
+        .name { font-size: 16px; font-weight: 600; text-transform: uppercase; color: #fff; }
+        .desc { font-size: 12px; color: #ccc; margin-top: 5px; line-height: 1.5; }
+        .price { font-weight: bold; color: #d4af37; font-size: 16px; }
+
+        .footer-note { margin-top: 60px; font-size: 12px; color: #d4af37; text-align: right; border-top: 1px solid #333; padding-top: 10px; }
+        
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">GOLDEN SPOON RESTAURANT</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="menu.html" class="active">Menu</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="chef.html">Chef</a></li>
+        </ul>
+    </nav>
+
+    <!-- Menu Content -->
+    <div class="page-content">
+        <div class="menu-wrapper">
+            
+            <!-- ACCOMPANIMENTS -->
+            <h2 class="section-header">Accompaniments</h2>
+            <div class="grid">
+                <div>
+                    <div class="item"><div class="name-desc"><div class="name">Raita</div><div class="desc">Veg / Boondi / Onion / Pineapple</div></div><div class="price">110</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Plain Curd</div></div><div class="price">90</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Roasted Papad / Fried Papad</div></div><div class="price">30</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Masala Papad</div></div><div class="price">40</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Masala Cheese Papad</div></div><div class="price">80</div></div>
+                </div>
+                <div>
+                    <div class="item"><div class="name-desc"><div class="name">French Fries</div></div><div class="price">100</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Piri Piri French Fries</div></div><div class="price">110</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Cheese French Fries</div></div><div class="price">110</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Garlic Bread</div></div><div class="price">150</div></div>
+                </div>
+            </div>
+
+            <!-- SIZZLERS -->
+            <h2 class="section-header">Sizzlers</h2>
+            <p class="sub-header">300 - 350 gms</p>
+            <div class="grid">
+                <div>
+                    <div class="item"><div class="name-desc"><div class="name">Clay Pot Roast</div><div class="desc">Paneer tikka, Tandoori Gobi, Veg Tunde kebab seekh, Classic raja kebab, with kachumber & mint chutney</div></div><div class="price">570</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Asian Affair</div><div class="desc">Hakka noodles, bell pepper fried rice, Paneer Chili, Stir fry veg</div></div><div class="price">520</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Isabella</div><div class="desc">Penne in marinara sauce, stuffed ravioli in cheesy tomato sauce, butter tossed vegetables, croquettes, garlic breads</div></div><div class="price">570</div></div>
+                </div>
+                <div>
+                    <div class="item"><div class="name-desc"><div class="name">Mongolian Stir Fry Sizzler</div><div class="desc">Stir fry veg with paneer, burnt garlic fried rice, schezwan potato, bell pepper noodles</div></div><div class="price">540</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Smoked BBQ Paneer Sizzler</div><div class="desc">Cottage cheese tossed in special bbq sauce on the bed of veg and herb rice served along with Potato wedges marinara sauce and butter garlic breads</div></div><div class="price">570</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Veg Dynamite</div><div class="desc">Vegetable patty topped with tangy tomato sauce, macaroni with home made sauce, butter tossed vegetables, fries and garlic breads</div></div><div class="price">490</div></div>
+                </div>
+            </div>
+
+            <!-- WORLD CUISINE -->
+            <h2 class="section-header">World Cuisine</h2>
+            <p class="sub-header">300 - 350 gms</p>
+            <div class="grid">
+                <div>
+                    <div class="item"><div class="name-desc"><div class="name">Baked Macaroni / With Pineapple</div></div><div class="price">260/280</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Baked Vegetables / With Pineapple</div></div><div class="price">230/250</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Baked Veg Florentine</div></div><div class="price">230</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Hakka Noodles</div></div><div class="price">240</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Cottage Cheese Shanmargo</div><div class="desc">Cottage cheese chasseur sauce served with herb rice and bread</div></div><div class="price">395</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Thai Green Curry With Steamed Rice</div></div><div class="price">390</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Thai Red Curry With Steamed Rice</div></div><div class="price">390</div></div>
+                </div>
+                <div>
+                    <div class="item"><div class="name-desc"><div class="name">Stir Fry Pot Rice</div></div><div class="price">280</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Veg Manchurian With Gravy</div></div><div class="price">290</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Fired Rice</div><div class="desc">(veg, szchewan, Paneer, manchurian)</div></div><div class="price">240</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Pasta - Penne / Stuffed Ravioli</div><div class="desc">Served with choice of sauces - alfredo cheese sauce, spicy arabiata sauce, creamy pesto sauce, cheesy tomato sauce alongwith garlic bread</div></div><div class="price">320/350</div></div>
+                    <div class="item"><div class="name-desc"><div class="name">Baked Lasagna</div></div><div class="price">350</div></div>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                <p>▲ From The North Special</p>
+                <p>▲ Kids Special</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

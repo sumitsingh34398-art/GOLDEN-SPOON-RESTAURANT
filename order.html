@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Golden Spoon Premium Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('assets/background.jpg'); background-size: cover; color: #fff; display: flex; min-height: 100vh; }
+        
+        .menu-section { width: 70%; padding: 50px; }
+        h1 { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 40px; margin-bottom: 30px; text-transform: uppercase; }
+        .back-btn { display: inline-block; margin-bottom: 30px; color: #d4af37; border: 1px solid #d4af37; padding: 8px 15px; text-decoration: none; border-radius: 4px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .card { background: rgba(0,0,0,0.8); border: 1px solid #333; padding: 15px; border-radius: 12px; text-align: center; }
+        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; border: 1px solid #444; }
+        .card h4 { font-size: 14px; margin-bottom: 5px; }
+        .card p { color: #d4af37; font-weight: bold; margin-bottom: 10px; }
+        .controls { display: flex; justify-content: center; gap: 10px; align-items: center; }
+        .btn-qty { background: #d4af37; border: none; padding: 5px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+
+        .checkout-section { width: 30%; background: rgba(0,0,0,0.95); padding: 30px; border-left: 1px solid #333; }
+        .checkout-section h2 { color: #d4af37; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group input { width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        
+        #cartItems { margin: 20px 0; font-size: 14px; color: #ccc; }
+        #cartTotal { font-size: 24px; color: #d4af37; margin: 20px 0; border-top: 1px solid #333; padding-top: 10px; }
+        .place-order-btn { width: 100%; background: #d4af37; border: none; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="menu-section">
+    <a href="index.html" class="back-btn">&#8592; BACK TO HOME</a>
+    <h1>OUR PREMIUM MENU</h1>
+    <div class="grid" id="menuGrid"></div>
+</div>
+
+<div class="checkout-section">
+    <h2>CHECKOUT</h2>
+    <div class="input-group"><input type="text" id="userName" placeholder="Full Name"></div>
+    <div class="input-group"><input type="tel" id="userPhone" placeholder="Phone Number"></div>
+    <div class="input-group"><input type="text" id="userAddress" placeholder="Delivery Address"></div>
+    
+    <div id="cartItems"></div>
+    <h3 id="cartTotal">Total: ₹0</h3>
+    <button class="place-order-btn" onclick="placeOrder()">PLACE ORDER</button>
+</div>
+
+<div id="orderModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#1a1a1a; border:2px solid #d4af37; padding:30px; border-radius:15px; text-align:center; color:#fff; width:300px;">
+        <h2 id="modalTitle" style="color:#d4af37;">Order Status</h2>
+        <p id="modalMsg" style="margin:20px 0;"></p>
+        <button onclick="closeModal()" style="background:#d4af37; border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:5px;">OK</button>
+    </div>
+</div>
+
+<script>
+    let total = 0;
+    const dishes = [
+        { name: "salmon bruschetta", price: 450, img: "images/salmon bruschetta.jpg" },
+        { name: "grilled-salmon", price: 500, img: "assets/grilled-salmon.jpg" },
+        { name: "spaghetti", price: 350, img: "assets/spaghetti.jpg" },
+        { name: "roasted-dinner", price: 900, img: "assets/roasted-chicken-dinner.jpg" },
+        { name: "grilled-fish", price: 1200, img: "assets/grilled-dorade-vernick-fish.jpg" },
+        { name: "lamb-chops", price: 1800, img: "assets/lamb-chops.jpg" },
+        { name: "dradon-fruit-salad", price: 200, img: "assets/dradon fruit salad.jpg" },
+        { name: "pani puri", price: 100, img: "assets/pani puri.jpg" },
+        { name: "mushroom-steak", price: 680, img: "assets/mushroom-steak.jpg" },
+        { name: "Burger", price: 200, img: "images/Burger.png" },
+        { name: "healthy-grilled", price: 300, img: "assets/healthy-balanced-meal-grilled.jpg" },
+        { name: "Mixer-veg", price: 1500, img: "images/Mixer-veg.jpg" },
+        { name: "Wine Bottle", price: 1300, img: "images/Wine Bottle.png" },
+        { name: "Venison Loin", price: 1550, img: "assets/roasted-chicken-dinner.jpg" },
+        { name: "Champagne Flutes", price: 1500, img: "images/Champagne Flutes.jpg" },
+        { name: "chocolate-dessert", price: 650, img: "assets/chocolate-dessert.jpg" },
+        { name: "pizza", price: 450, img: "images/pizza.jpg" },
+        { name: "Tossed garden salad", price: 550, img: "images/Tossed garden salad.jpg" },
+        { name: "Coffee continental breakfast", price: 500, img: "images/Coffee continental breakfast .jpg" },
+        { name: "Full tablet with drinké", price: 2000, img: "images/Full tablet with drink.jpg" }
+    ];
+
+    dishes.forEach((d, i) => { d.qty = 0; d.id = i; });
+
+    function renderMenu() {
+        const menuGrid = document.getElementById('menuGrid');
+        menuGrid.innerHTML = dishes.map(d => `
+            <div class="card">
+                <img src="${d.img}" alt="${d.name}">
+                <h4>${d.name}</h4>
+                <p>₹${d.price}</p>
+                <div class="controls">
+                    <button class="btn-qty" onclick="updateQty(${d.id}, -1)">-</button>
+                    <span>${d.qty}</span>
+                    <button class="btn-qty" onclick="updateQty(${d.id}, 1)">+</button>
+                </div>
+            </div>
+        `).join('');
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartItems = document.getElementById('cartItems');
+        cartItems.innerHTML = dishes.filter(d => d.qty > 0).map(d => 
+            `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span>${d.name} x ${d.qty}</span> <span>₹${d.price * d.qty}</span>
+            </div>`
+        ).join('');
+        
+        total = dishes.reduce((sum, d) => sum + (d.price * d.qty), 0);
+        document.getElementById('cartTotal').innerText = "Total: ₹" + total;
+    }
+
+    function updateQty(id, val) {
+        if (dishes[id].qty + val >= 0) {
+            dishes[id].qty += val;
+            renderMenu();
+        }
+    }
+
+    function placeOrder() {
+        const name = document.getElementById('userName').value;
+        const modal = document.getElementById('orderModal');
+        const title = document.getElementById('modalTitle');
+        const msg = document.getElementById('modalMsg');
+
+        modal.style.display = 'flex'; 
+
+        if(total > 0 && name !== "") {
+            title.innerText = "Order Confirmed!";
+            msg.innerText = "Thank you, " + name + "! Your premium meal is being prepared.";
+        } else {
+            title.innerText = "Incomplete Details";
+            msg.innerText = "Please select items and fill your name to place the order.";
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('orderModal').style.display = 'none';
+    }
+
+    renderMenu();
+</script>
+</body>
+</html>

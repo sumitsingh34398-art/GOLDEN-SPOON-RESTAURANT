@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservation | Golden Spoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            /* Yahan apni pasand ki background photo ka naam likhein */
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assets/Reservation-back.jpg');
+            background-size: cover; background-position: center; min-height: 100vh; color: #fff;
+        }
+
+        /* Navigation Bar */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 50px; background: rgba(0,0,0,0.5); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 28px; color: #d4af37; letter-spacing: 3px; }
+        .nav-links a { color: #fff; text-decoration: none; margin-left: 25px; font-size: 14px; letter-spacing: 1px; }
+        .nav-links a.active { color: #d4af37; border-bottom: 2px solid #d4af37; }
+
+        /* Reservation Box */
+        .res-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 20px; }
+        .res-box { 
+            background: rgba(0,0,0,0.85); border: 2px solid #d4af37; padding: 60px; 
+            max-width: 900px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 { font-family: 'Playfair Display', serif; text-align: center; color: #d4af37; font-size: 32px; margin-bottom: 10px; }
+        .desc { text-align: center; margin-bottom: 40px; color: #ccc; }
+
+        .form-layout { display: grid; grid-template-columns: 200px 1fr; gap: 40px; border-top: 1px solid #333; padding-top: 40px; }
+        
+        .sidebar { color: #fff; }
+        .item { margin-bottom: 25px; font-size: 14px; display: flex; align-items: center; }
+        .item-icon { margin-right: 15px; color: #d4af37; }
+
+        .form-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        input, select, textarea { width: 100%; padding: 12px; background: transparent; border: 1px solid #555; color: #fff; margin-bottom: 15px; }
+        textarea { grid-column: span 2; }
+        .submit-btn { 
+            grid-column: span 2; background: #d4af37; border: none; padding: 15px; 
+            font-weight: bold; cursor: pointer; color: #000; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-area">
+            <h2 class="logo-text">GOLDEN SPOON RESTAURANT</h2>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="about.html">ABOUT US</a>
+            <a href="menu.html">MENU</a>
+            <a href="reservation.html" class="active">RESERVATION</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="reviews.html">REVIEW</a>
+            <a href="contact.html">CONTACT</a>
+        </div>
+    </nav>
+
+    <div class="res-container">
+        <div class="res-box">
+            <h2>MAKE A RESERVATION</h2>
+            <p class="desc">Book your table for an unforgettable dining experience.</p>
+            
+            <div class="form-layout">
+                <div class="sidebar">
+                    <div class="item"><span class="item-icon">👥</span> GUESTS<br>1-10 People</div>
+                    <div class="item"><span class="item-icon">📅</span> DATE<br>Pick a Date</div>
+                    <div class="item"><span class="item-icon">🕒</span> TIME<br>Pick a Time</div>
+                    <div class="item"><span class="item-icon">🍽️</span> PREFERENCE<br>Any Preference</div>
+                    <div class="item"><span class="item-icon">📞</span> CONTACT<br>Enter Number</div>
+                </div>
+
+                <form class="form-fields">
+                    <input type="text" placeholder="FULL NAME">
+                    <input type="email" placeholder="EMAIL ADDRESS">
+                    <input type="text" placeholder="PHONE NUMBER">
+                    <input type="number" placeholder="Number of Guests" min="1" max="20">
+                    <textarea rows="3" placeholder="SPECIAL REQUEST (OPTIONAL)"></textarea>
+                    <button class="submit-btn">CONFIRM RESERVATION &rarr;</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

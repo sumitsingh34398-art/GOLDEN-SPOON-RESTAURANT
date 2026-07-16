@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us | Golden Spoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: url('assets/background-photo.jpg') no-repeat center center fixed; 
+            background-size: cover; 
+            color: #fff; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Back to Home Button */
+        .back-btn { 
+            position: absolute; top: 30px; left: 30px; 
+            color: #d4af37; text-decoration: none; border: 1px solid #d4af37; 
+            padding: 10px 20px; font-size: 12px; letter-spacing: 2px; transition: 0.3s;
+        }
+        .back-btn:hover { background: #d4af37; color: #000; }
+
+        h1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 60px; color: #d4af37; margin-bottom: 20px; }
+        .divider { width: 100px; height: 2px; background: #d4af37; margin: 0 auto 20px; }
+        .sub-text { color: #ccc; max-width: 600px; margin-bottom: 50px; line-height: 1.6; }
+
+        /* Contact Grid */
+        .contact-container { display: flex; justify-content: center; gap: 80px; margin-bottom: 60px; }
+        .contact-item { text-align: center; }
+        .icon-circle { 
+            width: 80px; height: 80px; border: 1px solid #d4af37; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            margin: 0 auto 20px; font-size: 30px; color: #d4af37;
+        }
+        .label { color: #d4af37; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; margin-bottom: 10px; }
+        .info { font-size: 14px; color: #fff; }
+
+        /* Follow Me */
+        .follow-section { margin-top: 20px; }
+        .social-icons { display: flex; gap: 20px; margin-top: 15px; }
+        .social-icon { width: 40px; height: 40px; border: 1px solid #d4af37; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #d4af37; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">&#8592; BACK TO HOME</a>
+
+    <h1>Contact Us</h1>
+    <div class="divider"></div>
+    <p class="sub-text">HOW TO GET IN TOUCH?<br>This section only proves that you are approachable and ready to accept reviews and prior bookings. People love to be associated with businesses that are friendly and communicate well.</p>
+
+    <div class="contact-container">
+        <div class="contact-item">
+            <div class="icon-circle">📍</div>
+            <div class="label">ADDRESS</div>
+            <div class="info">Golden Spoon Restaurant,<br>24,Food Street,Model Town Hisar,India</div>
+        </div>
+        <div class="contact-item">
+            <div class="icon-circle">📞</div>
+            <div class="label">PHONE NUMBER</div>
+            <div class="info">+1 99602-697-***</div>
+        </div>
+        <div class="contact-item">
+            <div class="icon-circle">✉️</div>
+            <div class="label">EMAIL ADDRESS</div>
+            <div class="info">sumitsingh***@gmail.com</div>
+        </div>
+    </div>
+
+    <div class="follow-section">
+        <p class="label">FOLLOW ME</p>
+        <div class="social-icons">
+            <div class="social-icon">P</div>
+            <div class="social-icon">f</div>
+            <div class="social-icon">t</div>
+            <div class="social-icon">g+</div>
+        </div>
+    </div>
+
+</body>
+</html>
