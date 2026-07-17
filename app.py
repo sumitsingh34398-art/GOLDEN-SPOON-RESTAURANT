@@ -1,17 +1,19 @@
 import sqlite3
 import csv
 import io
-from flask import Flask, request, jsonify, render_template, send_from_directory
+import os
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from datetime import datetime, timedelta
 
-app = Flask(__name__, template_folder='.')
+app = Flask(__name__)
 app.secret_key = 'golden_spoon_secret'
 CORS(app)
 
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
+# Database Init
 def init_db():
     conn = sqlite3.connect('orders.db')
     c = conn.cursor()
@@ -24,19 +26,33 @@ def init_db():
 
 init_db()
 
-# --- ROUTES UPDATED ---
+# --- ROUTES ---
 
+# 1. Root route: Home page load karega
 @app.route('/')
 def home():
-    # Yeh aapka main Home Page (index.html) load karega
     return send_from_directory('.', 'index.html')
 
-@app.route('/admin')
-def admin_page():
-    # Yeh aapka Admin Dashboard (admin.html) load karega
-    return send_from_directory('.', 'admin.html')
+# 2. Dynamic route: Kisi bhi HTML file ko load karne ke liye
+@app.route('/<filename>.html')
+def serve_html(filename):
+    return send_from_directory('.', f'{filename}.html')
 
-# ----------------------
+# 3. Assets aur Images route: CSS, JS aur Images load karne ke liye
+@app.route('/assets/<path:path>')
+def serve_assets(path):
+    return send_from_directory('assets', path)
+
+@app.route('/images/<path:path>')
+def serve_images(path):
+    return send_from_directory('images', path)
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    # CSS aur JS files ke liye
+    return send_from_directory('.', filename)
+
+# --- API ROUTES ---
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -61,7 +77,6 @@ def get_orders():
     filter_type = request.args.get('filter', 'all')
     conn = sqlite3.connect('orders.db')
     c = conn.cursor()
-    
     query = "SELECT * FROM orders"
     if filter_type == 'today':
         today = datetime.now().strftime("%Y-%m-%d")
@@ -69,7 +84,6 @@ def get_orders():
     elif filter_type == 'week':
         last_week = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d %H:%M:%S")
         query += f" WHERE date >= '{last_week}'"
-        
     query += " ORDER BY id DESC"
     c.execute(query)
     orders = c.fetchall()
@@ -93,17 +107,15 @@ def download_csv():
     c.execute("SELECT * FROM orders")
     orders = c.fetchall()
     conn.close()
-
+    from flask import make_response
     si = io.StringIO()
     cw = csv.writer(si)
     cw.writerow(['ID', 'Name', 'Phone', 'Address', 'Items', 'Total', 'Date', 'Status'])
     cw.writerows(orders)
-    
-    from flask import make_response
     output = make_response(si.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename=orders_report.csv"
     output.headers["Content-type"] = "text/csv"
     return output
 
 if __name__ == '__main__':
-    app.run(debug=False) # Render ke liye debug False rakha hai
+    app.run(debug=False)
