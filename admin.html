@@ -81,19 +81,24 @@
 
         function printReceipt(id, name, itemsRaw, total) {
             let items = JSON.parse(itemsRaw.replace(/'/g, '"'));
-            let subtotal = total;
+            let subtotal = parseFloat(total);
             let serviceCharge = (subtotal * 0.05).toFixed(2);
             let gst = (subtotal * 0.05).toFixed(2);
-            let finalTotal = (parseFloat(subtotal) + parseFloat(serviceCharge) + parseFloat(gst)).toFixed(2);
-            let itemsHtml = items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${i.qty * i.price}</td></tr>`).join('');
+            let finalTotal = (subtotal + parseFloat(serviceCharge) + parseFloat(gst)).toFixed(2);
+            
+            let itemsHtml = items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>₹${i.price}</td><td>₹${i.qty * i.price}</td></tr>`).join('');
 
-            let win = window.open('', '_blank', 'width=450,height=700');
-            win.document.write(`<html><style>body{font-family:'Poppins',sans-serif;padding:20px;color:#333;}.receipt{width:400px;border:5px double #d4af37;padding:20px;margin:auto;}.header{text-align:center;border-bottom:1px solid #d4af37;margin-bottom:20px;}h1{color:#d4af37;margin:0;}table{width:100%;border-collapse:collapse;margin:20px 0;}th{border-bottom:2px solid #d4af37;text-align:left;}.total-section{text-align:right;margin-top:10px;font-weight:bold;}</style><body>
-                <div class="receipt"><div class="header"><h1>GOLDEN SPOON</h1><p>Chef Sumit Singh | Premium Dining</p></div>
-                <p>Order ID: #${id} | Customer: ${name}</p>
-                <table><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amt</th></tr>${itemsHtml}</table>
-                <div class="total-section"><p>Subtotal: ₹${subtotal}</p><p>Service Charge (5%): ₹${serviceCharge}</p><p>GST (5%): ₹${gst}</p><h2 style="color:#d4af37;">TOTAL: ₹${finalTotal}</h2></div>
-                <p style="text-align:center;">Thank You! Visit Again.</p><button onclick="window.print()" style="width:100%;padding:10px;background:#d4af37;border:none;">Print</button></div></body></html>`);
+            let win = window.open('', '_blank', 'width=500,height=800');
+            win.document.write(`<html><style>body{font-family:'serif';padding:20px;color:#333;}.receipt{width:400px;border:5px double #d4af37;padding:30px;margin:auto;text-align:center;}.header h1{color:#d4af37;margin:0;font-size:24px;text-transform:uppercase;}.chef{font-weight:bold;margin:5px 0;}table{width:100%;border-collapse:collapse;margin:20px 0;}th{border-bottom:2px solid #d4af37;padding:10px;}td{padding:8px;}.totals{text-align:right;margin-top:15px;border-top:2px solid #d4af37;padding-top:10px;}.footer{margin-top:20px;font-size:12px;}</style><body>
+                <div class="receipt">
+                    <div class="header"><h1>GOLDEN SPOON</h1><p>RESTAURANT</p><p>PREMIUM DINING EXPERIENCE</p></div>
+                    <div class="chef">Chef Sumit Singh<br>Executive Chef</div><hr>
+                    <div style="text-align:left;">Order ID: #${id}<br>Customer: ${name}<br>Date: ${new Date().toLocaleDateString()}</div>
+                    <table><tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>AMT</th></tr>${itemsHtml}</table>
+                    <div class="totals">Subtotal: ₹${subtotal}<br>Service Charge (5%): ₹${serviceCharge}<br>GST (5%): ₹${gst}<br><h3>TOTAL AMOUNT: ₹${finalTotal}</h3></div>
+                    <div class="footer">Thank You! We hope to serve you again.<br>+91 9602697303<br>24, Food Street, Model Town,Hisar<br>www.goldenspoon.com</div>
+                    <button onclick="window.print()" style="margin-top:20px;padding:10px;background:#d4af37;border:none;cursor:pointer;">Print Receipt</button>
+                </div></body></html>`);
         }
 
         function searchTable() {
