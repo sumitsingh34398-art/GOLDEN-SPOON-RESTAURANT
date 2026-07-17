@@ -13,9 +13,10 @@ CORS(app)
 
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
+DB_PATH = os.path.join(os.getcwd(), 'orders.db')
 
 def init_db():
-    conn = sqlite3.connect('orders.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS orders 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -47,9 +48,21 @@ def login():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
+# --- YEH ROUTE MISSING THA, ISSE WAPAS ADD KIYA HAI ---
+@app.route('/save-order', methods=['POST'])
+def save_order():
+    data = request.json
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO orders (name, phone, address, items, total, date, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')",
+              (data['name'], data['phone'], data['address'], str(data['items']), data['total'], datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Order Saved Successfully!"})
+
 @app.route('/get-orders', methods=['GET'])
 def get_orders():
-    conn = sqlite3.connect('orders.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT * FROM orders ORDER BY id DESC")
     orders = c.fetchall()
@@ -59,7 +72,7 @@ def get_orders():
 @app.route('/update-order/<int:id>', methods=['POST'])
 def update_order(id):
     new_status = request.json.get('status')
-    conn = sqlite3.connect('orders.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("UPDATE orders SET status = ? WHERE id = ?", (new_status, id))
     conn.commit()
@@ -69,7 +82,7 @@ def update_order(id):
 # --- PROFESSIONAL RECEIPT ROUTE ---
 @app.route('/receipt/<int:order_id>')
 def get_receipt(order_id):
-    conn = sqlite3.connect('orders.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT * FROM orders WHERE id=?", (order_id,))
     order = c.fetchone()
@@ -117,7 +130,7 @@ def get_receipt(order_id):
             </div>
             <table><tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>AMT</th></tr>{items_html}</table>
             <div class="totals">
-                Subtotal: ₹{subtotal:.2f}<br>Service Charge (5%): ₹{service_charge:.2f}<br>GST (5%): ₹{gst:.2f}<br>
+                Subtotal: ₹{subtotal:.2f}<br>Service Charge (2%): ₹{service_charge:.2f}<br>GST (1.5%): ₹{gst:.2f}<br>
                 <h3 style="color:#d4af37; font-size: 20px; margin: 10px 0;">TOTAL: ₹{final_total:.2f}</h3>
             </div>
             <div class="footer">
