@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Golden Spoon Restaurant | Best Dining Experience in Hisar, Haryana</title>
+    <title>Golden Spoon Restaurant | Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-attachment: fixed; color: #fff; padding: 20px; min-height: 100vh; margin: 0; }
@@ -38,7 +38,7 @@
     <div class="nav-bar">
         <button class="nav-btn active" id="btn-all" onclick="fetchAndShow('all')">All</button>
         <button class="nav-btn" id="btn-today" onclick="fetchAndShow('today')">Today's</button>
-        <button class="nav-btn" onclick="window.location.href='http://127.0.0.1:5000/download-csv'">📥 Download CSV</button>
+        <button class="nav-btn" onclick="window.location.href='/download-csv'">📥 Download CSV</button>
     </div>
     
     <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="🔍 Search by Name or ID...">
@@ -52,7 +52,7 @@
     <script>
         function checkPassword() {
             let pass = document.getElementById("adminPass").value;
-            fetch('http://127.0.0.1:5000/login', {
+            fetch('/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({username: "Sumit", password: pass})
@@ -65,7 +65,7 @@
             if(filter === 'all') document.getElementById('btn-all').classList.add('active');
             else document.getElementById('btn-today').classList.add('active');
 
-            fetch(`http://127.0.0.1:5000/get-orders?filter=${filter}`)
+            fetch(`/get-orders?filter=${filter}`)
             .then(res => res.json())
             .then(data => {
                 const body = document.getElementById('tableBody');
@@ -89,7 +89,7 @@
         }
 
         function updateStatus(id, newStatus) {
-            fetch(`http://127.0.0.1:5000/update-order/${id}`, { 
+            fetch(`/update-order/${id}`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({status: newStatus})
