@@ -128,15 +128,16 @@
             message += `%0A*Total: ₹${total}*`;
             window.open(`https://wa.me/919602697303?text=${message}`, '_blank');
 
-            // 2. Python Backend Logic
+            // 2. Python Backend Logic (Updated)
             try {
-                await fetch('http://127.0.0.1:5000/save-order', {
+                await fetch('/save-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
+                console.log("Order saved to database successfully.");
             } catch (e) {
-                console.log("Python server offline, but WhatsApp sent.");
+                console.log("Python server connection error:", e);
             }
         } else {
             document.getElementById('orderModal').style.display = 'flex';
