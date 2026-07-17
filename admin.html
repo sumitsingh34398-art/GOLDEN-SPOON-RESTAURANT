@@ -7,21 +7,19 @@
     <style>
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-attachment: fixed; color: #fff; padding: 20px; min-height: 100vh; margin: 0; }
         h1 { color: #d4af37; text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 20px; }
-        /* Modal Styles */
         .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: #1a1a1a; padding: 40px; border: 2px solid #d4af37; border-radius: 15px; text-align: center; }
         .login-box input { padding: 12px; width: 250px; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; margin-bottom: 15px; }
         .login-btn { background: #d4af37; border: none; padding: 10px 30px; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; }
-        
         .nav-bar { text-align: center; margin-bottom: 25px; }
         .nav-btn { padding: 10px 20px; margin: 0 5px; cursor: pointer; border-radius: 20px; border: 1px solid #d4af37; background: transparent; color: #d4af37; font-weight: 600; transition: 0.3s; }
         .nav-btn:hover, .nav-btn.active { background: #d4af37; color: #000; }
-        
         input#searchInput { padding: 12px 20px; width: 350px; border-radius: 25px; border: 2px solid #d4af37; background: rgba(0,0,0,0.5); color: white; text-align: center; display: block; margin: 0 auto 20px; }
         table { width: 98%; margin: 0 auto; border-collapse: collapse; background: rgba(0, 0, 0, 0.8); border-radius: 10px; overflow: hidden; }
         th { background: #d4af37; color: #000; padding: 15px; text-transform: uppercase; font-size: 13px; }
         td { padding: 12px; border-bottom: 1px solid #333; text-align: center; font-size: 13px; }
         .status-select { background: #000; color: #d4af37; border: 1px solid #d4af37; padding: 5px; border-radius: 5px; cursor: pointer; }
+        .receipt-btn { background: #333; color: #d4af37; border: 1px solid #d4af37; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -44,7 +42,7 @@
     <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="🔍 Search by Name or ID...">
     <table id="orderTable">
         <thead id="tableHead">
-            <tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th></tr>
+            <tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th><th>Receipt</th></tr>
         </thead>
         <tbody id="tableBody"></tbody>
     </table>
@@ -52,48 +50,50 @@
     <script>
         function checkPassword() {
             let pass = document.getElementById("adminPass").value;
-            fetch('/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username: "Sumit", password: pass})
-            })
+            fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: "Sumit", password: pass}) })
             .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", fetchAndShow('all')) : alert("❌ Wrong Password!"));
         }
 
         function fetchAndShow(filter) {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(filter === 'all') document.getElementById('btn-all').classList.add('active');
-            else document.getElementById('btn-today').classList.add('active');
-
             fetch(`/get-orders?filter=${filter}`)
             .then(res => res.json())
             .then(data => {
                 const body = document.getElementById('tableBody');
                 body.innerHTML = "";
                 data.forEach(o => {
-                    body.innerHTML += `<tr><td>#${o[0]}</td><td>${o[1]}</td><td>${o[6]}</td><td>${parseItems(o[4])}</td><td>₹${o[5]}</td><td>${o[7].toUpperCase()}</td><td>
-                        <select class="status-select" onchange="updateStatus(${o[0]}, this.value)">
-                            <option value="pending" ${o[7]=='pending'?'selected':''}>Pending</option>
-                            <option value="preparing" ${o[7]=='preparing'?'selected':''}>Preparing</option>
-                            <option value="out for delivery" ${o[7]=='out for delivery'?'selected':''}>Out for Delivery</option>
-                            <option value="delivered" ${o[7]=='delivered'?'selected':''}>Delivered</option>
-                        </select>
-                    </td></tr>`;
+                    body.innerHTML += `<tr><td>#${o[0]}</td><td>${o[1]}</td><td>${o[6]}</td><td>${parseItems(o[4])}</td><td>₹${o[5]}</td><td>${o[7].toUpperCase()}</td>
+                    <td><select class="status-select" onchange="updateStatus(${o[0]}, this.value)">
+                        <option value="pending" ${o[7]=='pending'?'selected':''}>Pending</option>
+                        <option value="preparing" ${o[7]=='preparing'?'selected':''}>Preparing</option>
+                        <option value="out for delivery" ${o[7]=='out for delivery'?'selected':''}>Out for Delivery</option>
+                        <option value="delivered" ${o[7]=='delivered'?'selected':''}>Delivered</option>
+                    </select></td>
+                    <td><button class="receipt-btn" onclick="printReceipt(${o[0]}, '${o[1]}', '${o[4]}', ${o[5]})">🖨️ Receipt</button></td></tr>`;
                 });
             });
         }
 
-        function parseItems(raw) {
-            try { return JSON.parse(raw.replace(/'/g, '"')).map(i => `${i.name}(${i.qty})`).join(', '); } 
-            catch { return raw; }
-        }
+        function parseItems(raw) { try { return JSON.parse(raw.replace(/'/g, '"')).map(i => `${i.name}(${i.qty})`).join(', '); } catch { return raw; } }
 
         function updateStatus(id, newStatus) {
-            fetch(`/update-order/${id}`, { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({status: newStatus})
-            }).then(() => fetchAndShow('all'));
+            fetch(`/update-order/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({status: newStatus}) }).then(() => fetchAndShow('all'));
+        }
+
+        function printReceipt(id, name, itemsRaw, total) {
+            let items = JSON.parse(itemsRaw.replace(/'/g, '"'));
+            let subtotal = total;
+            let serviceCharge = (subtotal * 0.05).toFixed(2);
+            let gst = (subtotal * 0.05).toFixed(2);
+            let finalTotal = (parseFloat(subtotal) + parseFloat(serviceCharge) + parseFloat(gst)).toFixed(2);
+            let itemsHtml = items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${i.qty * i.price}</td></tr>`).join('');
+
+            let win = window.open('', '_blank', 'width=450,height=700');
+            win.document.write(`<html><style>body{font-family:'Poppins',sans-serif;padding:20px;color:#333;}.receipt{width:400px;border:5px double #d4af37;padding:20px;margin:auto;}.header{text-align:center;border-bottom:1px solid #d4af37;margin-bottom:20px;}h1{color:#d4af37;margin:0;}table{width:100%;border-collapse:collapse;margin:20px 0;}th{border-bottom:2px solid #d4af37;text-align:left;}.total-section{text-align:right;margin-top:10px;font-weight:bold;}</style><body>
+                <div class="receipt"><div class="header"><h1>GOLDEN SPOON</h1><p>Chef Sumit Singh | Premium Dining</p></div>
+                <p>Order ID: #${id} | Customer: ${name}</p>
+                <table><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amt</th></tr>${itemsHtml}</table>
+                <div class="total-section"><p>Subtotal: ₹${subtotal}</p><p>Service Charge (5%): ₹${serviceCharge}</p><p>GST (5%): ₹${gst}</p><h2 style="color:#d4af37;">TOTAL: ₹${finalTotal}</h2></div>
+                <p style="text-align:center;">Thank You! Visit Again.</p><button onclick="window.print()" style="width:100%;padding:10px;background:#d4af37;border:none;">Print</button></div></body></html>`);
         }
 
         function searchTable() {
