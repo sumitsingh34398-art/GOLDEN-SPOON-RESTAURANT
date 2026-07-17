@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | Golden Spoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-attachment: fixed; color: #fff; padding: 20px; min-height: 100vh; margin: 0; }
+        h1 { color: #d4af37; text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 20px; }
+        /* Modal Styles */
+        .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-box { background: #1a1a1a; padding: 40px; border: 2px solid #d4af37; border-radius: 15px; text-align: center; }
+        .login-box input { padding: 12px; width: 250px; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; margin-bottom: 15px; }
+        .login-btn { background: #d4af37; border: none; padding: 10px 30px; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        
+        .nav-bar { text-align: center; margin-bottom: 25px; }
+        .nav-btn { padding: 10px 20px; margin: 0 5px; cursor: pointer; border-radius: 20px; border: 1px solid #d4af37; background: transparent; color: #d4af37; font-weight: 600; transition: 0.3s; }
+        .nav-btn:hover, .nav-btn.active { background: #d4af37; color: #000; }
+        
+        input#searchInput { padding: 12px 20px; width: 350px; border-radius: 25px; border: 2px solid #d4af37; background: rgba(0,0,0,0.5); color: white; text-align: center; display: block; margin: 0 auto 20px; }
+        table { width: 98%; margin: 0 auto; border-collapse: collapse; background: rgba(0, 0, 0, 0.8); border-radius: 10px; overflow: hidden; }
+        th { background: #d4af37; color: #000; padding: 15px; text-transform: uppercase; font-size: 13px; }
+        td { padding: 12px; border-bottom: 1px solid #333; text-align: center; font-size: 13px; }
+        .status-select { background: #000; color: #d4af37; border: 1px solid #d4af37; padding: 5px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="loginModal" class="login-modal">
+        <div class="login-box">
+            <h2>🔒 Admin Access</h2>
+            <input type="password" id="adminPass" placeholder="Enter Password">
+            <br>
+            <button class="login-btn" onclick="checkPassword()">Login</button>
+        </div>
+    </div>
+
+    <h1>Order Management Dashboard</h1>
+    <div class="nav-bar">
+        <button class="nav-btn active" id="btn-all" onclick="fetchAndShow('all')">All</button>
+        <button class="nav-btn" id="btn-today" onclick="fetchAndShow('today')">Today's</button>
+        <button class="nav-btn" onclick="window.location.href='http://127.0.0.1:5000/download-csv'">📥 Download CSV</button>
+    </div>
+    
+    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="🔍 Search by Name or ID...">
+    <table id="orderTable">
+        <thead id="tableHead">
+            <tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+        function checkPassword() {
+            let pass = document.getElementById("adminPass").value;
+            fetch('http://127.0.0.1:5000/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: "Sumit", password: pass})
+            })
+            .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", fetchAndShow('all')) : alert("❌ Wrong Password!"));
+        }
+
+        function fetchAndShow(filter) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if(filter === 'all') document.getElementById('btn-all').classList.add('active');
+            else document.getElementById('btn-today').classList.add('active');
+
+            fetch(`http://127.0.0.1:5000/get-orders?filter=${filter}`)
+            .then(res => res.json())
+            .then(data => {
+                const body = document.getElementById('tableBody');
+                body.innerHTML = "";
+                data.forEach(o => {
+                    body.innerHTML += `<tr><td>#${o[0]}</td><td>${o[1]}</td><td>${o[6]}</td><td>${parseItems(o[4])}</td><td>₹${o[5]}</td><td>${o[7].toUpperCase()}</td><td>
+                        <select class="status-select" onchange="updateStatus(${o[0]}, this.value)">
+                            <option value="pending" ${o[7]=='pending'?'selected':''}>Pending</option>
+                            <option value="preparing" ${o[7]=='preparing'?'selected':''}>Preparing</option>
+                            <option value="out for delivery" ${o[7]=='out for delivery'?'selected':''}>Out for Delivery</option>
+                            <option value="delivered" ${o[7]=='delivered'?'selected':''}>Delivered</option>
+                        </select>
+                    </td></tr>`;
+                });
+            });
+        }
+
+        function parseItems(raw) {
+            try { return JSON.parse(raw.replace(/'/g, '"')).map(i => `${i.name}(${i.qty})`).join(', '); } 
+            catch { return raw; }
+        }
+
+        function updateStatus(id, newStatus) {
+            fetch(`http://127.0.0.1:5000/update-order/${id}`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({status: newStatus})
+            }).then(() => fetchAndShow('all'));
+        }
+
+        function searchTable() {
+            let input = document.getElementById("searchInput").value.toUpperCase();
+            let rows = document.getElementById("tableBody").getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].style.display = rows[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
