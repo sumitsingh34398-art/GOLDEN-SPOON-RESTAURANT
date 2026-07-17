@@ -13,7 +13,6 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Database Init
 def init_db():
     conn = sqlite3.connect('orders.db')
     c = conn.cursor()
@@ -28,17 +27,19 @@ init_db()
 
 # --- ROUTES ---
 
-# 1. Root route: Home page load karega
 @app.route('/')
 def home():
     return send_from_directory('.', 'index.html')
 
-# 2. Dynamic route: Kisi bhi HTML file ko load karne ke liye
+# Yahan add kiya hai taaki /admin kaam kare
+@app.route('/admin')
+def admin_page():
+    return send_from_directory('.', 'admin.html')
+
 @app.route('/<filename>.html')
 def serve_html(filename):
     return send_from_directory('.', f'{filename}.html')
 
-# 3. Assets aur Images route: CSS, JS aur Images load karne ke liye
 @app.route('/assets/<path:path>')
 def serve_assets(path):
     return send_from_directory('assets', path)
@@ -49,7 +50,6 @@ def serve_images(path):
 
 @app.route('/<path:filename>')
 def serve_static(filename):
-    # CSS aur JS files ke liye
     return send_from_directory('.', filename)
 
 # --- API ROUTES ---
