@@ -48,7 +48,6 @@ def login():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
-# --- YEH ROUTE MISSING THA, ISSE WAPAS ADD KIYA HAI ---
 @app.route('/save-order', methods=['POST'])
 def save_order():
     data = request.json
@@ -94,8 +93,9 @@ def get_receipt(order_id):
     items = json.loads(order[4].replace("'", '"'))
     
     subtotal = total
-    service_charge = subtotal * 0.05
-    gst = subtotal * 0.05
+    # UPDATED CALCULATIONS
+    service_charge = subtotal * 0.02
+    gst = subtotal * 0.015
     final_total = subtotal + service_charge + gst
     
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
@@ -134,7 +134,7 @@ def get_receipt(order_id):
                 <h3 style="color:#d4af37; font-size: 20px; margin: 10px 0;">TOTAL: ₹{final_total:.2f}</h3>
             </div>
             <div class="footer">
-                Thank You! We hope to serve you again.<br>+91 9602697303<br>24, Food Street, Model Town, Hisar<br>www.goldenspoon.com
+                Thank You! We hope to serve you again.<br>+91 9602697303<br>46, Sarojini Marg, Ashok Nager, jaipur<br>www.goldenspoon.com
             </div>
             <button class="print-btn" onclick="window.print()" style="margin-top:20px; background:#d4af37; border:none; padding:10px 20px; cursor:pointer;">Print Receipt</button>
         </div>
