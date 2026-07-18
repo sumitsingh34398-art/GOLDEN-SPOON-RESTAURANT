@@ -3,6 +3,7 @@ import csv
 import io
 import os
 import json
+import pytz
 from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 from datetime import datetime
@@ -51,10 +52,14 @@ def login():
 @app.route('/save-order', methods=['POST'])
 def save_order():
     data = request.json
+    # IST Timezone fix
+    ist = pytz.timezone('Asia/Kolkata')
+    current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
+    
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("INSERT INTO orders (name, phone, address, items, total, date, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')",
-              (data['name'], data['phone'], data['address'], str(data['items']), data['total'], datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+              (data['name'], data['phone'], data['address'], str(data['items']), data['total'], current_time))
     conn.commit()
     conn.close()
     return jsonify({"message": "Order Saved Successfully!"})
@@ -93,7 +98,6 @@ def get_receipt(order_id):
     items = json.loads(order[4].replace("'", '"'))
     
     subtotal = total
-    # UPDATED CALCULATIONS
     service_charge = subtotal * 0.02
     gst = subtotal * 0.015
     final_total = subtotal + service_charge + gst
