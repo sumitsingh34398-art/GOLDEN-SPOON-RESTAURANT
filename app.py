@@ -52,7 +52,6 @@ def login():
 @app.route('/save-order', methods=['POST'])
 def save_order():
     data = request.json
-    # IST Timezone fix
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
@@ -82,6 +81,24 @@ def update_order(id):
     conn.commit()
     conn.close()
     return jsonify({"message": "Status Updated!"})
+
+@app.route('/download-csv')
+def download_csv():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM orders ORDER BY id DESC")
+    orders = c.fetchall()
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Name', 'Phone', 'Address', 'Items', 'Total', 'Date', 'Status'])
+    writer.writerows(orders)
+    
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=orders.csv"
+    response.headers["Content-type"] = "text/csv"
+    return response
 
 # --- PROFESSIONAL RECEIPT ROUTE ---
 @app.route('/receipt/<int:order_id>')
