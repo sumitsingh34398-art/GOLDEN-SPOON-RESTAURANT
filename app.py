@@ -81,11 +81,21 @@ def login_user():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
+@app.route('/check-session')
+def check_session():
+    if 'user' in session:
+        return jsonify({"logged_in": True})
+    return jsonify({"logged_in": False})
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return jsonify({"success": True})
+
 @app.route('/book-table')
 def book_table():
     if 'user' not in session:
         return send_from_directory('.', 'login.html')
-    # Updated: Ab ye order.html serve karega
     return send_from_directory('.', 'order.html')
 
 # --- ORDER ROUTES ---
