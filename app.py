@@ -4,7 +4,7 @@ import io
 import os
 import json
 import pytz
-from flask import Flask, request, jsonify, send_from_directory, make_response
+from flask import Flask, request, jsonify, send_from_directory, make_response, session, redirect, url_for
 from flask_cors import CORS
 from datetime import datetime
 
@@ -23,6 +23,9 @@ def init_db():
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, phone TEXT, address TEXT, 
                   items TEXT, total REAL, date TEXT, status TEXT DEFAULT 'pending')''')
+    c.execute('''CREATE TABLE IF NOT EXISTS users 
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  phone TEXT UNIQUE, password TEXT)''')
     conn.commit()
     conn.close()
 
@@ -48,6 +51,44 @@ def login():
     if data.get('username') == ADMIN_USER and data.get('password') == ADMIN_PASS:
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
+
+# --- USER AUTHENTICATION ROUTES ---
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    try:
+        c.execute("INSERT INTO users (phone, password) VALUES (?, ?)", (data['phone'], data['password']))
+        conn.commit()
+        return jsonify({"success": True})
+    except:
+        return jsonify({"success": False, "message": "User already exists"})
+    finally:
+        conn.close()
+
+@app.route('/login-user', methods=['POST'])
+def login_user():
+    data = request.json
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE phone=? AND password=?", (data['phone'], data['password']))
+    user = c.fetchone()
+    conn.close()
+    if user:
+        session['user'] = data['phone']
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 401
+
+@app.route('/book-table')
+def book_table():
+    if 'user' not in session:
+        return send_from_directory('.', 'login.html')
+    # Updated: Ab ye order.html serve karega
+    return send_from_directory('.', 'order.html')
+
+# --- ORDER ROUTES ---
 
 @app.route('/save-order', methods=['POST'])
 def save_order():
@@ -100,7 +141,6 @@ def download_csv():
     response.headers["Content-type"] = "text/csv"
     return response
 
-# --- PROFESSIONAL RECEIPT ROUTE ---
 @app.route('/receipt/<int:order_id>')
 def get_receipt(order_id):
     conn = sqlite3.connect(DB_PATH)
