@@ -60,9 +60,9 @@
         if(!data.logged_in) { window.location.href = 'login.html'; }
     });
 
-    // 2. Logout Function
+    // 2. Logout Function - Redirect to Home Page
     function logout() {
-        fetch('/logout').then(() => { window.location.href = 'login.html'; });
+        fetch('/logout').then(() => { window.location.href = 'index.html'; });
     }
 
     let total = 0;
