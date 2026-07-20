@@ -23,7 +23,8 @@
         .input-group input { width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 4px; }
         #cartItems { margin: 20px 0; font-size: 14px; color: #ccc; }
         #cartTotal { font-size: 24px; color: #d4af37; margin: 20px 0; border-top: 1px solid #333; padding-top: 10px; }
-        .place-order-btn { width: 100%; background: #d4af37; border: none; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 5px; }
+        .place-order-btn { width: 100%; background: #d4af37; border: none; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 5px; margin-bottom: 10px; }
+        .logout-btn { width: 100%; background: #333; border: 1px solid #d4af37; color: #d4af37; padding: 10px; cursor: pointer; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -42,6 +43,7 @@
     <div id="cartItems"></div>
     <h3 id="cartTotal">Total: ₹0</h3>
     <button class="place-order-btn" onclick="placeOrder()">PLACE ORDER</button>
+    <button class="logout-btn" onclick="logout()">LOGOUT</button>
 </div>
 
 <div id="orderModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center;">
@@ -53,6 +55,16 @@
 </div>
 
 <script>
+    // 1. Session Protection Check
+    fetch('/check-session').then(res => res.json()).then(data => {
+        if(!data.logged_in) { window.location.href = 'login.html'; }
+    });
+
+    // 2. Logout Function
+    function logout() {
+        fetch('/logout').then(() => { window.location.href = 'login.html'; });
+    }
+
     let total = 0;
     const dishes = [
         { name: "salmon bruschetta", price: 450, img: "images/salmon bruschetta.jpg" },
@@ -122,22 +134,22 @@
         if (total > 0 && name !== "" && phone !== "" && address !== "") {
             const orderData = { name, phone, address, items: dishes.filter(d => d.qty > 0), total };
             
-            // 1. WhatsApp Logic
             let message = `*New Order Received!*%0A%0A*Customer:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A%0A*Items:*%0A`;
             orderData.items.forEach(d => message += `• ${d.name} (x${d.qty}) = ₹${d.price * d.qty}%0A`);
             message += `%0A*Total: ₹${total}*`;
             window.open(`https://wa.me/919602697303?text=${message}`, '_blank');
 
-            // 2. Python Backend Logic (Updated)
             try {
                 await fetch('/save-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
-                console.log("Order saved to database successfully.");
+                document.getElementById('orderModal').style.display = 'flex';
+                document.getElementById('modalTitle').innerText = "Order Successful";
+                document.getElementById('modalMsg').innerText = "Your order has been placed!";
             } catch (e) {
-                console.log("Python server connection error:", e);
+                console.log("Error:", e);
             }
         } else {
             document.getElementById('orderModal').style.display = 'flex';
