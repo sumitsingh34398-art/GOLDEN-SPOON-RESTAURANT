@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Golden Spoon</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            /* Yahan apni image ka naam change karein */
+            background: url('images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .register-box {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #d4af37;
+            background: transparent;
+            color: white;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #d4af37;
+            border: none;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        h2 { color: #d4af37; }
+    </style>
+</head>
+<body>
+    <div class="register-box">
+        <h2>REGISTER</h2>
+        <input type="text" id="phone" placeholder="Enter Phone Number">
+        <input type="password" id="password" placeholder="Enter Password">
+        <button onclick="register()">SIGN UP</button>
+        <p style="font-size: 12px; margin-top: 15px;">
+            Already have an account? <a href="login.html" style="color: #d4af37;">Login</a>
+        </p>
+    </div>
+
+    <script>
+        async function register() {
+            const data = { 
+                phone: document.getElementById('phone').value, 
+                password: document.getElementById('password').value 
+            };
+            const res = await fetch('/register', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(data) 
+            });
+            const result = await res.json();
+            if(result.success) { 
+                alert("Registration Successful!"); 
+                window.location.href = 'login.html'; 
+            } else { 
+                alert(result.message); 
+            }
+        }
+    </script>
+</body>
+</html>
