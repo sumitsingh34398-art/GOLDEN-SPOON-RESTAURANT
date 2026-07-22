@@ -190,30 +190,33 @@ def get_receipt(order_id):
     gst = subtotal * 0.015
     final_total = subtotal + service_charge + gst
     
-    items_text_list = "\n".join([f"- {i['name']} (Qty: {i['qty']}) - ₹{int(i['qty'])*int(i['price'])}" for i in items])
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
     
     return f"""
-    <html><head><style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins&display=swap');
-        body {{ background: #e0e0e0; display: flex; justify-content: center; padding: 20px; }}
-        .receipt {{ 
-            width: 400px; height: auto; min-height: 600px;
-            background: #fff; border: 15px double #d4af37; padding: 30px;
-            text-align: center; font-family: 'Poppins', sans-serif;
-        }}
-        h1 {{ font-family: 'Playfair Display', serif; color: #d4af37; margin: 0; font-size: 28px; }}
-        .chef-box {{ border-bottom: 1px dashed #d4af37; padding-bottom: 10px; margin-bottom: 20px; }}
-        table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-        th {{ border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; padding: 8px; color: #d4af37; font-size: 14px; }}
-        td {{ padding: 8px; border-bottom: 1px dashed #eee; font-size: 14px; }}
-        .totals {{ text-align: right; margin-top: 20px; font-weight: bold; font-size: 14px; }}
-        .footer {{ margin-top: 30px; font-size: 12px; border-top: 1px solid #d4af37; padding-top: 10px; }}
-        .btn-container {{ display: flex; justify-content: center; gap: 10px; margin-top: 20px; }}
-        .action-btn {{ background: #d4af37; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 13px; border-radius: 4px; color: #000; }}
-        @media print {{ .action-btn {{ display: none; }} }}
-    </style></head><body>
-        <div class="receipt">
+    <html><head>
+        <!-- html2canvas library jodi gayi hai taaki receipt ko image mein badla ja sake -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins&display=swap');
+            body {{ background: #e0e0e0; display: flex; justify-content: center; padding: 20px; }}
+            .receipt {{ 
+                width: 400px; height: auto; min-height: 600px;
+                background: #fff; border: 15px double #d4af37; padding: 30px;
+                text-align: center; font-family: 'Poppins', sans-serif;
+            }}
+            h1 {{ font-family: 'Playfair Display', serif; color: #d4af37; margin: 0; font-size: 28px; }}
+            .chef-box {{ border-bottom: 1px dashed #d4af37; padding-bottom: 10px; margin-bottom: 20px; }}
+            table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+            th {{ border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; padding: 8px; color: #d4af37; font-size: 14px; }}
+            td {{ padding: 8px; border-bottom: 1px dashed #eee; font-size: 14px; }}
+            .totals {{ text-align: right; margin-top: 20px; font-weight: bold; font-size: 14px; }}
+            .footer {{ margin-top: 30px; font-size: 12px; border-top: 1px solid #d4af37; padding-top: 10px; }}
+            .btn-container {{ display: flex; justify-content: center; gap: 10px; margin-top: 20px; }}
+            .action-btn {{ background: #d4af37; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 13px; border-radius: 4px; color: #000; }}
+            @media print {{ .action-btn {{ display: none; }} }}
+        </style>
+    </head><body>
+        <div class="receipt" id="receiptContent">
             <h1>GOLDEN SPOON</h1>
             <p style="margin:0; letter-spacing: 2px;">RESTAURANT</p>
             <p style="font-size: 12px; margin-bottom: 20px;">PREMIUM DINING EXPERIENCE</p>
@@ -238,16 +241,35 @@ def get_receipt(order_id):
         </div>
 
         <script>
-            function shareReceipt() {{
-                const receiptText = `GOLDEN SPOON RESTAURANT\\nOrder ID: #{order_id}\\nCustomer: {name}\\nPhone: {phone}\\nDate: {date}\\n\\nItems:\\n{items_text_list}\\n\\nTotal: ₹{final_total:.2f}\\nAddress: {address}\\nThank you for ordering!`;
-                
-                if (navigator.share) {{
-                    navigator.share({{
-                        title: 'Golden Spoon Receipt #{order_id}',
-                        text: receiptText,
-                    }}).catch((error) => console.log('Sharing failed', error));
-                }} else {{
-                    alert('Sharing is not supported on this browser.');
+            async function shareReceipt() {{
+                const receiptElement = document.getElementById('receiptContent');
+                try {{
+                    const canvas = await html2canvas(receiptElement, {{ scale: 2 }});
+                    canvas.toBlob(async (blob) => {{
+                        const file = new File([blob], "Receipt_{order_id}.png", {{ type: "image/png" }});
+                        
+                        if (navigator.canShare && navigator.canShare({{ files: [file] }})) {{
+                            try {{
+                                await navigator.share({{
+                                    title: 'Golden Spoon Receipt #{order_id}',
+                                    text: 'Here is your receipt from Golden Spoon Restaurant.',
+                                    files: [file]
+                                }});
+                            }} catch (error) {{
+                                console.log('Sharing error:', error);
+                            }}
+                        }} else {{
+                            // Fallback agar direct file sharing support na ho
+                            const link = document.createElement('a');
+                            link.download = 'Receipt_{order_id}.png';
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                            alert('Sharing files not supported directly on this browser, image downloaded instead!');
+                        }}
+                    }});
+                }} catch (err) {{
+                    console.error('Canvas error:', err);
+                    alert('Failed to generate receipt image.');
                 }}
             }}
         </script>
