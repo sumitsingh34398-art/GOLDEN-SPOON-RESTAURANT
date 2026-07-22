@@ -43,6 +43,15 @@
             background: #d4af37; color: #000; border: none; padding: 8px 15px; 
             cursor: pointer; font-weight: bold; border-radius: 4px;
         }
+
+        /* Update: Naye Review Button aur Modal ki Styling */
+        .add-review-container { text-align: center; margin-bottom: 30px; }
+        .add-review-btn { background: #d4af37; color: #000; border: none; padding: 12px 25px; font-weight: bold; border-radius: 25px; cursor: pointer; font-size: 14px; letter-spacing: 1px; }
+        .review-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 2000; }
+        .review-box { background: #1a1a1a; padding: 30px; border: 2px solid #d4af37; border-radius: 10px; width: 350px; text-align: center; color: #fff; }
+        .review-box input, .review-box textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #d4af37; background: #000; color: #fff; border-radius: 5px; }
+        .review-box button { width: 100%; padding: 10px; background: #d4af37; border: none; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        .close-modal { background: #ff4d4d !important; color: #fff !important; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -50,7 +59,24 @@
     <a href="index.html" class="back-btn">&#8592; BACK TO HOME</a>
     <h1>RESTAURANT EXPERIENCES</h1>
 
-    <div class="grid-container">
+    <!-- Update: Naya Review add karne ka button -->
+    <div class="add-review-container">
+        <button class="add-review-btn" onclick="openReviewModal()">✍️ Add Your Review</button>
+    </div>
+
+    <!-- Update: Review Submit karne ka Pop-up Modal -->
+    <div id="reviewModal" class="review-modal">
+        <div class="review-box">
+            <h2 style="color: #d4af37; margin-bottom: 15px;">Write a Review</h2>
+            <input type="text" id="revName" placeholder="Enter Your Name">
+            <input type="number" id="revRating" min="1" max="5" placeholder="Rating (1 to 5 Stars)">
+            <textarea id="revComment" placeholder="Write your experience..." rows="3"></textarea>
+            <button onclick="submitReview()">Submit Review</button>
+            <button class="close-modal" onclick="closeReviewModal()">Cancel</button>
+        </div>
+    </div>
+
+    <div class="grid-container" id="gridContainer">
         <!-- Card 1 -->
         <div class="card">
             <img src="assets/pani puri.jpg" alt="Dish">
@@ -131,5 +157,43 @@
         </div>
     </div>
 
+    <!-- Update: JavaScript functions modal aur review handling ke liye -->
+    <script>
+        function openReviewModal() {
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+        function submitReview() {
+            let name = document.getElementById('revName').value;
+            let rating = document.getElementById('revRating').value;
+            let comment = document.getElementById('revComment').value;
+
+            if(!name || !rating || !comment) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            // Naya review card dynamically grid mein add karna
+            let container = document.getElementById('gridContainer');
+            let newCard = document.createElement('div');
+            newCard.className = 'card';
+            newCard.innerHTML = `
+                <div class="card-body" style="background:#fff; color:#333; height:100%;">
+                    <div class="title">${name}</div>
+                    <div class="rating">${'★'.repeat(Math.min(rating, 5))} (${rating} Stars)</div>
+                    <p class="details" style="color:#000; font-size:1rem; margin-bottom:10px;">"${comment}"</p>
+                    <p style="font-size: 0.8rem; color: #888;">Verified Customer Review</p>
+                </div>
+            `;
+            container.prepend(newCard);
+            alert("Review Added Successfully!");
+            closeReviewModal();
+            document.getElementById('revName').value = '';
+            document.getElementById('revRating').value = '';
+            document.getElementById('revComment').value = '';
+        }
+    </script>
 </body>
 </html>
