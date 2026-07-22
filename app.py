@@ -215,7 +215,7 @@ def get_receipt(order_id):
                 <h3 style="color:#d4af37; font-size: 20px; margin: 10px 0;">TOTAL: ₹{final_total:.2f}</h3>
             </div>
             <div class="footer">
-                Thank You! We hope to serve you again.<br>+91 9602697303<br>46, Sarojini Marg, Ashok Nager, jaipur<br>www.goldenspoon.com
+                Thank You! We hope to serve you again.<br>+91 9602697303<br>24, Food Street, Model Town, Hisar<br>https://golden-spoon-restaurant.onrender.com
             </div>
             <button class="print-btn" onclick="window.print()" style="margin-top:20px; background:#d4af37; border:none; padding:10px 20px; cursor:pointer;">Print Receipt</button>
         </div>
