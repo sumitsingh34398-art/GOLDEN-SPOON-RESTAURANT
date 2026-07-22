@@ -35,10 +35,10 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS menu 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, price REAL, image TEXT)''')
-    # Update: Reviews table jodi gayi hai online customer reviews store karne ke liye
+    # Update: Reviews table mein image column bhi joda gaya hai online customer reviews ke liye
     c.execute('''CREATE TABLE IF NOT EXISTS reviews 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  name TEXT, rating INTEGER, comment TEXT, date TEXT)''')
+                  name TEXT, rating INTEGER, comment TEXT, image TEXT, date TEXT)''')
     conn.commit()
     conn.close()
 
@@ -280,14 +280,26 @@ def delete_menu_item(id):
 # --- ONLINE REVIEWS ROUTES ---
 @app.route('/add-review', methods=['POST'])
 def add_review():
-    data = request.json
+    name = request.form.get('name')
+    rating = request.form.get('rating')
+    comment = request.form.get('comment')
+    
+    file = request.files.get('image')
+    if file and file.filename != '':
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(file_path)
+        image_url = f"{UPLOAD_FOLDER}/{filename}"
+    else:
+        image_url = "assets/default.jpg"
+
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("INSERT INTO reviews (name, rating, comment, date) VALUES (?, ?, ?, ?)",
-              (data['name'], data['rating'], data['comment'], current_time))
+    c.execute("INSERT INTO reviews (name, rating, comment, image, date) VALUES (?, ?, ?, ?, ?)",
+              (name, rating, comment, image_url, current_time))
     conn.commit()
     conn.close()
     return jsonify({"success": True, "message": "Review submitted successfully!"})
