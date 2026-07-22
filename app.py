@@ -27,9 +27,10 @@ def init_db():
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, phone TEXT, address TEXT, 
                   items TEXT, total REAL, date TEXT, status TEXT DEFAULT 'pending')''')
+    # Update: Users table mein 'name' column joda gaya hai
     c.execute('''CREATE TABLE IF NOT EXISTS users 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  phone TEXT UNIQUE, password TEXT)''')
+                  name TEXT, phone TEXT UNIQUE, password TEXT)''')
     # Nayi Menu Table (Admin se dishes manage karne ke liye)
     c.execute('''CREATE TABLE IF NOT EXISTS menu 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -68,7 +69,8 @@ def register():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     try:
-        c.execute("INSERT INTO users (phone, password) VALUES (?, ?)", (data['phone'], data['password']))
+        # Update: Database mein name, phone, aur password save kiye ja rahe hain
+        c.execute("INSERT INTO users (name, phone, password) VALUES (?, ?, ?)", (data['name'], data['phone'], data['password']))
         conn.commit()
         return jsonify({"success": True})
     except:
@@ -226,7 +228,8 @@ def get_receipt(order_id):
 def get_users():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT id, phone FROM users ORDER BY id DESC")
+    # Update: Users table se id, name, aur phone teeno fetch kiye ja rahe hain
+    c.execute("SELECT id, name, phone FROM users ORDER BY id DESC")
     users = c.fetchall()
     conn.close()
     return jsonify(users)
