@@ -51,6 +51,8 @@
 <body>
     <div class="register-box">
         <h2>REGISTER</h2>
+        <!-- Update: Naya Full Name input field joda gaya hai -->
+        <input type="text" id="name" placeholder="Enter Full Name">
         <input type="text" id="phone" placeholder="Enter Phone Number">
         <input type="password" id="password" placeholder="Enter Password">
         <button onclick="register()">SIGN UP</button>
@@ -61,13 +63,15 @@
 
     <script>
         async function register() {
+            // Update: data object mein name bhi shamil kar diya gaya hai
             const data = { 
+                name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value, 
                 password: document.getElementById('password').value 
             };
             
-            // Check karein ki fields khaali na hon
-            if(!data.phone || !data.password) {
+            // Check karein ki fields khaali na hon (Name, Phone aur Password teeno check honge)
+            if(!data.name || !data.phone || !data.password) {
                 alert("Please fill all fields!");
                 return;
             }
