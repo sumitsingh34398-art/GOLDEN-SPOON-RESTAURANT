@@ -7,6 +7,7 @@ import pytz
 from flask import Flask, request, jsonify, send_from_directory, make_response, session, redirect, url_for
 from flask_cors import CORS
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'golden_spoon_secret'
@@ -15,6 +16,9 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 DB_PATH = os.path.join(os.getcwd(), 'orders.db')
+
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -238,17 +242,33 @@ def get_menu():
 
 @app.route('/add-menu-item', methods=['POST'])
 def add_menu_item():
-    data = request.json
-    name = data.get('name')
-    price = data.get('price')
-    image = data.get('image')
+    name = request.form.get('name')
+    price = request.form.get('price')
+    
+    file = request.files.get('image')
+    if file and file.filename != '':
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(file_path)
+        image_url = f"{UPLOAD_FOLDER}/{filename}"
+    else:
+        image_url = "assets/default.jpg"
     
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("INSERT INTO menu (name, price, image) VALUES (?, ?, ?)", (name, price, image))
+    c.execute("INSERT INTO menu (name, price, image) VALUES (?, ?, ?)", (name, price, image_url))
     conn.commit()
     conn.close()
     return jsonify({"success": True, "message": "Item added successfully!"})
+
+@app.route('/delete-menu-item/<int:id>', methods=['POST'])
+def delete_menu_item(id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM menu WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Item deleted successfully!"})
 
 # --- FORGOT PASSWORD / RESET PASSWORD ROUTE ---
 @app.route('/reset-password', methods=['POST'])
