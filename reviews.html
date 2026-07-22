@@ -93,7 +93,7 @@
     </div>
 
     <div class="grid-container" id="gridContainer">
-        <!-- Card 1 -->
+        <!-- Static / Default Cards (Jaise Pani Puri, Spaghetti, etc.) -->
         <div class="card">
             <img src="assets/pani puri.jpg" alt="Dish">
             <div class="card-body">
@@ -106,7 +106,6 @@
                 </div>
             </div>
         </div>
-        <!-- Card 2 -->
         <div class="card">
             <img src="assets/spaghetti.jpg" alt="Dish">
             <div class="card-body">
@@ -119,7 +118,6 @@
                 </div>
             </div>
         </div>
-        <!-- Card 3 -->
         <div class="card">
             <img src="assets/grilled-salmon.jpg" alt="Dish">
             <div class="card-body">
@@ -132,7 +130,6 @@
                 </div>
             </div>
         </div>
-        <!-- Card 4 -->
         <div class="card">
             <img src="assets/chocolate-dessert.jpg" alt="Dish">
             <div class="card-body">
@@ -145,7 +142,6 @@
                 </div>
             </div>
         </div>
-        <!-- Card 5 -->
         <div class="card">
             <img src="assets/mushroom-steak.jpg" alt="Dish">
             <div class="card-body">
@@ -158,7 +154,6 @@
                 </div>
             </div>
         </div>
-        <!-- Card 6 -->
         <div class="card">
             <img src="assets/lamb-chops.jpg" alt="Dish">
             <div class="card-body">
@@ -175,6 +170,43 @@
 
     <script>
         let selectedRating = 0;
+
+        // Page load hone par database se reviews load karne ke liye function
+        window.onload = function() {
+            fetchReviews();
+        };
+
+        function fetchReviews() {
+            fetch('/get-reviews')
+            .then(res => res.json())
+            .then(data => {
+                let container = document.getElementById('gridContainer');
+                // Database wale reviews ko grid mein append/prepend karna
+                data.forEach(review => {
+                    // review format: [id, name, rating, comment, image, date]
+                    let revId = review[0];
+                    let name = review[1];
+                    let rating = review[2];
+                    let comment = review[3];
+                    let imgSrc = review[4] ? review[4] : 'assets/default.jpg';
+                    let date = review[5];
+
+                    let newCard = document.createElement('div');
+                    newCard.className = 'card';
+                    newCard.innerHTML = `
+                        <img src="${imgSrc}" alt="Dish">
+                        <div class="card-body">
+                            <div class="title">${name}</div>
+                            <div class="rating">${'★'.repeat(rating)} (${rating} Stars)</div>
+                            <p class="details" style="color:#444; font-size:0.95rem; margin-bottom:10px;">"${comment}"</p>
+                            <p style="font-size: 0.8rem; color: #888;">Verified Customer • ${date}</p>
+                        </div>
+                    `;
+                    container.prepend(newCard);
+                });
+            })
+            .catch(err => console.error("Error fetching reviews:", err));
+        }
 
         function setRating(rating) {
             selectedRating = rating;
@@ -208,39 +240,38 @@
                 return;
             }
 
-            // Image ko URL/Base64 mein convert karne ka tareeka taaki card par photo dikh sake
-            let reader = new FileReader();
-            if (imageInput.files && imageInput.files[0]) {
-                reader.onload = function(e) {
-                    createReviewCard(name, rating, comment, e.target.result);
-                }
-                reader.readAsDataURL(imageInput.files[0]);
-            } else {
-                // Agar photo nahi chuni toh default image lag jayegi
-                createReviewCard(name, rating, comment, 'assets/default.jpg');
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('rating', rating);
+            formData.append('comment', comment);
+            if(imageInput.files[0]) {
+                formData.append('image', imageInput.files[0]);
             }
-        }
 
-        function createReviewCard(name, rating, comment, imgSrc) {
-            let container = document.getElementById('gridContainer');
-            let newCard = document.createElement('div');
-            newCard.className = 'card';
-            newCard.innerHTML = `
-                <img src="${imgSrc}" alt="Dish">
-                <div class="card-body">
-                    <div class="title">${name}</div>
-                    <div class="rating">${'★'.repeat(rating)} (${rating} Stars)</div>
-                    <p class="details" style="color:#444; font-size:0.95rem; margin-bottom:10px;">"${comment}"</p>
-                    <p style="font-size: 0.8rem; color: #888;">Verified Customer Review</p>
-                </div>
-            `;
-            container.prepend(newCard);
-            alert("Review Added Successfully!");
-            closeReviewModal();
-            document.getElementById('revName').value = '';
-            document.getElementById('revComment').value = '';
-            document.getElementById('revImage').value = '';
-            setRating(0);
+            // Backend par review save karne ki request (FormData ke sath)
+            fetch('/add-review', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    alert("Review Added Successfully!");
+                    closeReviewModal();
+                    document.getElementById('revName').value = '';
+                    document.getElementById('revComment').value = '';
+                    document.getElementById('revImage').value = '';
+                    setRating(0);
+                    // Page refresh karke latest review database se load karne ke liye
+                    location.reload();
+                } else {
+                    alert("Failed to submit review.");
+                }
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Something went wrong!");
+            });
         }
     </script>
 </body>
