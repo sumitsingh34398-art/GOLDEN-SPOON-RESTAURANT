@@ -216,7 +216,7 @@ def get_receipt(order_id):
     </body></html>
     """
 
-# --- NEW ADMIN FEATURES ROUTES (Added safely) ---
+# --- NEW ADMIN FEATURES ROUTES ---
 
 @app.route('/get-users', methods=['GET'])
 def get_users():
@@ -249,6 +249,27 @@ def add_menu_item():
     conn.commit()
     conn.close()
     return jsonify({"success": True, "message": "Item added successfully!"})
+
+# --- FORGOT PASSWORD / RESET PASSWORD ROUTE ---
+@app.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.json
+    phone = data.get('phone')
+    new_password = data.get('newPassword')
+    
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE phone=?", (phone,))
+    user = c.fetchone()
+    
+    if user:
+        c.execute("UPDATE users SET password = ? WHERE phone = ?", (new_password, phone))
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True})
+    else:
+        conn.close()
+        return jsonify({"success": False, "message": "Phone number not registered!"})
 
 if __name__ == '__main__':
     app.run(debug=True)
