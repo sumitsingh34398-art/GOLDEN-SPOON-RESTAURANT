@@ -65,17 +65,29 @@
                 phone: document.getElementById('phone').value, 
                 password: document.getElementById('password').value 
             };
-            const res = await fetch('/register', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(data) 
-            });
-            const result = await res.json();
-            if(result.success) { 
-                alert("Registration Successful!"); 
-                window.location.href = 'login.html'; 
-            } else { 
-                alert(result.message); 
+            
+            // Check karein ki fields khaali na hon
+            if(!data.phone || !data.password) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            try {
+                const res = await fetch('/register', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(data) 
+                });
+                const result = await res.json();
+                if(result.success) { 
+                    alert("Registration Successful!"); 
+                    window.location.href = 'login.html'; 
+                } else { 
+                    alert(result.message || "Registration failed!"); 
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Something went wrong!");
             }
         }
     </script>
