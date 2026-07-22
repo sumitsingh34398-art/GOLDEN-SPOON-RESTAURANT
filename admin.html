@@ -72,9 +72,10 @@
     <!-- SECTION 2: REGISTERED USERS -->
     <div id="section-users" class="admin-section">
         <h2 style="color: #d4af37; text-align: center;">Registered Customers List</h2>
-        <table style="width: 60%;">
+        <table style="width: 70%;">
             <thead>
-                <tr><th>User ID</th><th>Phone Number</th></tr>
+                <!-- Update: Table headers mein Customer Name column add kiya gaya hai -->
+                <tr><th>User ID</th><th>Customer Name</th><th>Phone Number</th></tr>
             </thead>
             <tbody id="usersTableBody"></tbody>
         </table>
@@ -164,7 +165,8 @@
                 let tbody = document.getElementById('usersTableBody');
                 tbody.innerHTML = "";
                 data.forEach(u => {
-                    tbody.innerHTML += `<tr><td>#${u[0]}</td><td>${u[1]}</td></tr>`;
+                    // Update: u[0] ID, u[1] Name, aur u[2] Phone number ko table row mein render kiya gaya hai
+                    tbody.innerHTML += `<tr><td>#${u[0]}</td><td>${u[1]}</td><td>${u[2]}</td></tr>`;
                 });
             });
         }
