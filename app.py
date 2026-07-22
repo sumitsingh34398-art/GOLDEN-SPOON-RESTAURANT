@@ -182,7 +182,7 @@ def get_receipt(order_id):
     
     if not order: return "Order not found"
     
-    name, total, date = order[1], float(order[5]), order[6]
+    name, phone, address, total, date = order[1], order[2], order[3], float(order[5]), order[6]
     items = json.loads(order[4].replace("'", '"'))
     
     subtotal = total
@@ -190,6 +190,7 @@ def get_receipt(order_id):
     gst = subtotal * 0.015
     final_total = subtotal + service_charge + gst
     
+    items_text_list = "\n".join([f"- {i['name']} (Qty: {i['qty']}) - ₹{int(i['qty'])*int(i['price'])}" for i in items])
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
     
     return f"""
@@ -208,7 +209,9 @@ def get_receipt(order_id):
         td {{ padding: 8px; border-bottom: 1px dashed #eee; font-size: 14px; }}
         .totals {{ text-align: right; margin-top: 20px; font-weight: bold; font-size: 14px; }}
         .footer {{ margin-top: 30px; font-size: 12px; border-top: 1px solid #d4af37; padding-top: 10px; }}
-        @media print {{ .print-btn {{ display: none; }} }}
+        .btn-container {{ display: flex; justify-content: center; gap: 10px; margin-top: 20px; }}
+        .action-btn {{ background: #d4af37; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 13px; border-radius: 4px; color: #000; }}
+        @media print {{ .action-btn {{ display: none; }} }}
     </style></head><body>
         <div class="receipt">
             <h1>GOLDEN SPOON</h1>
@@ -218,7 +221,7 @@ def get_receipt(order_id):
                 <strong>Chef Sumit Singh</strong><br>Executive Chef
             </div>
             <div style="text-align:left; font-size: 13px;">
-                Order ID: #{order_id}<br>Customer: {name}<br>Date: {date}
+                Order ID: #{order_id}<br>Customer: {name}<br>Phone: {phone}<br>Date: {date}
             </div>
             <table><tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>AMT</th></tr>{items_html}</table>
             <div class="totals">
@@ -228,8 +231,26 @@ def get_receipt(order_id):
             <div class="footer">
                 Thank You! We hope to serve you again.<br>+91 9602697303<br>24, Food Street, Model Town, Hisar<br>https://golden-spoon-restaurant.onrender.com
             </div>
-            <button class="print-btn" onclick="window.print()" style="margin-top:20px; background:#d4af37; border:none; padding:10px 20px; cursor:pointer;">Print Receipt</button>
+            <div class="btn-container">
+                <button class="action-btn" onclick="window.print()">Print Receipt</button>
+                <button class="action-btn" onclick="shareReceipt()">Send / Share</button>
+            </div>
         </div>
+
+        <script>
+            function shareReceipt() {{
+                const receiptText = `GOLDEN SPOON RESTAURANT\\nOrder ID: #{order_id}\\nCustomer: {name}\\nPhone: {phone}\\nDate: {date}\\n\\nItems:\\n{items_text_list}\\n\\nTotal: ₹{final_total:.2f}\\nAddress: {address}\\nThank you for ordering!`;
+                
+                if (navigator.share) {{
+                    navigator.share({{
+                        title: 'Golden Spoon Receipt #{order_id}',
+                        text: receiptText,
+                    }}).catch((error) => console.log('Sharing failed', error));
+                }} else {{
+                    alert('Sharing is not supported on this browser.');
+                }}
+            }}
+        </script>
     </body></html>
     """
 
