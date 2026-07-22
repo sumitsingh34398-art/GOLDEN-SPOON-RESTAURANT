@@ -8,7 +8,6 @@
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            /* Background image ka path yahan sahi rakhein */
             background: url('assets/background-photo.jpg') no-repeat center center fixed;
             background-size: cover;
             display: flex;
@@ -34,7 +33,7 @@
             background: transparent;
             color: white;
             border-radius: 5px;
-            box-sizing: border-box; /* Input ko box se bahar nikalne se rokta hai */
+            box-sizing: border-box;
         }
         button {
             width: 100%;
@@ -52,21 +51,46 @@
             background: #b8962d;
         }
         h2 { color: #d4af37; margin-bottom: 20px; }
-        a { color: #d4af37; text-decoration: none; }
+        a { color: #d4af37; text-decoration: none; cursor: pointer; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="login-box">
-        <h2>LOGIN</h2>
-        <input type="text" id="phone" placeholder="Enter Phone Number">
-        <input type="password" id="password" placeholder="Enter Password">
-        <button onclick="login()">LOGIN</button>
-        <p style="font-size: 12px; margin-top: 15px;">
-            Don't have an account? <a href="register.html">Register</a>
-        </p>
+        <!-- Login Form -->
+        <div id="loginSection">
+            <h2>LOGIN</h2>
+            <input type="text" id="phone" placeholder="Enter Phone Number">
+            <input type="password" id="password" placeholder="Enter Password">
+            <button onclick="login()">LOGIN</button>
+            <p style="font-size: 12px; margin-top: 15px;">
+                <a onclick="showForgot()">Forgot Password?</a>
+            </p>
+            <p style="font-size: 12px; margin-top: 5px;">
+                Don't have an account? <a href="register.html">Register</a>
+            </p>
+        </div>
+
+        <!-- Forgot Password / OTP Section -->
+        <div id="forgotSection" class="hidden">
+            <h2>RESET PASSWORD</h2>
+            <input type="text" id="resetPhone" placeholder="Enter Registered Phone">
+            <button id="sendOtpBtn" onclick="sendOtp()">SEND OTP</button>
+            
+            <div id="otpBlock" class="hidden">
+                <input type="text" id="enteredOtp" placeholder="Enter 4-Digit OTP">
+                <input type="password" id="newPassword" placeholder="Enter New Password">
+                <button onclick="verifyAndReset()">UPDATE PASSWORD</button>
+            </div>
+            <p style="font-size: 12px; margin-top: 15px;">
+                <a onclick="showLogin()">Back to Login</a>
+            </p>
+        </div>
     </div>
 
     <script>
+        let generatedOtp = "";
+
         async function login() {
             const data = { 
                 phone: document.getElementById('phone').value, 
@@ -80,12 +104,65 @@
             });
             
             const result = await res.json();
-            
             if(result.success) { 
-                // Login successful hone par seedha order page par redirect
                 window.location.href = 'order.html'; 
             } else { 
                 alert("Login Failed! Please check your credentials."); 
+            }
+        }
+
+        function showForgot() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('forgotSection').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('forgotSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+        }
+
+        function sendOtp() {
+            const phone = document.getElementById('resetPhone').value;
+            if(!phone) {
+                alert("Please enter your phone number first!");
+                return;
+            }
+            // 4-digit random demo OTP generate karna
+            generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
+            alert("Demo OTP sent to " + phone + "\nYour OTP is: " + generatedOtp);
+            
+            document.getElementById('otpBlock').classList.remove('hidden');
+            document.getElementById('sendOtpBtn').style.display = 'none';
+        }
+
+        async function verifyAndReset() {
+            const phone = document.getElementById('resetPhone').value;
+            const userOtp = document.getElementById('enteredOtp').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (userOtp !== generatedOtp) {
+                alert("Invalid OTP! Please try again.");
+                return;
+            }
+
+            if (!newPassword) {
+                alert("Please enter a new password!");
+                return;
+            }
+
+            // Backend par password update karne ki request (Iske liye app.py mein ek chhota route add karna padega, niche bataya gaya hai)
+            const res = await fetch('/reset-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ phone, newPassword })
+            });
+
+            const result = await res.json();
+            if(result.success) {
+                alert("Password updated successfully! Please login now.");
+                showLogin();
+            } else {
+                alert("Error: " + result.message);
             }
         }
     </script>
