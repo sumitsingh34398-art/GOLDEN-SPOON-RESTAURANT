@@ -35,6 +35,10 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS menu 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, price REAL, image TEXT)''')
+    # Update: Reviews table jodi gayi hai online customer reviews store karne ke liye
+    c.execute('''CREATE TABLE IF NOT EXISTS reviews 
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  name TEXT, rating INTEGER, comment TEXT, date TEXT)''')
     conn.commit()
     conn.close()
 
@@ -272,6 +276,30 @@ def delete_menu_item(id):
     conn.commit()
     conn.close()
     return jsonify({"success": True, "message": "Item deleted successfully!"})
+
+# --- ONLINE REVIEWS ROUTES ---
+@app.route('/add-review', methods=['POST'])
+def add_review():
+    data = request.json
+    ist = pytz.timezone('Asia/Kolkata')
+    current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
+    
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO reviews (name, rating, comment, date) VALUES (?, ?, ?, ?)",
+              (data['name'], data['rating'], data['comment'], current_time))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Review submitted successfully!"})
+
+@app.route('/get-reviews', methods=['GET'])
+def get_reviews():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM reviews ORDER BY id DESC")
+    reviews = c.fetchall()
+    conn.close()
+    return jsonify(reviews)
 
 # --- FORGOT PASSWORD / RESET PASSWORD ROUTE ---
 @app.route('/reset-password', methods=['POST'])
