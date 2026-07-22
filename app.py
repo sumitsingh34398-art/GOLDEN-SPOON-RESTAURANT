@@ -26,6 +26,10 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS users 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   phone TEXT UNIQUE, password TEXT)''')
+    # Nayi Menu Table (Admin se dishes manage karne ke liye)
+    c.execute('''CREATE TABLE IF NOT EXISTS menu 
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  name TEXT, price REAL, image TEXT)''')
     conn.commit()
     conn.close()
 
@@ -211,6 +215,40 @@ def get_receipt(order_id):
         </div>
     </body></html>
     """
+
+# --- NEW ADMIN FEATURES ROUTES (Added safely) ---
+
+@app.route('/get-users', methods=['GET'])
+def get_users():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT id, phone FROM users ORDER BY id DESC")
+    users = c.fetchall()
+    conn.close()
+    return jsonify(users)
+
+@app.route('/get-menu', methods=['GET'])
+def get_menu():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM menu")
+    items = c.fetchall()
+    conn.close()
+    return jsonify(items)
+
+@app.route('/add-menu-item', methods=['POST'])
+def add_menu_item():
+    data = request.json
+    name = data.get('name')
+    price = data.get('price')
+    image = data.get('image')
+    
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO menu (name, price, image) VALUES (?, ?, ?)", (name, price, image))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Item added successfully!"})
 
 if __name__ == '__main__':
     app.run(debug=True)
