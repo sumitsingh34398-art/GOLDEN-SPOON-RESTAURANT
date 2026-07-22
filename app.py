@@ -39,6 +39,13 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS reviews 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, rating INTEGER, comment TEXT, image TEXT, date TEXT)''')
+    
+    # Safe check: Agar purane database mein 'image' column nahi hai, toh use add kar diya jayega taaki error na aaye
+    try:
+        c.execute("ALTER TABLE reviews ADD COLUMN image TEXT")
+    except sqlite3.OperationalError:
+        pass # Column pehle se hi mojood hai
+
     conn.commit()
     conn.close()
 
