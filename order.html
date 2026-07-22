@@ -66,30 +66,24 @@
     }
 
     let total = 0;
-    const dishes = [
-        { name: "salmon bruschetta", price: 450, img: "images/salmon bruschetta.jpg" },
-        { name: "grilled-salmon", price: 500, img: "assets/grilled-salmon.jpg" },
-        { name: "spaghetti", price: 350, img: "assets/spaghetti.jpg" },
-        { name: "roasted-dinner", price: 900, img: "assets/roasted-chicken-dinner.jpg" },
-        { name: "grilled-fish", price: 1200, img: "assets/grilled-dorade-vernick-fish.jpg" },
-        { name: "lamb-chops", price: 1800, img: "assets/lamb-chops.jpg" },
-        { name: "dradon-fruit-salad", price: 200, img: "assets/dradon fruit salad.jpg" },
-        { name: "pani puri", price: 100, img: "assets/pani puri.jpg" },
-        { name: "mushroom-steak", price: 680, img: "assets/mushroom-steak.jpg" },
-        { name: "Burger", price: 200, img: "images/Burger.png" },
-        { name: "healthy-grilled", price: 300, img: "assets/healthy-balanced-meal-grilled.jpg" },
-        { name: "Mixer-veg", price: 1500, img: "images/Mixer-veg.jpg" },
-        { name: "Wine Bottle", price: 1300, img: "images/Wine Bottle.png" },
-        { name: "Venison Loin", price: 1550, img: "assets/roasted-chicken-dinner.jpg" },
-        { name: "Champagne Flutes", price: 1500, img: "images/Champagne Flutes.jpg" },
-        { name: "chocolate-dessert", price: 650, img: "assets/chocolate-dessert.jpg" },
-        { name: "pizza", price: 450, img: "images/pizza.jpg" },
-        { name: "Tossed garden salad", price: 550, img: "images/Tossed garden salad.jpg" },
-        { name: "Coffee continental breakfast", price: 500, img: "images/Coffee continental breakfast .jpg" },
-        { name: "Full tablet with drinké", price: 2000, img: "images/Full tablet with drink.jpg" }
-    ];
+    let dishes = [];
 
-    dishes.forEach((d, i) => { d.qty = 0; d.id = i; });
+    // Fetch dynamic menu items from backend database
+    function fetchMenu() {
+        fetch('/get-menu')
+        .then(res => res.json())
+        .then(data => {
+            // Mapping backend database data [id, name, price, image] to dishes array
+            dishes = data.map((d, index) => ({
+                id: d[0],
+                name: d[1],
+                price: d[2],
+                img: d[3],
+                qty: 0
+            }));
+            renderMenu();
+        });
+    }
 
     function renderMenu() {
         const menuGrid = document.getElementById('menuGrid');
@@ -119,8 +113,9 @@
     }
 
     function updateQty(id, val) {
-        if (dishes[id].qty + val >= 0) {
-            dishes[id].qty += val;
+        let item = dishes.find(d => d.id === id);
+        if (item && item.qty + val >= 0) {
+            item.qty += val;
             renderMenu();
             renderCart();
         }
@@ -159,7 +154,9 @@
     }
 
     function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
-    renderMenu();
+    
+    // Load menu on page load
+    fetchMenu();
 </script>
 </body>
 </html>
