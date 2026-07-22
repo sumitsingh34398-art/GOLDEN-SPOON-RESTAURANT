@@ -21,6 +21,14 @@
         .status-select { background: #000; color: #d4af37; border: 1px solid #d4af37; padding: 5px; border-radius: 5px; cursor: pointer; }
         .receipt-link { background: #d4af37; color: #000; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; }
         .receipt-link:hover { background: #fff; }
+        /* Naye Tabs ke liye styling */
+        .admin-section { display: none; }
+        .admin-section.active-section { display: block; }
+        .menu-form { background: rgba(0,0,0,0.85); padding: 20px; border: 1px solid #d4af37; border-radius: 10px; width: 400px; margin: 0 auto 20px; text-align: center; }
+        .menu-form input { padding: 10px; width: 90%; margin: 8px 0; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; }
+        .menu-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 95%; margin: 0 auto; }
+        .menu-card { border: 1px solid #d4af37; padding: 15px; border-radius: 8px; width: 200px; background: rgba(0,0,0,0.8); text-align: center; }
+        .menu-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -34,19 +42,55 @@
     </div>
 
     <h1>Order Management Dashboard</h1>
-    <div class="nav-bar">
-        <button class="nav-btn active" id="btn-all" onclick="fetchAndShow('all')">All</button>
-        <button class="nav-btn" id="btn-today" onclick="fetchAndShow('today')">Today's</button>
-        <a href="/download-csv" class="nav-btn">📥 Download CSV</a>
-    </div>
     
-    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="🔍 Search by Name or ID...">
-    <table id="orderTable">
-        <thead id="tableHead">
-            <tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th><th>Receipt</th></tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
+    <!-- Navigation Tabs (Updated without losing old buttons) -->
+    <div class="nav-bar">
+        <button class="nav-btn active" id="tab-orders" onclick="switchDashboardTab('orders')">📦 Orders</button>
+        <button class="nav-btn" id="tab-users" onclick="switchDashboardTab('users')">👥 Registered Users</button>
+        <button class="nav-btn" id="tab-menu" onclick="switchDashboardTab('menu')">🍽️ Menu Management</button>
+    </div>
+
+    <!-- SECTION 1: ORDERS (Aapka original view) -->
+    <div id="section-orders" class="admin-section active-section">
+        <div class="nav-bar">
+            <button class="nav-btn active" id="btn-all" onclick="fetchAndShow('all')">All</button>
+            <button class="nav-btn" id="btn-today" onclick="fetchAndShow('today')">Today's</button>
+            <a href="/download-csv" class="nav-btn">📥 Download CSV</a>
+        </div>
+        
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="🔍 Search by Name or ID...">
+        <table id="orderTable">
+            <thead id="tableHead">
+                <tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th><th>Receipt</th></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- SECTION 2: REGISTERED USERS -->
+    <div id="section-users" class="admin-section">
+        <h2 style="color: #d4af37; text-align: center;">Registered Customers List</h2>
+        <table style="width: 60%;">
+            <thead>
+                <tr><th>User ID</th><th>Phone Number</th></tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- SECTION 3: MENU MANAGEMENT -->
+    <div id="section-menu" class="admin-section">
+        <h2 style="color: #d4af37; text-align: center;">Add New Menu Item</h2>
+        <div class="menu-form">
+            <input type="text" id="menuName" placeholder="Dish Name (e.g. Pasta)">
+            <input type="number" id="menuPrice" placeholder="Price in ₹ (e.g. 350)">
+            <input type="text" id="menuImage" placeholder="Image URL / Filename">
+            <br>
+            <button class="login-btn" onclick="addNewMenuItem()" style="margin-top: 10px;">Add Item</button>
+        </div>
+        <h2 style="color: #d4af37; text-align: center; margin-top: 30px;">Existing Menu Items</h2>
+        <div id="menuGrid" class="menu-grid"></div>
+    </div>
 
     <script>
         function checkPassword() {
@@ -62,7 +106,6 @@
                 const body = document.getElementById('tableBody');
                 body.innerHTML = "";
                 data.forEach(o => {
-                    // Yahan fix kiya hai: agar status na ho toh 'pending' le lega
                     let status = o[7] ? o[7] : 'pending'; 
                     body.innerHTML += `<tr>
                         <td>#${o[0]}</td>
@@ -86,6 +129,84 @@
         function parseItems(raw) { try { return JSON.parse(raw.replace(/'/g, '"')).map(i => `${i.name}(${i.qty})`).join(', '); } catch { return raw; } }
         function updateStatus(id, newStatus) { fetch(`/update-order/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({status: newStatus}) }).then(() => fetchAndShow('all')); }
         function searchTable() { let input = document.getElementById("searchInput").value.toUpperCase(); let rows = document.getElementById("tableBody").getElementsByTagName("tr"); for (let i = 0; i < rows.length; i++) { rows[i].style.display = rows[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; } }
+
+        // --- NAYE TABS AUR FUNCTIONS ---
+        function switchDashboardTab(tab) {
+            document.getElementById('section-orders').classList.remove('active-section');
+            document.getElementById('section-users').classList.remove('active-section');
+            document.getElementById('section-menu').classList.remove('active-section');
+
+            document.getElementById('tab-orders').classList.remove('active');
+            document.getElementById('tab-users').classList.remove('active');
+            document.getElementById('tab-menu').classList.remove('active');
+
+            if(tab === 'orders') {
+                document.getElementById('section-orders').classList.add('active-section');
+                document.getElementById('tab-orders').classList.add('active');
+                fetchAndShow('all');
+            } else if(tab === 'users') {
+                document.getElementById('section-users').classList.add('active-section');
+                document.getElementById('tab-users').classList.add('active');
+                loadRegisteredUsers();
+            } else if(tab === 'menu') {
+                document.getElementById('section-menu').classList.add('active-section');
+                document.getElementById('tab-menu').classList.add('active');
+                loadAdminMenu();
+            }
+        }
+
+        function loadRegisteredUsers() {
+            fetch('/get-users')
+            .then(res => res.json())
+            .then(data => {
+                let tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = "";
+                data.forEach(u => {
+                    tbody.innerHTML += `<tr><td>#${u[0]}</td><td>${u[1]}</td></tr>`;
+                });
+            });
+        }
+
+        function loadAdminMenu() {
+            fetch('/get-menu')
+            .then(res => res.json())
+            .then(data => {
+                let grid = document.getElementById('menuGrid');
+                grid.innerHTML = "";
+                data.forEach(m => {
+                    grid.innerHTML += `<div class="menu-card">
+                        <img src="${m[3]}" alt="Dish">
+                        <h4 style="color: #d4af37; margin: 10px 0 5px;">${m[1]}</h4>
+                        <p style="margin: 0; font-weight: bold;">₹${m[2]}</p>
+                    </div>`;
+                });
+            });
+        }
+
+        function addNewMenuItem() {
+            let name = document.getElementById('menuName').value;
+            let price = document.getElementById('menuPrice').value;
+            let image = document.getElementById('menuImage').value;
+
+            if(!name || !price || !image) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            fetch('/add-menu-item', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: name, price: price, image: image})
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById('menuName').value = "";
+                document.getElementById('menuPrice').value = "";
+                document.getElementById('menuImage').value = "";
+                loadAdminMenu();
+            });
+        }
     </script>
 </body>
 </html>
