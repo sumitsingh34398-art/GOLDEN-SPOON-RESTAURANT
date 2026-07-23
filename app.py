@@ -16,18 +16,13 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Render Disk ke liye permanent path set kiya gaya hai
-DATABASE_NAME = '/data/database.db'
+DATABASE_NAME = 'database.db'
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db_connection():
-    # Agar local testing ke waqt /data folder na ho toh local file use ho, warna disk wali file
-    db_path = DATABASE_NAME
-    if not os.path.exists('/data'):
-        db_path = 'database.db'
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(DATABASE_NAME)
     conn.row_factory = sqlite3.Row
     return conn
 
