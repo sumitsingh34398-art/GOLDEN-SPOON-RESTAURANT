@@ -16,14 +16,18 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Local SQLite Database (Simple aur bina error ke data store karne ke liye)
-DATABASE_NAME = 'database.db'
+# Render Disk ke liye permanent path set kiya gaya hai
+DATABASE_NAME = '/data/database.db'
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE_NAME)
+    # Agar local testing ke waqt /data folder na ho toh local file use ho, warna disk wali file
+    db_path = DATABASE_NAME
+    if not os.path.exists('/data'):
+        db_path = 'database.db'
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -35,22 +39,18 @@ def init_db():
                   name TEXT, phone TEXT, address TEXT, 
                   items TEXT, total REAL, date TEXT, status TEXT DEFAULT 'pending')''')
     
-    # Update: Users table mein 'name' column joda gaya hai
     c.execute('''CREATE TABLE IF NOT EXISTS users 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, phone TEXT UNIQUE, password TEXT)''')
     
-    # Nayi Menu Table (Admin se dishes manage karne ke liye)
     c.execute('''CREATE TABLE IF NOT EXISTS menu 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, price REAL, image TEXT)''')
     
-    # Update: Reviews table mein image column bhi joda gaya hai online customer reviews ke liye
     c.execute('''CREATE TABLE IF NOT EXISTS reviews 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   name TEXT, rating INTEGER, comment TEXT, image TEXT, date TEXT)''')
     
-    # Safe check: Agar purane database mein 'image' column nahi hai, toh use add kar diya jayega taaki error na aaye
     try:
         c.execute("ALTER TABLE reviews ADD COLUMN image TEXT")
     except Exception:
@@ -91,7 +91,6 @@ def register():
     conn = get_db_connection()
     c = conn.cursor()
     try:
-        # Update: Database mein name, phone, aur password save kiye ja rahe hain
         c.execute("INSERT INTO users (name, phone, password) VALUES (?, ?, ?)", (data['name'], data['phone'], data['password']))
         conn.commit()
         return jsonify({"success": True})
@@ -156,7 +155,6 @@ def get_orders():
     c = conn.cursor()
     c.execute("SELECT id, name, phone, address, items, total, date, status FROM orders ORDER BY id DESC")
     orders = c.fetchall()
-    # Convert sqlite3.Row to standard lists/tuples for json serialization compatibility
     orders_list = [list(row) for row in orders]
     c.close()
     conn.close()
@@ -215,7 +213,6 @@ def get_receipt(order_id):
     
     return f"""
     <html><head>
-        <!-- html2canvas library jodi gayi hai taaki receipt ko image mein badla ja sake -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins&display=swap');
@@ -280,7 +277,6 @@ def get_receipt(order_id):
                                 console.log('Sharing error:', error);
                             }}
                         }} else {{
-                            // Fallback agar direct file sharing support na ho
                             const link = document.createElement('a');
                             link.download = 'Receipt_{order_id}.png';
                             link.href = canvas.toDataURL('image/png');
@@ -303,7 +299,6 @@ def get_receipt(order_id):
 def get_users():
     conn = get_db_connection()
     c = conn.cursor()
-    # Update: Users table se id, name, aur phone teeno fetch kiye ja rahe hain
     c.execute("SELECT id, name, phone FROM users ORDER BY id DESC")
     users = c.fetchall()
     users_list = [list(row) for row in users]
