@@ -16,14 +16,13 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Supabase PostgreSQL Database URL
-DATABASE_URL = 'postgresql://postgres:Sumit%40007.006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres'
+# Supabase Connection Pooler URL (Render ke liye best aur secure connection)
+DATABASE_URL = 'postgresql://postgres.emrzttveagpiiifiyhsc:Sumit%40007.006@aws-0-ap-south-1.pooler.supabase.com:6543/postgres'
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db_connection():
-    # Yeh function direct Supabase PostgreSQL se connection banayega
     conn = psycopg2.connect(DATABASE_URL)
     return conn
 
@@ -47,7 +46,6 @@ def init_db():
                  (id SERIAL PRIMARY KEY, 
                   name TEXT, rating INTEGER, comment TEXT, image TEXT, date TEXT)''')
     
-    # Safe check: Agar reviews table mein 'image' column nahi hai, toh add kar diya jayega
     try:
         c.execute("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS image TEXT")
     except Exception:
