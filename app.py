@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 import csv
 import io
 import os
@@ -15,38 +15,46 @@ CORS(app)
 
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
-DB_PATH = os.path.join(os.getcwd(), 'orders.db')
+
+# Supabase PostgreSQL Database URL
+DATABASE_URL = 'postgresql://postgres:Sumit%40007.006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres'
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+def get_db_connection():
+    # Yeh function direct Supabase PostgreSQL se connection banayega
+    conn = psycopg2.connect(DATABASE_URL)
+    return conn
+
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS orders 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                 (id SERIAL PRIMARY KEY, 
                   name TEXT, phone TEXT, address TEXT, 
                   items TEXT, total REAL, date TEXT, status TEXT DEFAULT 'pending')''')
-    # Update: Users table mein 'name' column joda gaya hai
+    
     c.execute('''CREATE TABLE IF NOT EXISTS users 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                 (id SERIAL PRIMARY KEY, 
                   name TEXT, phone TEXT UNIQUE, password TEXT)''')
-    # Nayi Menu Table (Admin se dishes manage karne ke liye)
+    
     c.execute('''CREATE TABLE IF NOT EXISTS menu 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                 (id SERIAL PRIMARY KEY, 
                   name TEXT, price REAL, image TEXT)''')
-    # Update: Reviews table mein image column bhi joda gaya hai online customer reviews ke liye
+    
     c.execute('''CREATE TABLE IF NOT EXISTS reviews 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                 (id SERIAL PRIMARY KEY, 
                   name TEXT, rating INTEGER, comment TEXT, image TEXT, date TEXT)''')
     
-    # Safe check: Agar purane database mein 'image' column nahi hai, toh use add kar diya jayega taaki error na aaye
+    # Safe check: Agar reviews table mein 'image' column nahi hai, toh add kar diya jayega
     try:
-        c.execute("ALTER TABLE reviews ADD COLUMN image TEXT")
-    except sqlite3.OperationalError:
-        pass # Column pehle se hi mojood hai
+        c.execute("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS image TEXT")
+    except Exception:
+        conn.rollback()
 
     conn.commit()
+    c.close()
     conn.close()
 
 init_db()
@@ -77,25 +85,27 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
     try:
-        # Update: Database mein name, phone, aur password save kiye ja rahe hain
-        c.execute("INSERT INTO users (name, phone, password) VALUES (?, ?, ?)", (data['name'], data['phone'], data['password']))
+        c.execute("INSERT INTO users (name, phone, password) VALUES (%s, %s, %s)", (data['name'], data['phone'], data['password']))
         conn.commit()
         return jsonify({"success": True})
-    except:
+    except Exception:
+        conn.rollback()
         return jsonify({"success": False, "message": "User already exists"})
     finally:
+        c.close()
         conn.close()
 
 @app.route('/login-user', methods=['POST'])
 def login_user():
     data = request.json
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE phone=? AND password=?", (data['phone'], data['password']))
+    c.execute("SELECT * FROM users WHERE phone=%s AND password=%s", (data['phone'], data['password']))
     user = c.fetchone()
+    c.close()
     conn.close()
     if user:
         session['user'] = data['phone']
@@ -127,39 +137,43 @@ def save_order():
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("INSERT INTO orders (name, phone, address, items, total, date, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')",
+    c.execute("INSERT INTO orders (name, phone, address, items, total, date, status) VALUES (%s, %s, %s, %s, %s, %s, 'pending')",
               (data['name'], data['phone'], data['address'], str(data['items']), data['total'], current_time))
     conn.commit()
+    c.close()
     conn.close()
     return jsonify({"message": "Order Saved Successfully!"})
 
 @app.route('/get-orders', methods=['GET'])
 def get_orders():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM orders ORDER BY id DESC")
+    c.execute("SELECT id, name, phone, address, items, total, date, status FROM orders ORDER BY id DESC")
     orders = c.fetchall()
+    c.close()
     conn.close()
     return jsonify(orders)
 
 @app.route('/update-order/<int:id>', methods=['POST'])
 def update_order(id):
     new_status = request.json.get('status')
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("UPDATE orders SET status = ? WHERE id = ?", (new_status, id))
+    c.execute("UPDATE orders SET status = %s WHERE id = %s", (new_status, id))
     conn.commit()
+    c.close()
     conn.close()
     return jsonify({"message": "Status Updated!"})
 
 @app.route('/download-csv')
 def download_csv():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM orders ORDER BY id DESC")
+    c.execute("SELECT id, name, phone, address, items, total, date, status FROM orders ORDER BY id DESC")
     orders = c.fetchall()
+    c.close()
     conn.close()
 
     output = io.StringIO()
@@ -174,16 +188,17 @@ def download_csv():
 
 @app.route('/receipt/<int:order_id>')
 def get_receipt(order_id):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM orders WHERE id=?", (order_id,))
+    c.execute("SELECT id, name, phone, address, items, total, date, status FROM orders WHERE id=%s", (order_id,))
     order = c.fetchone()
+    c.close()
     conn.close()
     
     if not order: return "Order not found"
     
-    name, phone, address, total, date = order[1], order[2], order[3], float(order[5]), order[6]
-    items = json.loads(order[4].replace("'", '"'))
+    name, phone, address, items_str, total, date = order[1], order[2], order[3], order[4], float(order[5]), order[6]
+    items = json.loads(items_str.replace("'", '"'))
     
     subtotal = total
     service_charge = subtotal * 0.02
@@ -194,7 +209,6 @@ def get_receipt(order_id):
     
     return f"""
     <html><head>
-        <!-- html2canvas library jodi gayi hai taaki receipt ko image mein badla ja sake -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins&display=swap');
@@ -259,7 +273,6 @@ def get_receipt(order_id):
                                 console.log('Sharing error:', error);
                             }}
                         }} else {{
-                            // Fallback agar direct file sharing support na ho
                             const link = document.createElement('a');
                             link.download = 'Receipt_{order_id}.png';
                             link.href = canvas.toDataURL('image/png');
@@ -280,20 +293,21 @@ def get_receipt(order_id):
 
 @app.route('/get-users', methods=['GET'])
 def get_users():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    # Update: Users table se id, name, aur phone teeno fetch kiye ja rahe hain
     c.execute("SELECT id, name, phone FROM users ORDER BY id DESC")
     users = c.fetchall()
+    c.close()
     conn.close()
     return jsonify(users)
 
 @app.route('/get-menu', methods=['GET'])
 def get_menu():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM menu")
+    c.execute("SELECT id, name, price, image FROM menu")
     items = c.fetchall()
+    c.close()
     conn.close()
     return jsonify(items)
 
@@ -311,19 +325,21 @@ def add_menu_item():
     else:
         image_url = "assets/default.jpg"
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("INSERT INTO menu (name, price, image) VALUES (?, ?, ?)", (name, price, image_url))
+    c.execute("INSERT INTO menu (name, price, image) VALUES (%s, %s, %s)", (name, price, image_url))
     conn.commit()
+    c.close()
     conn.close()
     return jsonify({"success": True, "message": "Item added successfully!"})
 
 @app.route('/delete-menu-item/<int:id>', methods=['POST'])
 def delete_menu_item(id):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("DELETE FROM menu WHERE id = ?", (id,))
+    c.execute("DELETE FROM menu WHERE id = %s", (id,))
     conn.commit()
+    c.close()
     conn.close()
     return jsonify({"success": True, "message": "Item deleted successfully!"})
 
@@ -346,20 +362,22 @@ def add_review():
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("INSERT INTO reviews (name, rating, comment, image, date) VALUES (?, ?, ?, ?, ?)",
+    c.execute("INSERT INTO reviews (name, rating, comment, image, date) VALUES (%s, %s, %s, %s, %s)",
               (name, rating, comment, image_url, current_time))
     conn.commit()
+    c.close()
     conn.close()
     return jsonify({"success": True, "message": "Review submitted successfully!"})
 
 @app.route('/get-reviews', methods=['GET'])
 def get_reviews():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM reviews ORDER BY id DESC")
+    c.execute("SELECT id, name, rating, comment, image, date FROM reviews ORDER BY id DESC")
     reviews = c.fetchall()
+    c.close()
     conn.close()
     return jsonify(reviews)
 
@@ -370,21 +388,21 @@ def reset_password():
     phone = data.get('phone')
     new_password = data.get('newPassword')
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE phone=?", (phone,))
+    c.execute("SELECT * FROM users WHERE phone=%s", (phone,))
     user = c.fetchone()
     
     if user:
-        c.execute("UPDATE users SET password = ? WHERE phone = ?", (new_password, phone))
+        c.execute("UPDATE users SET password = %s WHERE phone = %s", (new_password, phone))
         conn.commit()
+        c.close()
         conn.close()
         return jsonify({"success": True})
     else:
+        c.close()
         conn.close()
         return jsonify({"success": False, "message": "Phone number not registered!"})
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sumit%40007.006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres'
