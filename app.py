@@ -16,7 +16,7 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Supabase PostgreSQL Direct Connection URL (Aapka diya hua URL yahan set hai)
+# Supabase PostgreSQL Direct Connection URL
 DATABASE_URL = os.environ.get('DATABASE_URL') or 'postgresql://postgres:Sumit%4003062006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres'
 
 UPLOAD_FOLDER = 'uploads'
