@@ -16,7 +16,7 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Supabase Connection Pooler URL (Render ke liye best aur secure connection)
+# Supabase PostgreSQL Connection URL (Session Pooler format for stable cloud deployment)
 DATABASE_URL = 'postgresql://postgres.emrzttveagpiiifiyhsc:Sumit%40007.006@aws-0-ap-south-1.pooler.supabase.com:6543/postgres'
 
 UPLOAD_FOLDER = 'uploads'
@@ -34,18 +34,22 @@ def init_db():
                   name TEXT, phone TEXT, address TEXT, 
                   items TEXT, total REAL, date TEXT, status TEXT DEFAULT 'pending')''')
     
+    # Update: Users table mein 'name' column joda gaya hai
     c.execute('''CREATE TABLE IF NOT EXISTS users 
                  (id SERIAL PRIMARY KEY, 
                   name TEXT, phone TEXT UNIQUE, password TEXT)''')
     
+    # Nayi Menu Table (Admin se dishes manage karne ke liye)
     c.execute('''CREATE TABLE IF NOT EXISTS menu 
                  (id SERIAL PRIMARY KEY, 
                   name TEXT, price REAL, image TEXT)''')
     
+    # Update: Reviews table mein image column bhi joda gaya hai online customer reviews ke liye
     c.execute('''CREATE TABLE IF NOT EXISTS reviews 
                  (id SERIAL PRIMARY KEY, 
                   name TEXT, rating INTEGER, comment TEXT, image TEXT, date TEXT)''')
     
+    # Safe check: Agar purane database mein 'image' column nahi hai, toh use add kar diya jayega taaki error na aaye
     try:
         c.execute("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS image TEXT")
     except Exception:
@@ -86,6 +90,7 @@ def register():
     conn = get_db_connection()
     c = conn.cursor()
     try:
+        # Update: Database mein name, phone, aur password save kiye ja rahe hain
         c.execute("INSERT INTO users (name, phone, password) VALUES (%s, %s, %s)", (data['name'], data['phone'], data['password']))
         conn.commit()
         return jsonify({"success": True})
@@ -207,6 +212,7 @@ def get_receipt(order_id):
     
     return f"""
     <html><head>
+        <!-- html2canvas library jodi gayi hai taaki receipt ko image mein badla ja sake -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins&display=swap');
@@ -271,6 +277,7 @@ def get_receipt(order_id):
                                 console.log('Sharing error:', error);
                             }}
                         }} else {{
+                            // Fallback agar direct file sharing support na ho
                             const link = document.createElement('a');
                             link.download = 'Receipt_{order_id}.png';
                             link.href = canvas.toDataURL('image/png');
@@ -293,6 +300,7 @@ def get_receipt(order_id):
 def get_users():
     conn = get_db_connection()
     c = conn.cursor()
+    # Update: Users table se id, name, aur phone teeno fetch kiye ja rahe hain
     c.execute("SELECT id, name, phone FROM users ORDER BY id DESC")
     users = c.fetchall()
     c.close()
