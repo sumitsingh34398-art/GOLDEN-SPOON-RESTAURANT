@@ -16,8 +16,8 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Render Environment Variable se secure connection uthayega
-DATABASE_URL = os.environ.get('DATABASE_URL')
+# Render Environment Variable ya direct secure connection URL
+DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:Sumit%4003062006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres"
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
