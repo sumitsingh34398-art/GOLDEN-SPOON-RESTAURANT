@@ -33,6 +33,7 @@
             background: transparent;
             color: white;
             border-radius: 5px;
+            box-sizing: border-box;
         }
         button {
             width: 100%;
@@ -46,6 +47,47 @@
             margin-top: 10px;
         }
         h2 { color: #d4af37; }
+
+        /* Professional Custom Modal Styles */
+        .hidden { display: none !important; }
+        .custom-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #111;
+            border: 2px solid #d4af37;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            width: 280px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+            color: white;
+        }
+        .modal-content p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+        .modal-btn {
+            background: #d4af37;
+            border: none;
+            padding: 8px 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            color: black;
+            width: 100%;
+        }
+        .modal-btn:hover {
+            background: #b8962d;
+        }
     </style>
 </head>
 <body>
@@ -61,7 +103,30 @@
         </p>
     </div>
 
+    <!-- Custom Professional Alert Modal Container -->
+    <div id="customModal" class="custom-modal hidden">
+        <div class="modal-content">
+            <p id="modalMessage">Message here</p>
+            <button class="modal-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
     <script>
+        // Professional Alert Function
+        function showCustomAlert(message, callback = null) {
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('customModal').classList.remove('hidden');
+            window.modalCallback = callback;
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+            if (window.modalCallback) {
+                window.modalCallback();
+                window.modalCallback = null;
+            }
+        }
+
         async function register() {
             // Update: data object mein name bhi shamil kar diya gaya hai
             const data = { 
@@ -72,7 +137,7 @@
             
             // Check karein ki fields khaali na hon (Name, Phone aur Password teeno check honge)
             if(!data.name || !data.phone || !data.password) {
-                alert("Please fill all fields!");
+                showCustomAlert("Please fill all fields!");
                 return;
             }
 
@@ -84,14 +149,15 @@
                 });
                 const result = await res.json();
                 if(result.success) { 
-                    alert("Registration Successful!"); 
-                    window.location.href = 'login.html'; 
+                    showCustomAlert("Registration Successful!", () => {
+                        window.location.href = 'login.html';
+                    }); 
                 } else { 
-                    alert(result.message || "Registration failed!"); 
+                    showCustomAlert(result.message || "Registration failed!"); 
                 }
             } catch (err) {
                 console.error("Error:", err);
-                alert("Something went wrong!");
+                showCustomAlert("Something went wrong!");
             }
         }
     </script>
