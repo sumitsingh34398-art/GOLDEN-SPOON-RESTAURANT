@@ -16,8 +16,8 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Render Environment Variable ya direct secure connection URL
-DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:Sumit%4003062006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres"
+# Supabase PostgreSQL Connection URL (Fixed with Pooler & SSL Mode)
+DATABASE_URL = os.environ.get('DATABASE_URL') or 'postgresql://postgres.emrzttveagpiiifiyhsc:Sumit%40007.006@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require'
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -411,4 +411,5 @@ def reset_password():
         return jsonify({"success": False, "message": "Phone number not registered!"})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
