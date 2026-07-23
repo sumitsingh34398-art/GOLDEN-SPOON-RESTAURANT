@@ -53,6 +53,46 @@
         h2 { color: #d4af37; margin-bottom: 20px; }
         a { color: #d4af37; text-decoration: none; cursor: pointer; }
         .hidden { display: none; }
+
+        /* Professional Custom Modal Styles */
+        .custom-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #111;
+            border: 2px solid #d4af37;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            width: 280px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+            color: white;
+        }
+        .modal-content p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+        .modal-btn {
+            background: #d4af37;
+            border: none;
+            padding: 8px 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            color: black;
+            width: 100%;
+        }
+        .modal-btn:hover {
+            background: #b8962d;
+        }
     </style>
 </head>
 <body>
@@ -88,8 +128,31 @@
         </div>
     </div>
 
+    <!-- Custom Professional Alert Modal Container -->
+    <div id="customModal" class="custom-modal hidden">
+        <div class="modal-content">
+            <p id="modalMessage">Message here</p>
+            <button class="modal-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
     <script>
         let generatedOtp = "";
+
+        // Professional Alert Function
+        function showCustomAlert(message, callback = null) {
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('customModal').classList.remove('hidden');
+            window.modalCallback = callback;
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+            if (window.modalCallback) {
+                window.modalCallback();
+                window.modalCallback = null;
+            }
+        }
 
         async function login() {
             const data = { 
@@ -107,7 +170,7 @@
             if(result.success) { 
                 window.location.href = 'order.html'; 
             } else { 
-                alert("Login Failed! Please check your credentials."); 
+                showCustomAlert("Login Failed! Please check your credentials."); 
             }
         }
 
@@ -124,12 +187,12 @@
         function sendOtp() {
             const phone = document.getElementById('resetPhone').value;
             if(!phone) {
-                alert("Please enter your phone number first!");
+                showCustomAlert("Please enter your phone number first!");
                 return;
             }
             // 4-digit random demo OTP generate karna
             generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-            alert("Demo OTP sent to " + phone + "\nYour OTP is: " + generatedOtp);
+            showCustomAlert("Demo OTP sent to " + phone + "\nYour OTP is: " + generatedOtp);
             
             document.getElementById('otpBlock').classList.remove('hidden');
             document.getElementById('sendOtpBtn').style.display = 'none';
@@ -141,16 +204,16 @@
             const newPassword = document.getElementById('newPassword').value;
 
             if (userOtp !== generatedOtp) {
-                alert("Invalid OTP! Please try again.");
+                showCustomAlert("Invalid OTP! Please try again.");
                 return;
             }
 
             if (!newPassword) {
-                alert("Please enter a new password!");
+                showCustomAlert("Please enter a new password!");
                 return;
             }
 
-            // Backend par password update karne ki request (Iske liye app.py mein ek chhota route add karna padega, niche bataya gaya hai)
+            // Backend par password update karne ki request
             const res = await fetch('/reset-password', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -159,10 +222,11 @@
 
             const result = await res.json();
             if(result.success) {
-                alert("Password updated successfully! Please login now.");
-                showLogin();
+                showCustomAlert("Password updated successfully! Please login now.", () => {
+                    showLogin();
+                });
             } else {
-                alert("Error: " + result.message);
+                showCustomAlert("Error: " + result.message);
             }
         }
     </script>
