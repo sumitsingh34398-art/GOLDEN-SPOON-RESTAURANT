@@ -16,7 +16,7 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Supabase PostgreSQL Connection URL (Updated to Transaction Pooler with sslmode for Render stability)
+# Supabase PostgreSQL Connection URL (Corrected Transaction Pooler format for Supabase & Render)
 DATABASE_URL = 'postgresql://postgres.emrzttveagpiiifiyhsc:Sumit%40007.006@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require'
 
 UPLOAD_FOLDER = 'uploads'
