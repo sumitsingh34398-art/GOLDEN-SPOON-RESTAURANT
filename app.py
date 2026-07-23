@@ -16,8 +16,8 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Supabase PostgreSQL Connection URL (Updated to Direct Connection Port 5432 for stable cloud deployment)
-DATABASE_URL = 'postgresql://postgres.emrzttveagpiiifiyhsc:Sumit%40007.006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres'
+# Supabase PostgreSQL Connection URL (Updated to Transaction Pooler with sslmode for Render stability)
+DATABASE_URL = 'postgresql://postgres.emrzttveagpiiifiyhsc:Sumit%40007.006@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require'
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
