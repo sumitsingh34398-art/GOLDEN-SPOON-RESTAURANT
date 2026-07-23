@@ -386,3 +386,5 @@ def reset_password():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Sumit%40007.006@db.emrzttveagpiiifiyhsc.supabase.co:5432/postgres'
