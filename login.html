@@ -52,7 +52,9 @@
         }
         h2 { color: #d4af37; margin-bottom: 20px; }
         a { color: #d4af37; text-decoration: none; cursor: pointer; }
-        .hidden { display: none; }
+        
+        /* Fix: !important lagane se yeh hamesha chhipa rahega jab tak bulaya na jaye */
+        .hidden { display: none !important; }
 
         /* Professional Custom Modal Styles */
         .custom-modal {
@@ -128,7 +130,7 @@
         </div>
     </div>
 
-    <!-- Custom Professional Alert Modal Container -->
+    <!-- Custom Professional Alert Modal Container (Default Hidden) -->
     <div id="customModal" class="custom-modal hidden">
         <div class="modal-content">
             <p id="modalMessage">Message here</p>
@@ -190,7 +192,6 @@
                 showCustomAlert("Please enter your phone number first!");
                 return;
             }
-            // 4-digit random demo OTP generate karna
             generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
             showCustomAlert("Demo OTP sent to " + phone + "\nYour OTP is: " + generatedOtp);
             
@@ -213,7 +214,6 @@
                 return;
             }
 
-            // Backend par password update karne ki request
             const res = await fetch('/reset-password', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
