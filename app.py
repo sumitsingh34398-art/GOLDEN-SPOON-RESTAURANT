@@ -16,8 +16,8 @@ CORS(app)
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
-# Supabase PostgreSQL Connection URL (Corrected Transaction Pooler format for Supabase & Render)
-DATABASE_URL = 'postgresql://postgres.emrzttveagpiiifiyhsc:Sumit%40007.006@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require'
+# Render Environment Variable se secure connection uthayega
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
