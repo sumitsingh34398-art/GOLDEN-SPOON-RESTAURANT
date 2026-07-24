@@ -74,7 +74,8 @@ def send_otp():
     if not email:
         return jsonify({"success": False, "message": "Email is required!"})
     
-    otp = str(random.randint(100000, 999999))
+    # --- Updated to 4-digit OTP ---
+    otp = str(random.randint(1000, 9999))
     otp_storage[email] = otp
     
     try:
@@ -90,7 +91,7 @@ def send_otp():
         
         Welcome to Golden Spoon Restaurant!
         
-        Your email verification code for registration is: {otp}
+        Your 4-digit email verification code for registration is: {otp}
         
         This OTP is valid for a limited time. Please do not share it with anyone.
         
