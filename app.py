@@ -248,9 +248,8 @@ def get_receipt(order_id):
     items = json.loads(items_str.replace("'", '"'))
     
     subtotal = total
-    service_charge = subtotal * 0.02
-    gst = subtotal * 0.015
-    final_total = subtotal + service_charge + gst
+    # GST and Service charges removed as requested. Final total equals subtotal.
+    final_total = subtotal
     
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
     
@@ -314,7 +313,6 @@ def get_receipt(order_id):
             </div>
             <table><tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>AMT</th></tr>{items_html}</table>
             <div class="totals">
-                Subtotal: ₹{subtotal:.2f}<br>Service Charge (2%): ₹{service_charge:.2f}<br>GST (1.5%): ₹{gst:.2f}<br>
                 <h3 style="color:#d4af37; font-size: 20px; margin: 10px 0;">TOTAL: ₹{final_total:.2f}</h3>
             </div>
             <div class="footer">
