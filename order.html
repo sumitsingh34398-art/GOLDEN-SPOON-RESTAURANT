@@ -135,13 +135,32 @@
         #cartItems::-webkit-scrollbar { width: 4px; }
         #cartItems::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 4px; }
 
+        /* Bill Summary Styling with Service Charge & GST */
+        .bill-summary {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: #ddd;
+        }
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        
         #cartTotal { 
-            font-size: 20px; 
+            font-size: 17px; 
             color: #d4af37; 
-            margin: 15px 0; 
-            border-top: 1px solid #333; 
-            padding-top: 12px; 
+            margin-top: 6px; 
+            padding-top: 8px; 
+            border-top: 1px dashed rgba(212, 175, 55, 0.4);
             font-family: 'Playfair Display', serif;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
         }
         
         .place-order-btn { 
@@ -260,7 +279,15 @@
     <div class="input-group"><input type="tel" id="userPhone" placeholder="Phone Number"></div>
     <div class="input-group"><input type="text" id="userAddress" placeholder="Delivery Address"></div>
     <div id="cartItems"></div>
-    <h3 id="cartTotal">Total: ₹0</h3>
+    
+    <!-- Bill Summary with Service Charge (2%) & GST (1.5%) matching your invoice -->
+    <div class="bill-summary">
+        <div class="bill-row"><span>Subtotal:</span> <span id="subTotal">₹0.00</span></div>
+        <div class="bill-row"><span>Service Charge (2%):</span> <span id="serviceCharge">₹0.00</span></div>
+        <div class="bill-row"><span>GST (1.5%):</span> <span id="gstAmount">₹0.00</span></div>
+        <div class="bill-row" id="cartTotal"><span>TOTAL:</span> <span id="finalTotal">₹0.00</span></div>
+    </div>
+
     <button class="place-order-btn" onclick="placeOrder()">PLACE ORDER</button>
     <button class="logout-btn" onclick="logout()">LOGOUT</button>
 </div>
@@ -287,7 +314,10 @@
         fetch('/logout').then(() => { window.location.href = 'index.html'; });
     }
 
-    let total = 0;
+    let subtotal = 0;
+    let serviceCharge = 0;
+    let gst = 0;
+    let finalTotal = 0;
     
     // Aapki saari original 20 dishes bilkul waisi ki waisi hain
     let dishes = [
@@ -359,11 +389,19 @@
         const cartItems = document.getElementById('cartItems');
         cartItems.innerHTML = dishes.filter(d => d.qty > 0).map(d => 
             `<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span>${d.name} x ${d.qty}</span> <span>₹${d.price * d.qty}</span>
+                <span>${d.name} x ${d.qty}</span> <span>₹${d.price * d.qty}.00</span>
             </div>`
         ).join('');
-        total = dishes.reduce((sum, d) => sum + (d.price * d.qty), 0);
-        document.getElementById('cartTotal').innerText = "Total: ₹" + total;
+        
+        subtotal = dishes.reduce((sum, d) => sum + (d.price * d.qty), 0);
+        serviceCharge = subtotal * 0.02; // 2% Service Charge
+        gst = subtotal * 0.015;          // 1.5% GST
+        finalTotal = subtotal + serviceCharge + gst;
+
+        document.getElementById('subTotal').innerText = "₹" + subtotal.toFixed(2);
+        document.getElementById('serviceCharge').innerText = "₹" + serviceCharge.toFixed(2);
+        document.getElementById('gstAmount').innerText = "₹" + gst.toFixed(2);
+        document.getElementById('finalTotal').innerText = "₹" + finalTotal.toFixed(2);
     }
 
     function updateQty(id, val) {
@@ -380,12 +418,22 @@
         const phone = document.getElementById('userPhone').value;
         const address = document.getElementById('userAddress').value;
 
-        if (total > 0 && name !== "" && phone !== "" && address !== "") {
-            const orderData = { name, phone, address, items: dishes.filter(d => d.qty > 0), total };
+        if (finalTotal > 0 && name !== "" && phone !== "" && address !== "") {
+            const orderData = { 
+                name, 
+                phone, 
+                address, 
+                items: dishes.filter(d => d.qty > 0), 
+                subtotal: subtotal.toFixed(2), 
+                serviceCharge: serviceCharge.toFixed(2),
+                gst: gst.toFixed(2), 
+                total: finalTotal.toFixed(2) 
+            };
             
             let message = `*New Order Received!*%0A%0A*Customer:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A%0A*Items:*%0A`;
-            orderData.items.forEach(d => message += `• ${d.name} (x${d.qty}) = ₹${d.price * d.qty}%0A`);
-            message += `%0A*Total: ₹${total}*`;
+            orderData.items.forEach(d => message += `• ${d.name} (x${d.qty}) = ₹${d.price * d.qty}.00%0A`);
+            message += `%0A*Subtotal:* ₹${subtotal.toFixed(2)}%0A*Service Charge (2%):* ₹${serviceCharge.toFixed(2)}%0A*GST (1.5%):* ₹${gst.toFixed(2)}%0A*TOTAL: ₹${finalTotal.toFixed(2)}*`;
+            
             window.open(`https://wa.me/919602697303?text=${message}`, '_blank');
 
             try {
@@ -396,7 +444,7 @@
                 });
                 document.getElementById('orderModal').style.display = 'flex';
                 document.getElementById('modalTitle').innerText = "Order Successful";
-                document.getElementById('modalMsg').innerText = "Your order has been placed successfully!";
+                document.getElementById('modalMsg').innerText = "Your order with Service Charge and GST has been placed successfully!";
             } catch (e) {
                 console.log("Error:", e);
             }
