@@ -16,10 +16,10 @@
         }
 
         .back-btn { 
-            position: absolute; top: 30px; left: 30px; color: #d4af37; 
+            color: #d4af37; 
             text-decoration: none; border: 1px solid #d4af37; padding: 10px 20px; 
             font-size: 12px; letter-spacing: 2px; transition: 0.3s;
-            z-index: 10;
+            margin-top: 30px; display: inline-block;
         }
         .back-btn:hover { background: #d4af37; color: #000; }
 
@@ -27,33 +27,47 @@
             font-family: 'Playfair Display', serif;
             color: #d4af37;
             font-size: 2.5rem;
-            margin-top: 40px;
-            margin-bottom: 20px;
+            margin-top: 20px;
+            margin-bottom: 30px;
             letter-spacing: 3px;
             text-align: center;
         }
 
+        /* Screenshot Matching Slider Container */
         .gallery-container { 
-            width: 90%; max-width: 850px; border: 1px solid #d4af37; 
-            padding: 20px; text-align: center; background: rgba(0,0,0,0.7); 
-            position: relative; margin-bottom: 50px;
+            width: 100%; max-width: 700px; border: 2px solid #d4af37; 
+            padding: 0; text-align: center; background: rgba(0,0,0,0.9); 
+            position: relative; margin-bottom: 50px; border-radius: 12px; overflow: hidden;
         }
 
-        .slider-image { width: 100%; height: 450px; object-fit: cover; border: 1px solid #d4af37; transition: opacity 0.2s ease; }
+        .slider-image-box {
+            position: relative;
+            width: 100%;
+            height: 450px;
+        }
 
-        /* Professional Round Buttons */
+        .slider-image { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s ease; display: block; }
+
+        /* Reference Screenshot Style Navigation Buttons (Inside Image) */
         .nav-btn { 
             position: absolute; top: 50%; transform: translateY(-50%); 
-            background: rgba(212, 175, 55, 0.9); color: #000; 
-            border: none; width: 50px; height: 50px; border-radius: 50%; 
-            cursor: pointer; font-size: 20px; font-weight: bold; transition: 0.3s;
-            z-index: 5;
+            background: #d4af37; color: #000; 
+            border: none; width: 45px; height: 55px; 
+            cursor: pointer; font-size: 22px; font-weight: bold; transition: 0.3s;
+            z-index: 5; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        .nav-btn:hover { background: #fff; transform: translateY(-50%) scale(1.1); }
-        .prev { left: -25px; }
-        .next { right: -25px; }
+        .nav-btn:hover { background: #fff; }
+        .prev { left: 0; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+        .next { right: 0; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
         
-        .caption { margin-top: 20px; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #d4af37; }
+        /* Caption Overlaid at Bottom of Image like Screenshot */
+        .caption { 
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 20px; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #d4af37; 
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            text-align: center;
+        }
 
         /* Side-by-Side Grid Gallery Section */
         .grid-section-title {
@@ -85,6 +99,7 @@
             overflow: hidden;
             transition: 0.3s;
             text-align: center;
+            cursor: pointer;
         }
 
         .grid-card:hover {
@@ -107,33 +122,27 @@
 
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
-            .back-btn {
-                position: relative;
-                top: unset;
-                left: unset;
-                margin-bottom: 20px;
-            }
             body {
-                justify-content: flex-start;
                 padding: 20px 10px;
             }
-            .slider-image {
-                height: 280px;
+            .slider-image-box {
+                height: 320px;
             }
             .nav-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
+                width: 35px;
+                height: 45px;
+                font-size: 18px;
             }
-            .prev { left: -10px; }
-            .next { right: -10px; }
+            .caption {
+                font-size: 1.4rem;
+                padding: 15px;
+            }
             .side-by-side-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
             .page-title {
                 font-size: 1.8rem;
-                margin-top: 10px;
             }
         }
 
@@ -146,15 +155,15 @@
 </head>
 <body>
 
-    <a href="index.html" class="back-btn">&#8592; BACK TO HOME</a>
-
     <h1 class="page-title">OUR GALLERY</h1>
 
     <div class="gallery-container">
-        <img id="galleryImg" src="assets/lamb-chops.jpg" class="slider-image">
-        <button class="nav-btn prev" onclick="changeImage(-1)">&#10094;</button>
-        <button class="nav-btn next" onclick="changeImage(1)">&#10095;</button>
-        <p id="caption" class="caption">Lamb Chops</p>
+        <div class="slider-image-box">
+            <button class="nav-btn prev" onclick="changeImage(-1)">&#10094;</button>
+            <img id="galleryImg" src="assets/lamb-chops.jpg" class="slider-image">
+            <button class="nav-btn next" onclick="changeImage(1)">&#10095;</button>
+            <p id="caption" class="caption">Lamb Chops</p>
+        </div>
     </div>
 
     <!-- Side-by-Side Gallery Grid -->
@@ -162,6 +171,8 @@
     <div class="side-by-side-grid" id="sideBySideGrid">
         <!-- JavaScript will dynamically load all images here side-by-side -->
     </div>
+
+    <a href="index.html" class="back-btn">&#8592; Back to Home</a>
 
     <script>
         const images = [
