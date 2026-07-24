@@ -73,7 +73,6 @@
     <div id="section-users" class="admin-section">
         <h2 style="color: #d4af37; text-align: center;">Registered Customers List</h2>
         
-        <!-- Yahan naya download users PDF button add kiya gaya hai -->
         <div style="text-align: center; margin-bottom: 20px;">
             <button onclick="window.open('/download-users-pdf', '_blank')" class="nav-btn" style="background: #d4af37; color: #000;">📥 Download Users PDF</button>
         </div>
@@ -122,7 +121,7 @@
                         <td>${parseItems(o[4])}</td>
                         <td>₹${o[5]}</td>
                         <td>${status.toUpperCase()}</td>
-                        <td><select class="status-select" onchange="updateStatus(${o[0]}, this.value)">
+                        <td><select class="status-select" onchange="updateStatus('${o[0]}', this.value)">
                             <option value="pending" ${status=='pending'?'selected':''}>Pending</option>
                             <option value="preparing" ${status=='preparing'?'selected':''}>Preparing</option>
                             <option value="out for delivery" ${status=='out for delivery'?'selected':''}>Out for Delivery</option>
@@ -135,7 +134,19 @@
         }
 
         function parseItems(raw) { try { return JSON.parse(raw.replace(/'/g, '"')).map(i => `${i.name}(${i.qty})`).join(', '); } catch { return raw; } }
-        function updateStatus(id, newStatus) { fetch(`/update-order/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({status: newStatus}) }).then(() => fetchAndShow('all')); }
+        
+        function updateStatus(id, newStatus) { 
+            fetch(`/update-order/${id}`, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({status: newStatus}) 
+            })
+            .then(res => res.json())
+            .then(data => {
+                fetchAndShow('all');
+            }); 
+        }
+
         function searchTable() { let input = document.getElementById("searchInput").value.toUpperCase(); let rows = document.getElementById("tableBody").getElementsByTagName("tr"); for (let i = 0; i < rows.length; i++) { rows[i].style.display = rows[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; } }
 
         function switchDashboardTab(tab) {
@@ -185,7 +196,7 @@
                         <img src="${m[3]}" alt="Dish">
                         <h4 style="color: #d4af37; margin: 10px 0 5px;">${m[1]}</h4>
                         <p style="margin: 0; font-weight: bold;">₹${m[2]}</p>
-                        <button class="delete-btn" onclick="deleteMenuItem(${m[0]})">🗑️ Delete</button>
+                        <button class="delete-btn" onclick="deleteMenuItem('${m[0]}')">🗑️ Delete</button>
                     </div>`;
                 });
             });
