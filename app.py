@@ -248,7 +248,6 @@ def get_receipt(order_id):
     items = json.loads(items_str.replace("'", '"'))
     
     subtotal = total
-    # GST and Service charges removed as requested. Final total equals subtotal.
     final_total = subtotal
     
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
@@ -275,7 +274,6 @@ def get_receipt(order_id):
             .action-btn {{ background: #d4af37; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 13px; border-radius: 4px; color: #000; }}
             @media print {{ .action-btn {{ display: none; }} }}
 
-            /* Professional Luxury Modal Box Styling */
             .custom-modal {{
                 display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
@@ -324,7 +322,6 @@ def get_receipt(order_id):
             </div>
         </div>
 
-        <!-- Professional Luxury Modal Box -->
         <div id="receiptModal" class="custom-modal">
             <div class="modal-box-content">
                 <div class="modal-logo">🍽️</div>
