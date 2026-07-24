@@ -57,7 +57,6 @@ def register():
     data = request.json
     phone = data.get('phone')
     
-    # Check if user already exists in MongoDB
     existing_user = mongo_db.users.find_one({"phone": phone})
     if existing_user:
         return jsonify({"success": False, "message": "User already exists"})
@@ -128,7 +127,6 @@ def get_orders():
     orders = list(mongo_db.orders.find().sort("_id", -1))
     orders_list = []
     for order in orders:
-        # Format matching frontend expectation: [id, name, phone, address, items, total, date, status]
         order_id = str(order.get('_id'))
         orders_list.append([
             order_id,
@@ -146,10 +144,14 @@ def get_orders():
 def update_order(id):
     new_status = request.json.get('status')
     try:
-        mongo_db.orders.update_one({"_id": ObjectId(id)}, {"$set": {"status": new_status}})
+        # MongoDB ke ObjectId se match karne ke liye try karein
+        result = mongo_db.orders.update_one({"_id": ObjectId(id)}, {"$set": {"status": new_status}})
+        if result.matched_count == 0:
+            # Agar ObjectId se na mile toh string ID se try karein
+            mongo_db.orders.update_one({"_id": id}, {"$set": {"status": new_status}})
     except Exception:
-        # Fallback if id is stored as string/number elsewhere
         mongo_db.orders.update_one({"_id": id}, {"$set": {"status": new_status}})
+        
     return jsonify({"message": "Status Updated!"})
 
 @app.route('/download-csv')
@@ -181,6 +183,8 @@ def get_receipt(order_id):
     order = None
     try:
         order = mongo_db.orders.find_one({"_id": ObjectId(order_id)})
+        if not order:
+            order = mongo_db.orders.find_one({"_id": order_id})
     except Exception:
         order = mongo_db.orders.find_one({"_id": order_id})
     
@@ -355,7 +359,9 @@ def add_menu_item():
 @app.route('/delete-menu-item/<string:id>', methods=['POST'])
 def delete_menu_item(id):
     try:
-        mongo_db.menu.delete_one({"_id": ObjectId(id)})
+        result = mongo_db.menu.delete_one({"_id": ObjectId(id)})
+        if result.deleted_count == 0:
+            mongo_db.menu.delete_one({"_id": id})
     except Exception:
         mongo_db.menu.delete_one({"_id": id})
     return jsonify({"success": True, "message": "Item deleted successfully!"})
