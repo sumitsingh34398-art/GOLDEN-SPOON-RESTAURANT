@@ -2,7 +2,11 @@ import csv
 import io
 import os
 import json
+import random
 import pytz
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from flask import Flask, request, jsonify, send_from_directory, make_response, session, redirect, url_for, send_file
 from flask_cors import CORS
 from datetime import datetime
@@ -20,6 +24,12 @@ CORS(app)
 
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
+
+# --- EMAIL CONFIGURATION FOR OTP ---
+# Apna Gmail aur Gmail App Password yahan update karein
+SENDER_EMAIL = "your_restaurant_email@gmail.com"
+SENDER_PASSWORD = "your_gmail_app_password"
+otp_storage = {}
 
 # --- MONGODB ATLAS CONFIGURATION ---
 MONGO_URI = os.environ.get('MONGO_URI', "mongodb+srv://sumitadmin007:Y5wFdxbxFYWvie39@sumit.n5qfisg.mongodb.net/?appName=Sumit")
@@ -54,12 +64,66 @@ def login():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
-# --- USER AUTHENTICATION ROUTES ---
+# --- USER AUTHENTICATION & OTP ROUTES ---
+
+@app.route('/send-otp', methods=['POST'])
+def send_otp():
+    data = request.json
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({"success": False, "message": "Email is required!"})
+    
+    otp = str(random.randint(100000, 999999))
+    otp_storage[email] = otp
+    
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = email
+        msg['Subject'] = "Verification OTP - Golden Spoon Restaurant"
+        
+        body = f"""
+        Hello,
+        
+        Thank you for registering with Golden Spoon Restaurant Management System!
+        
+        Your OTP for email verification is: {otp}
+        
+        Please do not share this OTP with anyone.
+        
+        Best Regards,
+        Golden Spoon Team
+        """
+        msg.attach(MIMEText(body, 'plain'))
+        
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.sendmail(SENDER_EMAIL, email, msg.as_string())
+        server.quit()
+        
+        return jsonify({"success": True, "message": "OTP sent successfully to your Gmail!"})
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Failed to send email: {str(e)}"})
+
+@app.route('/verify-otp', methods=['POST'])
+def verify_otp():
+    data = request.json
+    email = data.get('email')
+    user_otp = data.get('otp')
+    
+    if email in otp_storage and otp_storage[email] == user_otp:
+        del otp_storage[email]
+        return jsonify({"success": True, "message": "OTP verified successfully!"})
+    else:
+        return jsonify({"success": False, "message": "Invalid or expired OTP!"})
 
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
     phone = data.get('phone')
+    email = data.get('email')
     
     existing_user = mongo_db.users.find_one({"phone": phone})
     if existing_user:
@@ -69,6 +133,7 @@ def register():
         user_data = {
             "name": data.get('name'),
             "phone": phone,
+            "email": email,
             "password": data.get('password')
         }
         mongo_db.users.insert_one(user_data)
@@ -331,7 +396,6 @@ def download_users_csv():
     response.headers["Content-type"] = "text/csv"
     return response
 
-# --- ADDED: Download Users PDF Route to fix 404 error ---
 @app.route('/download-users-pdf')
 def download_users_pdf():
     users = list(mongo_db.users.find().sort("_id", -1))
@@ -339,14 +403,12 @@ def download_users_pdf():
     pdf_buffer = io.BytesIO()
     c = canvas.Canvas(pdf_buffer, pagesize=letter)
     
-    # PDF Header styling
     c.setFont("Helvetica-Bold", 16)
     c.drawString(50, 750, "Golden Spoon Restaurant - Registered Users")
     c.setFont("Helvetica", 10)
     c.drawString(50, 735, f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     c.line(50, 725, 550, 725)
     
-    # Table Headings
     y = 695
     c.setFont("Helvetica-Bold", 11)
     c.drawString(50, y, "User ID")
@@ -473,7 +535,19 @@ def reset_password():
     else:
         return jsonify({"success": False, "message": "Phone number not registered!"})
 
-# --- OPTIONAL: BULK CLEAR ROUTES (Safe separate functions) ---
+# --- UPDATE PASSWORD ROUTE ---
+@app.route('/update-password', methods=['POST'])
+def update_password():
+    data = request.get_json()
+    new_password = data.get('new_password')
+    
+    config_data = {"admin_password": new_password}
+    with open('admin_config.json', 'w') as f:
+        json.dump(config_data, f)
+
+    return jsonify({"message": "Password updated and saved permanently successfully!"})
+
+# --- BULK CLEAR ROUTES ---
 @app.route('/clear-all-orders', methods=['POST'])
 def clear_all_orders():
     try:
