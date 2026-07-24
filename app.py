@@ -81,19 +81,22 @@ def send_otp():
         msg = MIMEMultipart()
         msg['From'] = SENDER_EMAIL
         msg['To'] = email
+        # --- Updated Subject for Golden Spoon Restaurant ---
         msg['Subject'] = "Verification OTP - Golden Spoon Restaurant"
         
+        # --- Updated Body for Golden Spoon Restaurant ---
         body = f"""
         Hello,
         
-        Thank you for registering with Golden Spoon Restaurant Management System!
+        Welcome to Golden Spoon Restaurant!
         
-        Your OTP for email verification is: {otp}
+        Your email verification code for registration is: {otp}
         
-        Please do not share this OTP with anyone.
+        This OTP is valid for a limited time. Please do not share it with anyone.
         
         Best Regards,
         Golden Spoon Team
+        https://golden-spoon-restaurant.onrender.com
         """
         msg.attach(MIMEText(body, 'plain'))
         
@@ -565,5 +568,4 @@ def clear_all_users():
         return jsonify({"success": False, "message": str(e)})
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=5000, debug=True)
