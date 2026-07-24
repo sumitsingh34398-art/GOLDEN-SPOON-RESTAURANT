@@ -23,17 +23,18 @@
         .summary-row { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 6px; }
         .summary-row span:last-child { color: #fff; font-weight: bold; }
 
-        .sidebar-footer { padding: 15px 20px; border-top: 1px solid #222; font-size: 12px; color: #888; text-align: center; background: #111; }
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid #222; font-size: 11px; color: #888; text-align: center; background: #111; }
 
         /* Main Content */
         .main-content { margin-left: 260px; flex: 1; padding: 30px; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-attachment: fixed; min-height: 100vh; box-sizing: border-box; }
         
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .welcome-text h2 { color: #fff; margin: 0; font-size: 24px; }
-        .welcome-text p { color: #d4af37; margin: 5px 0 0 0; font-size: 16px; font-weight: 500; letter-spacing: 0.5px; }
+        .welcome-text p { color: #d4af37; margin: 5px 0 0 0; font-size: 15px; font-weight: 500; letter-spacing: 0.5px; }
 
-        /* Live Date Badge (Top Right Header) */
-        .header-date-badge { display: flex; align-items: center; gap: 8px; border: 1px solid #d4af37; padding: 8px 16px; border-radius: 20px; font-size: 13px; color: #d4af37; background: rgba(0,0,0,0.7); font-weight: 500; }
+        /* Professional Header Live Date & Time Badge */
+        .header-date-badge { display: flex; align-items: center; gap: 10px; border: 1px solid #d4af37; padding: 10px 20px; border-radius: 30px; font-size: 13px; color: #d4af37; background: rgba(0,0,0,0.8); font-weight: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .header-date-badge span#headerLiveClock { color: #fff; font-weight: 600; margin-left: 5px; }
 
         .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: #1a1a1a; padding: 40px; border: 2px solid #d4af37; border-radius: 15px; text-align: center; }
@@ -105,8 +106,7 @@
         </div>
 
         <div class="sidebar-footer">
-            <div id="liveClock" style="font-weight: bold; color: #d4af37; margin-bottom: 3px;">00:00:00 PM</div>
-            <div id="liveDateFooter" style="font-size: 10px;">Loading date...</div>
+            <div style="color: #aaa; font-weight: 500;">Golden Spoon Admin Portal</div>
         </div>
     </div>
 
@@ -118,8 +118,10 @@
                 <p id="topPageSubtitle">Order Management Dashboard</p>
             </div>
             <div>
+                <!-- Professional Header Live Date & Time Badge -->
                 <div class="header-date-badge">
-                    <span>📅</span> <span id="headerLiveDate">Loading...</span>
+                    <span>📅</span> <span id="headerLiveDate">Loading date...</span>
+                    <span style="border-left: 1px solid #d4af37; padding-left: 10px;">⏰ <span id="headerLiveClock">00:00:00 PM</span></span>
                 </div>
             </div>
         </div>
@@ -217,16 +219,14 @@
     </div>
 
     <script>
-        // Live Clock & Date Script
+        // Professional Header Live Clock & Date Script
         function updateClock() {
             const now = new Date();
             const timeString = now.toLocaleTimeString();
-            const dateString = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            const shortDateString = now.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+            const dateString = now.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
 
-            document.getElementById('liveClock').innerText = timeString;
-            document.getElementById('liveDateFooter').innerText = dateString;
-            document.getElementById('headerLiveDate').innerText = shortDateString;
+            document.getElementById('headerLiveClock').innerText = timeString;
+            document.getElementById('headerLiveDate').innerText = dateString;
         }
         setInterval(updateClock, 1000);
         updateClock();
