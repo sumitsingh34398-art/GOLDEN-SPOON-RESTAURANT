@@ -2,5 +2,5 @@ Flask
 Flask-Cors
 gunicorn
 pytz
-psycopg2-binary
 werkzeug
+pymongo
