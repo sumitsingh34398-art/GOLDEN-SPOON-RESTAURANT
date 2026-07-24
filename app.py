@@ -166,7 +166,15 @@ def save_order():
 
 @app.route('/get-orders', methods=['GET'])
 def get_orders():
-    orders = list(mongo_db.orders.find().sort("_id", -1))
+    filter_type = request.args.get('filter', 'all')
+    query = {}
+    
+    if filter_type == 'today':
+        ist = pytz.timezone('Asia/Kolkata')
+        today_date = datetime.now(ist).strftime("%Y-%m-%d")
+        query = {"date": {"$regex": f"^{today_date}"}}
+
+    orders = list(mongo_db.orders.find(query).sort("_id", -1))
     orders_list = []
     for order in orders:
         order_id = str(order.get('_id'))
@@ -248,7 +256,9 @@ def get_receipt(order_id):
     items = json.loads(items_str.replace("'", '"'))
     
     subtotal = total
-    final_total = subtotal
+    service_charge = subtotal * 0.02
+    gst = subtotal * 0.015
+    final_total = subtotal + service_charge + gst
     
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
     
@@ -273,30 +283,6 @@ def get_receipt(order_id):
             .btn-container {{ display: flex; justify-content: center; gap: 10px; margin-top: 20px; }}
             .action-btn {{ background: #d4af37; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 13px; border-radius: 4px; color: #000; }}
             @media print {{ .action-btn {{ display: none; }} }}
-
-            .custom-modal {{
-                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
-                z-index: 1000; justify-content: center; align-items: center;
-            }}
-            .modal-box-content {{
-                background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%);
-                border: 2px solid #d4af37; padding: 35px 30px; border-radius: 20px;
-                text-align: center; color: #fff; width: 100%; max-width: 350px;
-                box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.1);
-            }}
-            .modal-logo {{
-                width: 50px; height: 50px; border: 2px solid #d4af37; border-radius: 50%;
-                display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;
-                background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); font-size: 22px;
-            }}
-            .modal-btn {{
-                background: linear-gradient(135deg, #d4af37, #aa8c2c); border: none;
-                padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 8px;
-                color: #000; width: 100%; margin-top: 15px; font-size: 14px;
-                box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); transition: all 0.3s;
-            }}
-            .modal-btn:hover {{ background: linear-gradient(135deg, #e6c547, #d4af37); }}
         </style>
     </head><body>
         <div class="receipt" id="receiptContent">
@@ -311,6 +297,7 @@ def get_receipt(order_id):
             </div>
             <table><tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>AMT</th></tr>{items_html}</table>
             <div class="totals">
+                Subtotal: ₹{subtotal:.2f}<br>Service Charge (2%): ₹{service_charge:.2f}<br>GST (1.5%): ₹{gst:.2f}<br>
                 <h3 style="color:#d4af37; font-size: 20px; margin: 10px 0;">TOTAL: ₹{final_total:.2f}</h3>
             </div>
             <div class="footer">
@@ -322,26 +309,7 @@ def get_receipt(order_id):
             </div>
         </div>
 
-        <div id="receiptModal" class="custom-modal">
-            <div class="modal-box-content">
-                <div class="modal-logo">🍽️</div>
-                <h2 id="modalTitle" style="color:#d4af37; font-family:'Playfair Display', serif; font-size:20px; margin-bottom:8px;">Notification</h2>
-                <div style="font-size: 12px; color: #bbb; margin-bottom: 12px;">Golden Spoon Restaurant</div>
-                <p id="modalMsg" style="margin:10px 0 15px 0; font-size:13px; color:#ddd; line-height:1.4;"></p>
-                <button class="modal-btn" onclick="closeModal()">CONTINUE</button>
-            </div>
-        </div>
-
         <script>
-            function showModal(title, msg) {{
-                document.getElementById('modalTitle').innerText = title;
-                document.getElementById('modalMsg').innerText = msg;
-                document.getElementById('receiptModal').style.display = 'flex';
-            }}
-            function closeModal() {{
-                document.getElementById('receiptModal').style.display = 'none';
-            }}
-
             async function shareReceipt() {{
                 const receiptElement = document.getElementById('receiptContent');
                 try {{
@@ -364,12 +332,12 @@ def get_receipt(order_id):
                             link.download = 'Receipt_{order_id}.png';
                             link.href = canvas.toDataURL('image/png');
                             link.click();
-                            showModal('Download Complete', 'Sharing files not supported directly on this browser, image downloaded instead!');
+                            alert('Sharing files not supported directly on this browser, image downloaded instead!');
                         }}
                     }});
                 }} catch (err) {{
                     console.error('Canvas error:', err);
-                    showModal('Error', 'Failed to generate receipt image.');
+                    alert('Failed to generate receipt image.');
                 }}
             }}
         </script>
@@ -508,14 +476,14 @@ def add_review():
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
-    review_data = {
+    render_data = {
         "name": name,
         "rating": rating,
         "comment": comment,
         "image": image_url,
         "date": current_time
     }
-    mongo_db.reviews.insert_one(review_data)
+    mongo_db.reviews.insert_one(render_data)
     return jsonify({"success": True, "message": "Review submitted successfully!"})
 
 @app.route('/get-reviews', methods=['GET'])
