@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify, send_from_directory, make_response, s
 from flask_cors import CORS
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from pymongo import MongoClient
 
 app = Flask(__name__)
 app.secret_key = 'golden_spoon_secret'
@@ -17,6 +18,15 @@ ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
 DATABASE_NAME = 'database.db'
+
+# --- MONGODB ATLAS CONFIGURATION ---
+MONGO_URI = os.environ.get('MONGO_URI', "mongodb+srv://sumitadmin007:Y5wFdxbxFYWvie39@sumit.n5qfisg.mongodb.net/?appName=Sumit")
+try:
+    mongo_client = MongoClient(MONGO_URI)
+    mongo_db = mongo_client['GoldenSpoon']
+    print("Connected to MongoDB Atlas successfully!")
+except Exception as e:
+    print(f"MongoDB Connection Error: {e}")
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -300,6 +310,25 @@ def get_users():
     c.close()
     conn.close()
     return jsonify(users_list)
+
+@app.route('/download-users-csv')
+def download_users_csv():
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("SELECT id, name, phone FROM users ORDER BY id DESC")
+    users = c.fetchall()
+    c.close()
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Name', 'Phone'])
+    writer.writerows(users)
+    
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=registered_users.csv"
+    response.headers["Content-type"] = "text/csv"
+    return response
 
 @app.route('/get-menu', methods=['GET'])
 def get_menu():
