@@ -2,29 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Golden Spoon</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            /* Yahan apni image ka naam change karein */
             background: url('assets/background-photo.jpg') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
         .register-box {
             background: rgba(0, 0, 0, 0.85);
-            padding: 40px;
+            padding: 30px 25px;
             border: 2px solid #d4af37;
             border-radius: 10px;
             color: white;
             text-align: center;
-            width: 320px;
+            width: 100%;
+            max-width: 380px;
+            margin: 15px;
             box-sizing: border-box;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
         input {
             width: 100%;
@@ -35,10 +38,15 @@
             color: white;
             border-radius: 5px;
             box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #e6c547;
         }
         button {
             width: 100%;
-            padding: 10px;
+            padding: 11px;
             background: #d4af37;
             border: none;
             color: black;
@@ -46,10 +54,15 @@
             cursor: pointer;
             border-radius: 5px;
             margin-top: 10px;
+            font-size: 15px;
+            transition: background 0.3s ease;
         }
-        h2 { color: #d4af37; }
+        button:hover {
+            background: #e6c547;
+        }
+        h2 { color: #d4af37; margin-top: 0; }
 
-        /* Professional Custom Modal Styles (Updated for extra elegance) */
+        /* Professional Custom Modal Styles */
         .hidden { display: none !important; }
         .custom-modal {
             position: fixed;
@@ -60,6 +73,8 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 15px;
+            box-sizing: border-box;
         }
         .modal-content {
             background: linear-gradient(145deg, #111111, #1a1a1a);
@@ -67,10 +82,12 @@
             padding: 30px 25px;
             border-radius: 12px;
             text-align: center;
-            width: 310px;
+            width: 100%;
+            max-width: 310px;
             box-shadow: 0 10px 35px rgba(212, 175, 55, 0.3);
             color: white;
             animation: modalPop 0.3s ease-in-out;
+            box-sizing: border-box;
         }
         @keyframes modalPop {
             0% { transform: scale(0.8); opacity: 0; }
@@ -137,7 +154,6 @@
     <script>
         let globalData = {};
 
-        // Professional Alert Function
         function showCustomAlert(message, callback = null) {
             document.getElementById('modalMessage').innerText = message;
             document.getElementById('customModal').classList.remove('hidden');
@@ -153,12 +169,11 @@
         }
 
         async function sendOtpRequest() {
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
 
-            // Check karein ki saari fields bhari hui hain ya nahi
             if(!name || !phone || !email || !password) {
                 showCustomAlert("Please fill all fields!");
                 return;
@@ -189,7 +204,7 @@
         }
 
         async function verifyAndRegister() {
-            const otp = document.getElementById('enteredOtp').value;
+            const otp = document.getElementById('enteredOtp').value.trim();
 
             if(!otp) {
                 showCustomAlert("Please enter the OTP!");
@@ -205,7 +220,6 @@
                 const verifyResult = await res.json();
 
                 if(verifyResult.success) {
-                    // OTP match hone par final register API call karein
                     const finalRes = await fetch('/register', { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
