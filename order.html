@@ -2,29 +2,248 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Golden Spoon Premium Menu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Spoon - Premium Menu & Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('assets/background.jpg'); background-size: cover; color: #fff; display: flex; min-height: 100vh; }
-        .menu-section { width: 70%; padding: 50px; }
-        h1 { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 40px; margin-bottom: 30px; text-transform: uppercase; }
-        .back-btn { display: inline-block; margin-bottom: 30px; color: #d4af37; border: 1px solid #d4af37; padding: 8px 15px; text-decoration: none; border-radius: 4px; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.88)), url('assets/background.jpg') no-repeat center center fixed; 
+            background-size: cover; 
+            color: #fff; 
+            display: flex; 
+            flex-direction: row;
+            min-height: 100vh; 
+        }
+        
+        /* Layout Structure */
+        .menu-section { width: 70%; padding: 40px; }
+        .checkout-section { 
+            width: 30%; 
+            background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%); 
+            padding: 30px; 
+            border-left: 2px solid #d4af37; 
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        h1 { 
+            font-family: 'Playfair Display', serif; 
+            color: #d4af37; 
+            font-size: 38px; 
+            margin-bottom: 25px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+        
+        .back-btn { 
+            display: inline-block; 
+            margin-bottom: 25px; 
+            color: #d4af37; 
+            border: 1px solid #d4af37; 
+            padding: 8px 16px; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Menu Grid System */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .card { background: rgba(0,0,0,0.8); border: 1px solid #333; padding: 15px; border-radius: 12px; text-align: center; }
-        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; border: 1px solid #444; }
-        .card h4 { font-size: 14px; margin-bottom: 5px; }
-        .card p { color: #d4af37; font-weight: bold; margin-bottom: 10px; }
-        .controls { display: flex; justify-content: center; gap: 10px; align-items: center; }
-        .btn-qty { background: #d4af37; border: none; padding: 5px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .checkout-section { width: 30%; background: rgba(0,0,0,0.95); padding: 30px; border-left: 1px solid #333; }
-        .checkout-section h2 { color: #d4af37; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group input { width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 4px; }
-        #cartItems { margin: 20px 0; font-size: 14px; color: #ccc; }
-        #cartTotal { font-size: 24px; color: #d4af37; margin: 20px 0; border-top: 1px solid #333; padding-top: 10px; }
-        .place-order-btn { width: 100%; background: #d4af37; border: none; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 5px; margin-bottom: 10px; }
-        .logout-btn { width: 100%; background: #333; border: 1px solid #d4af37; color: #d4af37; padding: 10px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .card { 
+            background: rgba(15, 15, 15, 0.9); 
+            border: 1px solid #333; 
+            padding: 18px; 
+            border-radius: 14px; 
+            text-align: center; 
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .card:hover {
+            border-color: #d4af37;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.15);
+        }
+        .card img { 
+            width: 100%; 
+            height: 140px; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            margin-bottom: 12px; 
+            border: 1px solid #444; 
+        }
+        .card h4 { font-size: 15px; margin-bottom: 6px; font-weight: 600; color: #f0f0f0; }
+        .card p { color: #d4af37; font-weight: bold; margin-bottom: 12px; font-size: 15px; }
+        
+        .controls { display: flex; justify-content: center; gap: 12px; align-items: center; }
+        .btn-qty { 
+            background: linear-gradient(135deg, #d4af37, #aa8c2c); 
+            border: none; 
+            padding: 6px 14px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            color: #000;
+            transition: all 0.2s;
+        }
+        .btn-qty:hover { background: #f3e5ab; box-shadow: 0 0 8px rgba(212, 175, 55, 0.5); }
+        .controls span { font-weight: 600; min-width: 20px; text-align: center; }
+
+        /* Checkout Panel Styles */
+        .checkout-section h2 { 
+            font-family: 'Playfair Display', serif;
+            color: #d4af37; 
+            margin-bottom: 20px; 
+            font-size: 24px;
+            letter-spacing: 0.5px;
+        }
+        .input-group { margin-bottom: 12px; }
+        .input-group input { 
+            width: 100%; 
+            padding: 11px 14px; 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid #d4af37; 
+            color: #fff; 
+            border-radius: 6px; 
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #f3e5ab;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+        }
+        
+        #cartItems { 
+            margin: 15px 0; 
+            font-size: 13px; 
+            color: #cccccc; 
+            max-height: 180px; 
+            overflow-y: auto; 
+            padding-right: 5px;
+        }
+        #cartItems::-webkit-scrollbar { width: 4px; }
+        #cartItems::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 4px; }
+
+        #cartTotal { 
+            font-size: 20px; 
+            color: #d4af37; 
+            margin: 15px 0; 
+            border-top: 1px solid #333; 
+            padding-top: 12px; 
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .place-order-btn { 
+            width: 100%; 
+            background: linear-gradient(135deg, #d4af37, #aa8c2c); 
+            border: none; 
+            padding: 13px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            border-radius: 6px; 
+            margin-bottom: 10px; 
+            color: #000;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        .place-order-btn:hover { 
+            background: linear-gradient(135deg, #e6c547, #d4af37); 
+            box-shadow: 0 6px 18px rgba(212, 175, 55, 0.5); 
+        }
+
+        .logout-btn { 
+            width: 100%; 
+            background: transparent; 
+            border: 1px solid #d4af37; 
+            color: #d4af37; 
+            padding: 10px; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover { 
+            background: rgba(212, 175, 55, 0.1); 
+            color: #f3e5ab; 
+        }
+
+        /* Professional Luxury Modal Box (Matching Previous Theme) */
+        .custom-modal {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.88); 
+            backdrop-filter: blur(8px);
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center;
+        }
+        .modal-box-content {
+            background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%);
+            border: 2px solid #d4af37; 
+            padding: 35px 30px; 
+            border-radius: 20px; 
+            text-align: center; 
+            color: #fff; 
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-logo {
+            width: 55px; height: 55px;
+            border: 2px solid #d4af37; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin: 0 auto 15px auto;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            font-size: 24px;
+        }
+        .modal-btn {
+            background: linear-gradient(135deg, #d4af37, #aa8c2c); 
+            border: none; 
+            padding: 12px 20px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            color: #000;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 14px;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s;
+        }
+        .modal-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); }
+
+        /* Responsive Breakpoints for Mobile & Tablet */
+        @media(max-width: 1024px) {
+            body { flex-direction: column; }
+            .menu-section { width: 100%; padding: 20px; }
+            .checkout-section { width: 100%; border-left: none; border-top: 2px solid #d4af37; padding: 25px 20px; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        }
+        @media(max-width: 580px) {
+            .grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -46,11 +265,14 @@
     <button class="logout-btn" onclick="logout()">LOGOUT</button>
 </div>
 
-<div id="orderModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:#1a1a1a; border:2px solid #d4af37; padding:30px; border-radius:15px; text-align:center; color:#fff; width:300px;">
-        <h2 id="modalTitle" style="color:#d4af37;">Order Status</h2>
-        <p id="modalMsg" style="margin:20px 0;"></p>
-        <button onclick="closeModal()" style="background:#d4af37; border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:5px;">OK</button>
+<!-- Luxury Custom Modal Box -->
+<div id="orderModal" class="custom-modal">
+    <div class="modal-box-content">
+        <div class="modal-logo">🍽️</div>
+        <h2 id="modalTitle" style="color:#d4af37; font-family:'Playfair Display', serif; font-size:22px; margin-bottom:8px;">Order Status</h2>
+        <div style="font-size: 13px; color: #bbb; margin-bottom: 15px;">Golden Spoon Restaurant</div>
+        <p id="modalMsg" style="margin:10px 0 20px 0; font-size:14px; color:#ddd; line-height:1.5;"></p>
+        <button class="modal-btn" onclick="closeModal()">CONTINUE</button>
     </div>
 </div>
 
@@ -99,9 +321,7 @@
         fetch('/get-menu')
         .then(res => res.json())
         .then(data => {
-            // Agar database mein naye items hain, toh unhe dishes array mein add kar do
             data.forEach((d, index) => {
-                // Check karte hain ki ye dish pehle se array mein na ho
                 let exists = dishes.some(item => item.name.toLowerCase() === d[1].toLowerCase());
                 if (!exists) {
                     dishes.push({
@@ -115,7 +335,7 @@
             });
             renderMenu();
         }).catch(err => {
-            renderMenu(); // Agar database fetch fail ho toh kam se kam static menu dikhta rahe
+            renderMenu(); 
         });
     }
 
@@ -138,7 +358,7 @@
     function renderCart() {
         const cartItems = document.getElementById('cartItems');
         cartItems.innerHTML = dishes.filter(d => d.qty > 0).map(d => 
-            `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            `<div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                 <span>${d.name} x ${d.qty}</span> <span>₹${d.price * d.qty}</span>
             </div>`
         ).join('');
@@ -176,14 +396,14 @@
                 });
                 document.getElementById('orderModal').style.display = 'flex';
                 document.getElementById('modalTitle').innerText = "Order Successful";
-                document.getElementById('modalMsg').innerText = "Your order has been placed!";
+                document.getElementById('modalMsg').innerText = "Your order has been placed successfully!";
             } catch (e) {
                 console.log("Error:", e);
             }
         } else {
             document.getElementById('orderModal').style.display = 'flex';
             document.getElementById('modalTitle').innerText = "Incomplete Details";
-            document.getElementById('modalMsg').innerText = "Please fill all details to place order.";
+            document.getElementById('modalMsg').innerText = "Please fill all your details and select items to place an order.";
         }
     }
 
