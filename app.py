@@ -275,6 +275,31 @@ def get_receipt(order_id):
             .btn-container {{ display: flex; justify-content: center; gap: 10px; margin-top: 20px; }}
             .action-btn {{ background: #d4af37; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 13px; border-radius: 4px; color: #000; }}
             @media print {{ .action-btn {{ display: none; }} }}
+
+            /* Professional Luxury Modal Box Styling */
+            .custom-modal {{
+                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
+                z-index: 1000; justify-content: center; align-items: center;
+            }}
+            .modal-box-content {{
+                background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%);
+                border: 2px solid #d4af37; padding: 35px 30px; border-radius: 20px;
+                text-align: center; color: #fff; width: 100%; max-width: 350px;
+                box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            }}
+            .modal-logo {{
+                width: 50px; height: 50px; border: 2px solid #d4af37; border-radius: 50%;
+                display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto;
+                background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); font-size: 22px;
+            }}
+            .modal-btn {{
+                background: linear-gradient(135deg, #d4af37, #aa8c2c); border: none;
+                padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 8px;
+                color: #000; width: 100%; margin-top: 15px; font-size: 14px;
+                box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); transition: all 0.3s;
+            }}
+            .modal-btn:hover {{ background: linear-gradient(135deg, #e6c547, #d4af37); }}
         </style>
     </head><body>
         <div class="receipt" id="receiptContent">
@@ -301,7 +326,27 @@ def get_receipt(order_id):
             </div>
         </div>
 
+        <!-- Professional Luxury Modal Box -->
+        <div id="receiptModal" class="custom-modal">
+            <div class="modal-box-content">
+                <div class="modal-logo">🍽️</div>
+                <h2 id="modalTitle" style="color:#d4af37; font-family:'Playfair Display', serif; font-size:20px; margin-bottom:8px;">Notification</h2>
+                <div style="font-size: 12px; color: #bbb; margin-bottom: 12px;">Golden Spoon Restaurant</div>
+                <p id="modalMsg" style="margin:10px 0 15px 0; font-size:13px; color:#ddd; line-height:1.4;"></p>
+                <button class="modal-btn" onclick="closeModal()">CONTINUE</button>
+            </div>
+        </div>
+
         <script>
+            function showModal(title, msg) {{
+                document.getElementById('modalTitle').innerText = title;
+                document.getElementById('modalMsg').innerText = msg;
+                document.getElementById('receiptModal').style.display = 'flex';
+            }}
+            function closeModal() {{
+                document.getElementById('receiptModal').style.display = 'none';
+            }}
+
             async function shareReceipt() {{
                 const receiptElement = document.getElementById('receiptContent');
                 try {{
@@ -324,12 +369,12 @@ def get_receipt(order_id):
                             link.download = 'Receipt_{order_id}.png';
                             link.href = canvas.toDataURL('image/png');
                             link.click();
-                            alert('Sharing files not supported directly on this browser, image downloaded instead!');
+                            showModal('Download Complete', 'Sharing files not supported directly on this browser, image downloaded instead!');
                         }}
                     }});
                 }} catch (err) {{
                     console.error('Canvas error:', err);
-                    alert('Failed to generate receipt image.');
+                    showModal('Error', 'Failed to generate receipt image.');
                 }}
             }}
         </script>
@@ -530,4 +575,4 @@ def clear_all_orders():
         return jsonify({"success": False, "message": str(e)})
 
 if __name__ == '__main__':
-    app.run(host='0.5.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
