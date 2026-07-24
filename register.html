@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Golden Spoon</title>
+    <title>Register - Golden Spoon Restaurant</title>
     <style>
         body {
             margin: 0;
@@ -17,129 +17,142 @@
             min-height: 100vh;
         }
         .register-box {
-            background: rgba(0, 0, 0, 0.85);
-            padding: 30px 25px;
+            background: rgba(10, 10, 10, 0.90);
+            padding: 35px 30px;
             border: 2px solid #d4af37;
-            border-radius: 10px;
+            border-radius: 14px;
             color: white;
             text-align: center;
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             margin: 15px;
             box-sizing: border-box;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 20px rgba(212, 175, 55, 0.15);
         }
         input {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 12px 15px;
+            margin: 12px 0;
             border: 1px solid #d4af37;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.05);
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
             box-sizing: border-box;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         input:focus {
             outline: none;
-            border-color: #e6c547;
+            border-color: #f3e5ab;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
         }
         button {
             width: 100%;
-            padding: 11px;
-            background: #d4af37;
+            padding: 12px;
+            background: linear-gradient(135deg, #d4af37, #aa8c2c);
             border: none;
-            color: black;
+            color: #000;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
+            border-radius: 6px;
+            margin-top: 12px;
             font-size: 15px;
-            transition: background 0.3s ease;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
         button:hover {
-            background: #e6c547;
+            background: linear-gradient(135deg, #e6c547, #d4af37);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
         }
-        h2 { color: #d4af37; margin-top: 0; }
+        h2 { 
+            color: #d4af37; 
+            margin-top: 0; 
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 1px;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
 
         /* Professional Custom Modal Styles */
         .hidden { display: none !important; }
         .custom-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            padding: 15px;
+            padding: 20px;
             box-sizing: border-box;
         }
         .modal-content {
-            background: linear-gradient(145deg, #111111, #1a1a1a);
+            background: linear-gradient(145deg, #141414, #1f1f1f);
             border: 2px solid #d4af37;
             padding: 30px 25px;
-            border-radius: 12px;
+            border-radius: 14px;
             text-align: center;
             width: 100%;
-            max-width: 310px;
-            box-shadow: 0 10px 35px rgba(212, 175, 55, 0.3);
+            max-width: 330px;
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.35);
             color: white;
-            animation: modalPop 0.3s ease-in-out;
+            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-sizing: border-box;
         }
         @keyframes modalPop {
-            0% { transform: scale(0.8); opacity: 0; }
+            0% { transform: scale(0.7); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
         .modal-content p {
             font-size: 15px;
-            margin-bottom: 22px;
+            margin-bottom: 25px;
             line-height: 1.6;
             white-space: pre-line;
-            color: #f3f3f3;
+            color: #eaeaea;
             letter-spacing: 0.5px;
         }
         .modal-btn {
-            background: #d4af37;
+            background: linear-gradient(135deg, #d4af37, #aa8c2c);
             border: none;
-            padding: 10px 20px;
+            padding: 11px 20px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            color: black;
+            color: #000;
             width: 100%;
             font-size: 14px;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
         }
         .modal-btn:hover {
-            background: #e6c547;
+            background: linear-gradient(135deg, #e6c547, #d4af37);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
         }
     </style>
 </head>
 <body>
     <div class="register-box">
-        <h2>REGISTER</h2>
+        <h2>CREATE ACCOUNT</h2>
         
         <!-- Step 1: Details Form (Name, Phone, Email & Password) -->
         <div id="step1Form">
             <input type="text" id="name" placeholder="Enter Full Name">
             <input type="text" id="phone" placeholder="Enter Phone Number">
             <input type="email" id="email" placeholder="Enter Gmail (e.g. user@gmail.com)">
-            <input type="password" id="password" placeholder="Enter Password">
+            <input type="password" id="password" placeholder="Create Password">
             <button onclick="sendOtpRequest()">SEND OTP</button>
         </div>
 
         <!-- Step 2: OTP Verification Form (Initially Hidden) -->
         <div id="step2Form" class="hidden">
-            <p style="font-size: 12px; color: #d4af37; margin-bottom: 10px;">OTP has been sent to your Gmail. Please enter it below:</p>
-            <input type="text" id="enteredOtp" placeholder="Enter 6-digit OTP" maxlength="6">
+            <p style="font-size: 13px; color: #d4af37; margin-bottom: 12px; font-weight: 500;">OTP has been sent to your Gmail inbox. Please verify below:</p>
+            <input type="text" id="enteredOtp" placeholder="Enter 4-digit OTP" maxlength="4" style="text-align: center; font-size: 18px; letter-spacing: 5px;">
             <button onclick="verifyAndRegister()">VERIFY & SIGN UP</button>
         </div>
 
-        <p style="font-size: 12px; margin-top: 15px;">
-            Already have an account? <a href="login.html" style="color: #d4af37;">Login</a>
+        <p style="font-size: 13px; margin-top: 20px; color: #bbb;">
+            Already have an account? <a href="login.html" style="color: #d4af37; text-decoration: none; font-weight: 600;">Login here</a>
         </p>
     </div>
 
@@ -175,7 +188,7 @@
             const password = document.getElementById('password').value.trim();
 
             if(!name || !phone || !email || !password) {
-                showCustomAlert("Please fill all fields!");
+                showCustomAlert("Please fill all the fields completely!");
                 return;
             }
 
@@ -190,7 +203,7 @@
                 const result = await res.json();
                 
                 if(result.success) { 
-                    showCustomAlert("OTP sent successfully to your Gmail!", () => {
+                    showCustomAlert("OTP has been sent successfully to your Gmail!", () => {
                         document.getElementById('step1Form').classList.add('hidden');
                         document.getElementById('step2Form').classList.remove('hidden');
                     }); 
@@ -199,7 +212,7 @@
                 }
             } catch (err) {
                 console.error("Error:", err);
-                showCustomAlert("Something went wrong!");
+                showCustomAlert("Something went wrong! Please check your connection.");
             }
         }
 
@@ -207,7 +220,7 @@
             const otp = document.getElementById('enteredOtp').value.trim();
 
             if(!otp) {
-                showCustomAlert("Please enter the OTP!");
+                showCustomAlert("Please enter the verification OTP!");
                 return;
             }
 
@@ -228,14 +241,14 @@
                     const result = await finalRes.json();
 
                     if(result.success) {
-                        showCustomAlert("Registration Successful!", () => {
+                        showCustomAlert("Registration Successful! Welcome to Golden Spoon.", () => {
                             window.location.href = 'login.html';
                         });
                     } else {
                         showCustomAlert(result.message || "Registration failed!");
                     }
                 } else {
-                    showCustomAlert(verifyResult.message || "Invalid or expired OTP!");
+                    showCustomAlert(verifyResult.message || "Invalid or expired OTP code!");
                 }
             } catch (err) {
                 console.error("Error:", err);
