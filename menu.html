@@ -54,7 +54,14 @@
 
         .footer-note { margin-top: 60px; font-size: 12px; color: #d4af37; text-align: right; border-top: 1px solid #333; padding-top: 10px; }
         
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        /* Mobile Responsiveness Updates */
+        @media (max-width: 768px) { 
+            .grid { grid-template-columns: 1fr; gap: 30px; } 
+            .navbar { flex-direction: column; gap: 15px; text-align: center; padding: 15px 20px; }
+            .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; }
+            .section-header { font-size: 28px; margin: 40px 0 10px; }
+            .page-content { padding: 30px 4%; }
+        }
     </style>
 </head>
 <body>
@@ -133,7 +140,7 @@
 
             <div class="footer-note">
                 <p>▲ From The North Special</p>
-                <p>▲ Kids Special</p>
+                <p>▲ Text Kids Special</p>
             </div>
         </div>
     </div>
