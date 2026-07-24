@@ -23,7 +23,8 @@
             border-radius: 10px;
             color: white;
             text-align: center;
-            width: 300px;
+            width: 320px;
+            box-sizing: border-box;
         }
         input {
             width: 100%;
@@ -48,56 +49,78 @@
         }
         h2 { color: #d4af37; }
 
-        /* Professional Custom Modal Styles */
+        /* Professional Custom Modal Styles (Updated for extra elegance) */
         .hidden { display: none !important; }
         .custom-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
         .modal-content {
-            background: #111;
+            background: linear-gradient(145deg, #111111, #1a1a1a);
             border: 2px solid #d4af37;
-            padding: 25px;
-            border-radius: 10px;
+            padding: 30px 25px;
+            border-radius: 12px;
             text-align: center;
-            width: 280px;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+            width: 310px;
+            box-shadow: 0 10px 35px rgba(212, 175, 55, 0.3);
             color: white;
+            animation: modalPop 0.3s ease-in-out;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
         .modal-content p {
-            font-size: 14px;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            font-size: 15px;
+            margin-bottom: 22px;
+            line-height: 1.6;
             white-space: pre-line;
+            color: #f3f3f3;
+            letter-spacing: 0.5px;
         }
         .modal-btn {
             background: #d4af37;
             border: none;
-            padding: 8px 20px;
+            padding: 10px 20px;
             font-weight: bold;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             color: black;
             width: 100%;
+            font-size: 14px;
+            transition: background 0.3s ease;
         }
         .modal-btn:hover {
-            background: #b8962d;
+            background: #e6c547;
         }
     </style>
 </head>
 <body>
     <div class="register-box">
         <h2>REGISTER</h2>
-        <!-- Update: Naya Full Name input field joda gaya hai -->
-        <input type="text" id="name" placeholder="Enter Full Name">
-        <input type="text" id="phone" placeholder="Enter Phone Number">
-        <input type="password" id="password" placeholder="Enter Password">
-        <button onclick="register()">SIGN UP</button>
+        
+        <!-- Step 1: Details Form (Name, Phone, Email & Password) -->
+        <div id="step1Form">
+            <input type="text" id="name" placeholder="Enter Full Name">
+            <input type="text" id="phone" placeholder="Enter Phone Number">
+            <input type="email" id="email" placeholder="Enter Gmail (e.g. user@gmail.com)">
+            <input type="password" id="password" placeholder="Enter Password">
+            <button onclick="sendOtpRequest()">SEND OTP</button>
+        </div>
+
+        <!-- Step 2: OTP Verification Form (Initially Hidden) -->
+        <div id="step2Form" class="hidden">
+            <p style="font-size: 12px; color: #d4af37; margin-bottom: 10px;">OTP has been sent to your Gmail. Please enter it below:</p>
+            <input type="text" id="enteredOtp" placeholder="Enter 6-digit OTP" maxlength="6">
+            <button onclick="verifyAndRegister()">VERIFY & SIGN UP</button>
+        </div>
+
         <p style="font-size: 12px; margin-top: 15px;">
             Already have an account? <a href="login.html" style="color: #d4af37;">Login</a>
         </p>
@@ -112,6 +135,8 @@
     </div>
 
     <script>
+        let globalData = {};
+
         // Professional Alert Function
         function showCustomAlert(message, callback = null) {
             document.getElementById('modalMessage').innerText = message;
@@ -127,37 +152,80 @@
             }
         }
 
-        async function register() {
-            // Update: data object mein name bhi shamil kar diya gaya hai
-            const data = { 
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value, 
-                password: document.getElementById('password').value 
-            };
-            
-            // Check karein ki fields khaali na hon (Name, Phone aur Password teeno check honge)
-            if(!data.name || !data.phone || !data.password) {
+        async function sendOtpRequest() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Check karein ki saari fields bhari hui hain ya nahi
+            if(!name || !phone || !email || !password) {
                 showCustomAlert("Please fill all fields!");
                 return;
             }
 
+            globalData = { name, phone, email, password };
+
             try {
-                const res = await fetch('/register', { 
+                const res = await fetch('/send-otp', { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify(data) 
+                    body: JSON.stringify({ email: email }) 
                 });
                 const result = await res.json();
+                
                 if(result.success) { 
-                    showCustomAlert("Registration Successful!", () => {
-                        window.location.href = 'login.html';
+                    showCustomAlert("OTP sent successfully to your Gmail!", () => {
+                        document.getElementById('step1Form').classList.add('hidden');
+                        document.getElementById('step2Form').classList.remove('hidden');
                     }); 
                 } else { 
-                    showCustomAlert(result.message || "Registration failed!"); 
+                    showCustomAlert(result.message || "Failed to send OTP!"); 
                 }
             } catch (err) {
                 console.error("Error:", err);
                 showCustomAlert("Something went wrong!");
+            }
+        }
+
+        async function verifyAndRegister() {
+            const otp = document.getElementById('enteredOtp').value;
+
+            if(!otp) {
+                showCustomAlert("Please enter the OTP!");
+                return;
+            }
+
+            try {
+                const res = await fetch('/verify-otp', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: globalData.email, otp: otp })
+                });
+                const verifyResult = await res.json();
+
+                if(verifyResult.success) {
+                    // OTP match hone par final register API call karein
+                    const finalRes = await fetch('/register', { 
+                        method: 'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify(globalData) 
+                    });
+                    const result = await finalRes.json();
+
+                    if(result.success) {
+                        showCustomAlert("Registration Successful!", () => {
+                            window.location.href = 'login.html';
+                        });
+                    } else {
+                        showCustomAlert(result.message || "Registration failed!");
+                    }
+                } else {
+                    showCustomAlert(verifyResult.message || "Invalid or expired OTP!");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                showCustomAlert("Something went wrong during verification!");
             }
         }
     </script>
