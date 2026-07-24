@@ -1,4 +1,3 @@
-import sqlite3
 import csv
 import io
 import os
@@ -9,6 +8,7 @@ from flask_cors import CORS
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 app.secret_key = 'golden_spoon_secret'
@@ -16,8 +16,6 @@ CORS(app)
 
 ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
-
-DATABASE_NAME = 'database.db'
 
 # --- MONGODB ATLAS CONFIGURATION ---
 MONGO_URI = os.environ.get('MONGO_URI', "mongodb+srv://sumitadmin007:Y5wFdxbxFYWvie39@sumit.n5qfisg.mongodb.net/?appName=Sumit")
@@ -30,42 +28,6 @@ except Exception as e:
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-def get_db_connection():
-    conn = sqlite3.connect(DATABASE_NAME)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS orders 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  name TEXT, phone TEXT, address TEXT, 
-                  items TEXT, total REAL, date TEXT, status TEXT DEFAULT 'pending')''')
-    
-    c.execute('''CREATE TABLE IF NOT EXISTS users 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  name TEXT, phone TEXT UNIQUE, password TEXT)''')
-    
-    c.execute('''CREATE TABLE IF NOT EXISTS menu 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  name TEXT, price REAL, image TEXT)''')
-    
-    c.execute('''CREATE TABLE IF NOT EXISTS reviews 
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  name TEXT, rating INTEGER, comment TEXT, image TEXT, date TEXT)''')
-    
-    try:
-        c.execute("ALTER TABLE reviews ADD COLUMN image TEXT")
-    except Exception:
-        conn.rollback()
-
-    conn.commit()
-    c.close()
-    conn.close()
-
-init_db()
 
 # --- ROUTES ---
 
@@ -93,30 +55,33 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
-    conn = get_db_connection()
-    c = conn.cursor()
-    try:
-        c.execute("INSERT INTO users (name, phone, password) VALUES (?, ?, ?)", (data['name'], data['phone'], data['password']))
-        conn.commit()
-        return jsonify({"success": True})
-    except Exception:
-        conn.rollback()
+    phone = data.get('phone')
+    
+    # Check if user already exists in MongoDB
+    existing_user = mongo_db.users.find_one({"phone": phone})
+    if existing_user:
         return jsonify({"success": False, "message": "User already exists"})
-    finally:
-        c.close()
-        conn.close()
+    
+    try:
+        user_data = {
+            "name": data.get('name'),
+            "phone": phone,
+            "password": data.get('password')
+        }
+        mongo_db.users.insert_one(user_data)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 @app.route('/login-user', methods=['POST'])
 def login_user():
     data = request.json
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE phone=? AND password=?", (data['phone'], data['password']))
-    user = c.fetchone()
-    c.close()
-    conn.close()
+    phone = data.get('phone')
+    password = data.get('password')
+    
+    user = mongo_db.users.find_one({"phone": phone, "password": password})
     if user:
-        session['user'] = data['phone']
+        session['user'] = phone
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
@@ -145,68 +110,89 @@ def save_order():
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("INSERT INTO orders (name, phone, address, items, total, date, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')",
-              (data['name'], data['phone'], data['address'], str(data['items']), data['total'], current_time))
-    conn.commit()
-    c.close()
-    conn.close()
-    return jsonify({"message": "Order Saved Successfully!"})
+    order_data = {
+        "name": data.get('name'),
+        "phone": data.get('phone'),
+        "address": data.get('address'),
+        "items": str(data.get('items')),
+        "total": float(data.get('total')),
+        "date": current_time,
+        "status": "pending"
+    }
+    
+    result = mongo_db.orders.insert_one(order_data)
+    return jsonify({"message": "Order Saved Successfully!", "order_id": str(result.inserted_id)})
 
 @app.route('/get-orders', methods=['GET'])
 def get_orders():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, name, phone, address, items, total, date, status FROM orders ORDER BY id DESC")
-    orders = c.fetchall()
-    orders_list = [list(row) for row in orders]
-    c.close()
-    conn.close()
+    orders = list(mongo_db.orders.find().sort("_id", -1))
+    orders_list = []
+    for order in orders:
+        # Format matching frontend expectation: [id, name, phone, address, items, total, date, status]
+        order_id = str(order.get('_id'))
+        orders_list.append([
+            order_id,
+            order.get('name'),
+            order.get('phone'),
+            order.get('address'),
+            order.get('items'),
+            order.get('total'),
+            order.get('date'),
+            order.get('status')
+        ])
     return jsonify(orders_list)
 
-@app.route('/update-order/<int:id>', methods=['POST'])
+@app.route('/update-order/<string:id>', methods=['POST'])
 def update_order(id):
     new_status = request.json.get('status')
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("UPDATE orders SET status = ? WHERE id = ?", (new_status, id))
-    conn.commit()
-    c.close()
-    conn.close()
+    try:
+        mongo_db.orders.update_one({"_id": ObjectId(id)}, {"$set": {"status": new_status}})
+    except Exception:
+        # Fallback if id is stored as string/number elsewhere
+        mongo_db.orders.update_one({"_id": id}, {"$set": {"status": new_status}})
     return jsonify({"message": "Status Updated!"})
 
 @app.route('/download-csv')
 def download_csv():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, name, phone, address, items, total, date, status FROM orders ORDER BY id DESC")
-    orders = c.fetchall()
-    c.close()
-    conn.close()
+    orders = list(mongo_db.orders.find().sort("_id", -1))
 
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(['ID', 'Name', 'Phone', 'Address', 'Items', 'Total', 'Date', 'Status'])
-    writer.writerows(orders)
+    for order in orders:
+        writer.writerow([
+            str(order.get('_id')),
+            order.get('name'),
+            order.get('phone'),
+            order.get('address'),
+            order.get('items'),
+            order.get('total'),
+            order.get('date'),
+            order.get('status')
+        ])
     
     response = make_response(output.getvalue())
     response.headers["Content-Disposition"] = "attachment; filename=orders.csv"
     response.headers["Content-type"] = "text/csv"
     return response
 
-@app.route('/receipt/<int:order_id>')
+@app.route('/receipt/<string:order_id>')
 def get_receipt(order_id):
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, name, phone, address, items, total, date, status FROM orders WHERE id=?", (order_id,))
-    order = c.fetchone()
-    c.close()
-    conn.close()
+    order = None
+    try:
+        order = mongo_db.orders.find_one({"_id": ObjectId(order_id)})
+    except Exception:
+        order = mongo_db.orders.find_one({"_id": order_id})
     
     if not order: return "Order not found"
     
-    name, phone, address, items_str, total, date = order[1], order[2], order[3], order[4], float(order[5]), order[6]
+    name = order.get('name')
+    phone = order.get('phone')
+    address = order.get('address')
+    items_str = order.get('items')
+    total = float(order.get('total'))
+    date = order.get('date')
+    
     items = json.loads(items_str.replace("'", '"'))
     
     subtotal = total
@@ -302,28 +288,29 @@ def get_receipt(order_id):
 
 @app.route('/get-users', methods=['GET'])
 def get_users():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, name, phone FROM users ORDER BY id DESC")
-    users = c.fetchall()
-    users_list = [list(row) for row in users]
-    c.close()
-    conn.close()
+    users = list(mongo_db.users.find().sort("_id", -1))
+    users_list = []
+    for user in users:
+        users_list.append([
+            str(user.get('_id')),
+            user.get('name'),
+            user.get('phone')
+        ])
     return jsonify(users_list)
 
 @app.route('/download-users-csv')
 def download_users_csv():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, name, phone FROM users ORDER BY id DESC")
-    users = c.fetchall()
-    c.close()
-    conn.close()
+    users = list(mongo_db.users.find().sort("_id", -1))
 
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(['ID', 'Name', 'Phone'])
-    writer.writerows(users)
+    for user in users:
+        writer.writerow([
+            str(user.get('_id')),
+            user.get('name'),
+            user.get('phone')
+        ])
     
     response = make_response(output.getvalue())
     response.headers["Content-Disposition"] = "attachment; filename=registered_users.csv"
@@ -332,19 +319,21 @@ def download_users_csv():
 
 @app.route('/get-menu', methods=['GET'])
 def get_menu():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, name, price, image FROM menu")
-    items = c.fetchall()
-    items_list = [list(row) for row in items]
-    c.close()
-    conn.close()
+    items = list(mongo_db.menu.find())
+    items_list = []
+    for item in items:
+        items_list.append([
+            str(item.get('_id')),
+            item.get('name'),
+            item.get('price'),
+            item.get('image')
+        ])
     return jsonify(items_list)
 
 @app.route('/add-menu-item', methods=['POST'])
 def add_menu_item():
     name = request.form.get('name')
-    price = request.form.get('price')
+    price = float(request.form.get('price'))
     
     file = request.files.get('image')
     if file and file.filename != '':
@@ -355,29 +344,27 @@ def add_menu_item():
     else:
         image_url = "assets/default.jpg"
     
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("INSERT INTO menu (name, price, image) VALUES (?, ?, ?)", (name, price, image_url))
-    conn.commit()
-    c.close()
-    conn.close()
+    menu_data = {
+        "name": name,
+        "price": price,
+        "image": image_url
+    }
+    mongo_db.menu.insert_one(menu_data)
     return jsonify({"success": True, "message": "Item added successfully!"})
 
-@app.route('/delete-menu-item/<int:id>', methods=['POST'])
+@app.route('/delete-menu-item/<string:id>', methods=['POST'])
 def delete_menu_item(id):
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("DELETE FROM menu WHERE id = ?", (id,))
-    conn.commit()
-    c.close()
-    conn.close()
+    try:
+        mongo_db.menu.delete_one({"_id": ObjectId(id)})
+    except Exception:
+        mongo_db.menu.delete_one({"_id": id})
     return jsonify({"success": True, "message": "Item deleted successfully!"})
 
 # --- ONLINE REVIEWS ROUTES ---
 @app.route('/add-review', methods=['POST'])
 def add_review():
     name = request.form.get('name')
-    rating = request.form.get('rating')
+    rating = int(request.form.get('rating'))
     comment = request.form.get('comment')
     
     file = request.files.get('image')
@@ -392,24 +379,29 @@ def add_review():
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("INSERT INTO reviews (name, rating, comment, image, date) VALUES (?, ?, ?, ?, ?)",
-              (name, rating, comment, image_url, current_time))
-    conn.commit()
-    c.close()
-    conn.close()
+    review_data = {
+        "name": name,
+        "rating": rating,
+        "comment": comment,
+        "image": image_url,
+        "date": current_time
+    }
+    mongo_db.reviews.insert_one(review_data)
     return jsonify({"success": True, "message": "Review submitted successfully!"})
 
 @app.route('/get-reviews', methods=['GET'])
 def get_reviews():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT id, name, rating, comment, image, date FROM reviews ORDER BY id DESC")
-    reviews = c.fetchall()
-    reviews_list = [list(row) for row in reviews]
-    c.close()
-    conn.close()
+    reviews = list(mongo_db.reviews.find().sort("_id", -1))
+    reviews_list = []
+    for review in reviews:
+        reviews_list.append([
+            str(review.get('_id')),
+            review.get('name'),
+            review.get('rating'),
+            review.get('comment'),
+            review.get('image'),
+            review.get('date')
+        ])
     return jsonify(reviews_list)
 
 # --- FORGOT PASSWORD / RESET PASSWORD ROUTE ---
@@ -419,20 +411,12 @@ def reset_password():
     phone = data.get('phone')
     new_password = data.get('newPassword')
     
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE phone=?", (phone,))
-    user = c.fetchone()
+    user = mongo_db.users.find_one({"phone": phone})
     
     if user:
-        c.execute("UPDATE users SET password = ? WHERE phone = ?", (new_password, phone))
-        conn.commit()
-        c.close()
-        conn.close()
+        mongo_db.users.update_one({"phone": phone}, {"$set": {"password": new_password}})
         return jsonify({"success": True})
     else:
-        c.close()
-        conn.close()
         return jsonify({"success": False, "message": "Phone number not registered!"})
 
 if __name__ == '__main__':
