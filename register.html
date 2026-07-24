@@ -146,7 +146,7 @@
 
         <!-- Step 2: OTP Verification Form (Initially Hidden) -->
         <div id="step2Form" class="hidden">
-            <p style="font-size: 13px; color: #d4af37; margin-bottom: 12px; font-weight: 500;">OTP has been sent to your Gmail inbox. Please verify below:</p>
+            <p style="font-size: 13px; color: #d4af37; margin-bottom: 12px; font-weight: 500;">Please enter your 4-digit verification code below:</p>
             <input type="text" id="enteredOtp" placeholder="Enter 4-digit OTP" maxlength="4" style="text-align: center; font-size: 18px; letter-spacing: 5px;">
             <button onclick="verifyAndRegister()">VERIFY & SIGN UP</button>
         </div>
@@ -203,12 +203,16 @@
                 const result = await res.json();
                 
                 if(result.success) { 
-                    showCustomAlert("OTP has been sent successfully to your Gmail!", () => {
+                    // Yahan backend se aaye huye message se 4-digit OTP nikal kar popup mein dikhaya gaya hai
+                    const matchOtp = result.message.match(/\d{4}/);
+                    const otpText = matchOtp ? matchOtp[0] : "1234";
+
+                    showCustomAlert("Your Verification OTP Code is:\n\n" + otpText, () => {
                         document.getElementById('step1Form').classList.add('hidden');
                         document.getElementById('step2Form').classList.remove('hidden');
                     }); 
                 } else { 
-                    showCustomAlert(result.message || "Failed to send OTP!"); 
+                    showCustomAlert(result.message || "Failed to generate OTP!"); 
                 }
             } catch (err) {
                 console.error("Error:", err);
