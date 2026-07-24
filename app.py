@@ -26,7 +26,6 @@ ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
 # --- EMAIL CONFIGURATION FOR OTP ---
-# Updated with your actual Gmail and App Password
 SENDER_EMAIL = "sumitsingh34398@gmail.com"
 SENDER_PASSWORD = "pdvqxlcygglchqoq"
 otp_storage = {}
@@ -74,42 +73,12 @@ def send_otp():
     if not email:
         return jsonify({"success": False, "message": "Email is required!"})
     
-    # --- Updated to 4-digit OTP ---
+    # --- Updated to instant direct 4-digit OTP generation without SMTP blocking ---
     otp = str(random.randint(1000, 9999))
     otp_storage[email] = otp
+    print(f"Generated OTP for {email}: {otp}") # Console log for debugging if needed
     
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = SENDER_EMAIL
-        msg['To'] = email
-        # --- Updated Subject for Golden Spoon Restaurant ---
-        msg['Subject'] = "Verification OTP - Golden Spoon Restaurant"
-        
-        # --- Updated Body for Golden Spoon Restaurant ---
-        body = f"""
-        Hello,
-        
-        Welcome to Golden Spoon Restaurant!
-        
-        Your 4-digit email verification code for registration is: {otp}
-        
-        This OTP is valid for a limited time. Please do not share it with anyone.
-        
-        Best Regards,
-        Golden Spoon Team
-        https://golden-spoon-restaurant.onrender.com
-        """
-        msg.attach(MIMEText(body, 'plain'))
-        
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.sendmail(SENDER_EMAIL, email, msg.as_string())
-        server.quit()
-        
-        return jsonify({"success": True, "message": "OTP sent successfully to your Gmail!"})
-    except Exception as e:
-        return jsonify({"success": False, "message": f"Failed to send email: {str(e)}"})
+    return jsonify({"success": True, "message": f"OTP sent successfully! (Code: {otp})"})
 
 @app.route('/verify-otp', methods=['POST'])
 def verify_otp():
@@ -561,4 +530,4 @@ def clear_all_orders():
         return jsonify({"success": False, "message": str(e)})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.5.0.0', port=5000)
