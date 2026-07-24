@@ -60,8 +60,8 @@ def serve_static(filename):
 def login():
     data = request.json
     if data.get('username') == ADMIN_USER and data.get('password') == ADMIN_PASS:
-        return jsonify({"success": True})
-    return jsonify({"success": False}), 401
+        return jsonify({"success": True, "message": "Welcome back, Master Chef Sumit!"})
+    return jsonify({"success": False, "message": "Access Denied: Incorrect Admin Credentials!"}), 401
 
 # --- USER AUTHENTICATION & OTP ROUTES ---
 
@@ -71,14 +71,13 @@ def send_otp():
     email = data.get('email')
     
     if not email:
-        return jsonify({"success": False, "message": "Email is required!"})
+        return jsonify({"success": False, "message": "Email address is required for verification!"})
     
-    # --- Updated to instant direct 4-digit OTP generation without SMTP blocking ---
     otp = str(random.randint(1000, 9999))
     otp_storage[email] = otp
-    print(f"Generated OTP for {email}: {otp}") # Console log for debugging if needed
+    print(f"Generated OTP for {email}: {otp}")
     
-    return jsonify({"success": True, "message": f"OTP sent successfully! (Code: {otp})"})
+    return jsonify({"success": True, "message": f"Luxury Verification Code sent successfully! (Code: {otp})"})
 
 @app.route('/verify-otp', methods=['POST'])
 def verify_otp():
@@ -88,9 +87,9 @@ def verify_otp():
     
     if email in otp_storage and otp_storage[email] == user_otp:
         del otp_storage[email]
-        return jsonify({"success": True, "message": "OTP verified successfully!"})
+        return jsonify({"success": True, "message": "Verification Successful! Welcome to Golden Spoon."})
     else:
-        return jsonify({"success": False, "message": "Invalid or expired OTP!"})
+        return jsonify({"success": False, "message": "Invalid or Expired Code. Please check again."})
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -100,7 +99,7 @@ def register():
     
     existing_user = mongo_db.users.find_one({"phone": phone})
     if existing_user:
-        return jsonify({"success": False, "message": "User already exists"})
+        return jsonify({"success": False, "message": "This phone number is already registered with us!"})
     
     try:
         user_data = {
@@ -110,7 +109,7 @@ def register():
             "password": data.get('password')
         }
         mongo_db.users.insert_one(user_data)
-        return jsonify({"success": True})
+        return jsonify({"success": True, "message": "Registration successful! Welcome to our family."})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
@@ -123,8 +122,8 @@ def login_user():
     user = mongo_db.users.find_one({"phone": phone, "password": password})
     if user:
         session['user'] = phone
-        return jsonify({"success": True})
-    return jsonify({"success": False}), 401
+        return jsonify({"success": True, "message": "Login successful! Enjoy your dining experience."})
+    return jsonify({"success": False, "message": "Incorrect phone number or password. Please try again."}), 401
 
 @app.route('/check-session')
 def check_session():
@@ -135,7 +134,7 @@ def check_session():
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    return jsonify({"success": True})
+    return jsonify({"success": True, "message": "Successfully logged out. Visit us again!"})
 
 @app.route('/book-table')
 def book_table():
@@ -162,7 +161,7 @@ def save_order():
     }
     
     result = mongo_db.orders.insert_one(order_data)
-    return jsonify({"message": "Order Saved Successfully!", "order_id": str(result.inserted_id)})
+    return jsonify({"message": "Your exquisite order has been placed successfully!", "order_id": str(result.inserted_id)})
 
 @app.route('/get-orders', methods=['GET'])
 def get_orders():
@@ -199,7 +198,7 @@ def update_order(id):
         new_status = request.form.get('status')
     
     if not new_status:
-        return jsonify({"success": False, "message": "Status not provided"}), 400
+        return jsonify({"success": False, "message": "Order status description not provided!"}), 400
 
     try:
         result = mongo_db.orders.update_one({"_id": ObjectId(id)}, {"$set": {"status": new_status}})
@@ -208,7 +207,7 @@ def update_order(id):
     except Exception:
         mongo_db.orders.update_one({"_id": id}, {"$set": {"status": new_status}})
         
-    return jsonify({"success": True, "message": "Status Updated!"})
+    return jsonify({"success": True, "message": "Order status updated with elegance!"})
 
 @app.route('/download-csv')
 def download_csv():
@@ -255,10 +254,8 @@ def get_receipt(order_id):
     
     items = json.loads(items_str.replace("'", '"'))
     
-    subtotal = total
-    service_charge = subtotal * 0.02
-    gst = subtotal * 0.015
-    final_total = subtotal + service_charge + gst
+    # --- UPDATED: GST and Service Charge removed, final total equals base total ---
+    final_total = total
     
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
     
@@ -267,9 +264,9 @@ def get_receipt(order_id):
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins&display=swap');
-            body {{ background: #e0e0e0; display: flex; justify-content: center; padding: 20px; }}
+            body {{ background: #121212; display: flex; justify-content: center; padding: 20px; }}
             .receipt {{ 
-                width: 400px; height: auto; min-height: 600px;
+                width: 400px; height: auto; min-height: 550px;
                 background: #fff; border: 15px double #d4af37; padding: 30px;
                 text-align: center; font-family: 'Poppins', sans-serif;
             }}
@@ -278,7 +275,7 @@ def get_receipt(order_id):
             table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
             th {{ border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37; padding: 8px; color: #d4af37; font-size: 14px; }}
             td {{ padding: 8px; border-bottom: 1px dashed #eee; font-size: 14px; }}
-            .totals {{ text-align: right; margin-top: 20px; font-weight: bold; font-size: 14px; }}
+            .totals {{ text-align: right; margin-top: 20px; font-weight: bold; font-size: 16px; }}
             .footer {{ margin-top: 30px; font-size: 12px; border-top: 1px solid #d4af37; padding-top: 10px; }}
             .btn-container {{ display: flex; justify-content: center; gap: 10px; margin-top: 20px; }}
             .action-btn {{ background: #d4af37; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 13px; border-radius: 4px; color: #000; }}
@@ -297,8 +294,7 @@ def get_receipt(order_id):
             </div>
             <table><tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>AMT</th></tr>{items_html}</table>
             <div class="totals">
-                Subtotal: ₹{subtotal:.2f}<br>Service Charge (2%): ₹{service_charge:.2f}<br>GST (1.5%): ₹{gst:.2f}<br>
-                <h3 style="color:#d4af37; font-size: 20px; margin: 10px 0;">TOTAL: ₹{final_total:.2f}</h3>
+                <h3 style="color:#d4af37; font-size: 22px; margin: 10px 0;">TOTAL: ₹{final_total:.2f}</h3>
             </div>
             <div class="footer">
                 Thank You! We hope to serve you again.<br>+91 9602697303<br>24, Food Street, Model Town, Hisar<br>https://golden-spoon-restaurant.onrender.com
@@ -321,7 +317,7 @@ def get_receipt(order_id):
                             try {{
                                 await navigator.share({{
                                     title: 'Golden Spoon Receipt #{order_id}',
-                                    text: 'Here is your receipt from Golden Spoon Restaurant.',
+                                    text: 'Here is your exquisite receipt from Golden Spoon Restaurant.',
                                     files: [file]
                                 }});
                             }} catch (error) {{
@@ -332,7 +328,7 @@ def get_receipt(order_id):
                             link.download = 'Receipt_{order_id}.png';
                             link.href = canvas.toDataURL('image/png');
                             link.click();
-                            alert('Sharing files not supported directly on this browser, image downloaded instead!');
+                            alert('Receipt image successfully downloaded to your device!');
                         }}
                     }});
                 }} catch (err) {{
@@ -445,7 +441,7 @@ def add_menu_item():
         "image": image_url
     }
     mongo_db.menu.insert_one(menu_data)
-    return jsonify({"success": True, "message": "Item added successfully!"})
+    return jsonify({"success": True, "message": "Exquisite menu item added successfully!"})
 
 @app.route('/delete-menu-item/<string:id>', methods=['POST'])
 def delete_menu_item(id):
@@ -455,7 +451,7 @@ def delete_menu_item(id):
             mongo_db.menu.delete_one({"_id": id})
     except Exception:
         mongo_db.menu.delete_one({"_id": id})
-    return jsonify({"success": True, "message": "Item deleted successfully!"})
+    return jsonify({"success": True, "message": "Menu item removed successfully!"})
 
 # --- ONLINE REVIEWS ROUTES ---
 @app.route('/add-review', methods=['POST'])
@@ -476,15 +472,15 @@ def add_review():
     ist = pytz.timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
     
-    render_data = {
+    review_data = {
         "name": name,
         "rating": rating,
         "comment": comment,
         "image": image_url,
         "date": current_time
     }
-    mongo_db.reviews.insert_one(render_data)
-    return jsonify({"success": True, "message": "Review submitted successfully!"})
+    mongo_db.reviews.insert_one(review_data)
+    return jsonify({"success": True, "message": "Thank you for sharing your luxury review with us!"})
 
 @app.route('/get-reviews', methods=['GET'])
 def get_reviews():
@@ -512,9 +508,9 @@ def reset_password():
     
     if user:
         mongo_db.users.update_one({"phone": phone}, {"$set": {"password": new_password}})
-        return jsonify({"success": True})
+        return jsonify({"success": True, "message": "Password reset successfully! Please login with your new credentials."})
     else:
-        return jsonify({"success": False, "message": "Phone number not registered!"})
+        return jsonify({"success": False, "message": "Phone number not registered in our database!"})
 
 # --- UPDATE PASSWORD ROUTE ---
 @app.route('/update-password', methods=['POST'])
@@ -526,14 +522,14 @@ def update_password():
     with open('admin_config.json', 'w') as f:
         json.dump(config_data, f)
 
-    return jsonify({"message": "Password updated and saved permanently successfully!"})
+    return jsonify({"message": "Master administrator password updated and secured permanently!"})
 
 # --- BULK CLEAR ROUTES ---
 @app.route('/clear-all-orders', methods=['POST'])
 def clear_all_orders():
     try:
         mongo_db.orders.delete_many({})
-        return jsonify({"success": True, "message": "All orders cleared successfully!"})
+        return jsonify({"success": True, "message": "All orders cleared successfully with administrative clearance."})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
