@@ -473,6 +473,23 @@ def reset_password():
     else:
         return jsonify({"success": False, "message": "Phone number not registered!"})
 
+# --- OPTIONAL: BULK CLEAR ROUTES (Safe separate functions) ---
+@app.route('/clear-all-orders', methods=['POST'])
+def clear_all_orders():
+    try:
+        mongo_db.orders.delete_many({})
+        return jsonify({"success": True, "message": "All orders cleared successfully!"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+@app.route('/clear-all-users', methods=['POST'])
+def clear_all_users():
+    try:
+        mongo_db.users.delete_many({})
+        return jsonify({"success": True, "message": "All users cleared successfully!"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
