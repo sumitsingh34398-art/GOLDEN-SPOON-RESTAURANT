@@ -3,12 +3,16 @@ import io
 import os
 import json
 import pytz
-from flask import Flask, request, jsonify, send_from_directory, make_response, session, redirect, url_for
+from flask import Flask, request, jsonify, send_from_directory, make_response, session, redirect, url_for, send_file
 from flask_cors import CORS
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+
+# PDF Generation libraries import
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
 app.secret_key = 'golden_spoon_secret'
@@ -142,7 +146,6 @@ def get_orders():
 
 @app.route('/update-order/<string:id>', methods=['POST'])
 def update_order(id):
-    # Dono tarike se status lene ki koshish karein (JSON ya Form data)
     new_status = None
     if request.is_json and request.json:
         new_status = request.json.get('status')
@@ -153,7 +156,6 @@ def update_order(id):
         return jsonify({"success": False, "message": "Status not provided"}), 400
 
     try:
-        # ObjectId se update karne ki koshish
         result = mongo_db.orders.update_one({"_id": ObjectId(id)}, {"$set": {"status": new_status}})
         if result.matched_count == 0:
             mongo_db.orders.update_one({"_id": id}, {"$set": {"status": new_status}})
@@ -328,6 +330,44 @@ def download_users_csv():
     response.headers["Content-Disposition"] = "attachment; filename=registered_users.csv"
     response.headers["Content-type"] = "text/csv"
     return response
+
+# --- ADDED: Download Users PDF Route to fix 404 error ---
+@app.route('/download-users-pdf')
+def download_users_pdf():
+    users = list(mongo_db.users.find().sort("_id", -1))
+
+    pdf_buffer = io.BytesIO()
+    c = canvas.Canvas(pdf_buffer, pagesize=letter)
+    
+    # PDF Header styling
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, 750, "Golden Spoon Restaurant - Registered Users")
+    c.setFont("Helvetica", 10)
+    c.drawString(50, 735, f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    c.line(50, 725, 550, 725)
+    
+    # Table Headings
+    y = 695
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "User ID")
+    c.drawString(200, y, "Customer Name")
+    c.drawString(400, y, "Phone Number")
+    y -= 20
+    
+    c.setFont("Helvetica", 10)
+    for u in users:
+        c.drawString(50, y, str(u.get('_id')))
+        c.drawString(200, y, str(u.get('name', '')))
+        c.drawString(400, y, str(u.get('phone', '')))
+        y -= 20
+        if y < 50:
+            c.showPage()
+            y = 750
+            
+    c.save()
+    pdf_buffer.seek(0)
+    
+    return send_file(pdf_buffer, as_attachment=True, download_name="registered_users.pdf", mimetype='application/pdf')
 
 @app.route('/get-menu', methods=['GET'])
 def get_menu():
