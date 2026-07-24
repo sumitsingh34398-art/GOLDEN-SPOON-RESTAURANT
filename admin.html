@@ -2,88 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golden Spoon Restaurant | Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #0b0b0b; color: #fff; margin: 0; display: flex; min-height: 100vh; }
+        body { font-family: 'Poppins', sans-serif; background: #0b0b0b; color: #fff; margin: 0; display: flex; min-height: 100vh; overflow-x: hidden; }
         
-        /* Professional Sidebar Layout */
-        .sidebar { width: 270px; background: #111111; border-right: 1px solid #1f1f1f; display: flex; flex-direction: column; justify-content: space-between; position: fixed; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
-        .sidebar-brand { padding: 30px 20px; text-align: center; border-bottom: 1px solid #1f1f1f; background: #0e0e0e; }
-        .sidebar-brand h2 { color: #d4af37; font-family: 'Playfair Display', serif; margin: 0; font-size: 24px; letter-spacing: 0.5px; }
-        .sidebar-brand p { font-size: 11px; color: #888; letter-spacing: 1.5px; text-transform: uppercase; margin: 6px 0 0 0; }
+        /* Professional Sidebar Layout with Responsive Support */
+        .sidebar { width: 270px; background: linear-gradient(180deg, #111111 0%, #090909 100%); border-right: 1px solid #1f1f1f; display: flex; flex-direction: column; justify-content: space-between; position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; box-shadow: 4px 0 20px rgba(0,0,0,0.7); transition: transform 0.3s ease; }
+        .sidebar-brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid #1f1f1f; background: rgba(14,14,14,0.9); }
+        .sidebar-brand h2 { color: #d4af37; font-family: 'Playfair Display', serif; margin: 0; font-size: 22px; letter-spacing: 0.5px; }
+        .sidebar-brand p { font-size: 10px; color: #888; letter-spacing: 1.5px; text-transform: uppercase; margin: 6px 0 0 0; }
         
-        .sidebar-menu { padding: 25px 0; flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-item { padding: 14px 24px; display: flex; align-items: center; gap: 14px; color: #999; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.3s ease; border-left: 4px solid transparent; margin: 2px 0; }
-        .sidebar-item:hover { background: rgba(212, 175, 55, 0.06); color: #d4af37; }
-        .sidebar-item.active { background: rgba(212, 175, 55, 0.12); color: #d4af37; border-left-color: #d4af37; font-weight: 600; }
+        .sidebar-menu { padding: 20px 0; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #999; cursor: pointer; font-weight: 500; font-size: 13px; transition: all 0.3s ease; border-left: 4px solid transparent; margin: 2px 0; }
+        .sidebar-item:hover { background: rgba(212, 175, 55, 0.08); color: #d4af37; }
+        .sidebar-item.active { background: rgba(212, 175, 55, 0.15); color: #d4af37; border-left-color: #d4af37; font-weight: 600; }
 
         /* Today's Summary Box in Sidebar */
-        .sidebar-summary { background: rgba(0,0,0,0.4); margin: 15px; padding: 16px; border-radius: 12px; border: 1px solid #222; }
-        .sidebar-summary h4 { color: #d4af37; margin: 0 0 12px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        .summary-row { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 8px; }
+        .sidebar-summary { background: rgba(0,0,0,0.6); margin: 12px; padding: 14px; border-radius: 10px; border: 1px solid #222; }
+        .sidebar-summary h4 { color: #d4af37; margin: 0 0 10px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 6px; }
         .summary-row:last-child { margin-bottom: 0; }
         .summary-row span:last-child { color: #fff; font-weight: 600; }
 
-        .sidebar-footer { padding: 20px; border-top: 1px solid #1f1f1f; font-size: 11px; color: #666; text-align: center; background: #0e0e0e; }
+        .sidebar-footer { padding: 15px; border-top: 1px solid #1f1f1f; font-size: 11px; color: #666; text-align: center; background: #0e0e0e; }
+
+        /* Mobile Menu Toggle Button */
+        .mobile-toggle { display: none; background: #1a1a1a; border: 1px solid #d4af37; color: #d4af37; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 15px; align-items: center; gap: 8px; width: fit-content; }
 
         /* Main Content */
-        .main-content { margin-left: 270px; flex: 1; padding: 30px; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-attachment: fixed; min-height: 100vh; box-sizing: border-box; }
+        .main-content { margin-left: 270px; flex: 1; padding: 25px; background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.88)), url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-attachment: fixed; min-height: 100vh; box-sizing: border-box; transition: margin-left 0.3s ease; }
         
-        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .welcome-text h2 { color: #fff; margin: 0; font-size: 24px; }
-        .welcome-text p { color: #d4af37; margin: 5px 0 0 0; font-size: 15px; font-weight: 500; letter-spacing: 0.5px; }
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .welcome-text h2 { color: #fff; margin: 0; font-size: 22px; }
+        .welcome-text p { color: #d4af37; margin: 4px 0 0 0; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
 
         /* Professional Header Live Date & Time Badge */
-        .header-date-badge { display: flex; align-items: center; gap: 10px; border: 1px solid #d4af37; padding: 10px 20px; border-radius: 30px; font-size: 13px; color: #d4af37; background: rgba(0,0,0,0.8); font-weight: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .header-date-badge span#headerLiveClock { color: #fff; font-weight: 600; margin-left: 5px; }
+        .header-date-badge { display: flex; align-items: center; gap: 8px; border: 1px solid #d4af37; padding: 8px 16px; border-radius: 25px; font-size: 12px; color: #d4af37; background: rgba(0,0,0,0.8); font-weight: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .header-date-badge span#headerLiveClock { color: #fff; font-weight: 600; margin-left: 4px; }
 
-        .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .login-box { background: #1a1a1a; padding: 40px; border: 2px solid #d4af37; border-radius: 15px; text-align: center; }
-        .login-box input { padding: 12px; width: 250px; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; margin-bottom: 15px; }
+        .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .login-box { background: #1a1a1a; padding: 30px; border: 2px solid #d4af37; border-radius: 12px; text-align: center; width: 90%; max-width: 350px; }
+        .login-box input { padding: 12px; width: 100%; box-sizing: border-box; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; margin-bottom: 15px; }
         .login-btn { background: #d4af37; border: none; padding: 10px 30px; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.2s; }
         .login-btn:hover { background: #fff; }
         
-        .nav-bar { text-align: left; margin-bottom: 25px; }
-        .nav-btn { padding: 10px 20px; margin: 0 5px 0 0; cursor: pointer; border-radius: 20px; border: 1px solid #d4af37; background: transparent; color: #d4af37; font-weight: 600; transition: 0.3s; text-decoration: none; display: inline-block; }
+        .nav-bar { text-align: left; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .nav-btn { padding: 8px 16px; cursor: pointer; border-radius: 20px; border: 1px solid #d4af37; background: transparent; color: #d4af37; font-weight: 600; transition: 0.3s; text-decoration: none; display: inline-block; font-size: 13px; }
         .nav-btn:hover, .nav-btn.active { background: #d4af37; color: #000; }
         
-        input#searchInput { padding: 12px 20px; width: 350px; border-radius: 25px; border: 2px solid #d4af37; background: rgba(0,0,0,0.5); color: white; display: block; margin-bottom: 20px; }
+        input#searchInput { padding: 10px 18px; width: 100%; max-width: 350px; border-radius: 25px; border: 2px solid #d4af37; background: rgba(0,0,0,0.5); color: white; display: block; margin-bottom: 20px; box-sizing: border-box; }
         
-        table { width: 100%; border-collapse: collapse; background: rgba(0, 0, 0, 0.85); border-radius: 10px; overflow: hidden; }
-        th { background: #d4af37; color: #000; padding: 15px; text-transform: uppercase; font-size: 13px; }
-        td { padding: 12px; border-bottom: 1px solid #333; text-align: center; font-size: 13px; }
-        .status-select { background: #000; color: #d4af37; border: 1px solid #d4af37; padding: 5px; border-radius: 5px; cursor: pointer; }
-        .receipt-link { background: #d4af37; color: #000; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; }
+        /* Table Responsive Container */
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        table { width: 100%; border-collapse: collapse; background: rgba(0, 0, 0, 0.9); min-width: 650px; }
+        th { background: #d4af37; color: #000; padding: 12px; text-transform: uppercase; font-size: 12px; }
+        td { padding: 10px; border-bottom: 1px solid #333; text-align: center; font-size: 12px; }
+        .status-select { background: #000; color: #d4af37; border: 1px solid #d4af37; padding: 4px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .receipt-link { background: #d4af37; color: #000; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 11px; display: inline-block; }
         .receipt-link:hover { background: #fff; }
         
         .admin-section { display: none; }
         .admin-section.active-section { display: block; }
         
-        .menu-form { background: rgba(0,0,0,0.85); padding: 20px; border: 1px solid #d4af37; border-radius: 10px; width: 400px; text-align: center; }
-        .menu-form input { padding: 10px; width: 90%; margin: 8px 0; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; box-sizing: border-box; }
-        .menu-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; }
-        .menu-card { border: 1px solid #d4af37; padding: 15px; border-radius: 8px; width: 200px; background: rgba(0,0,0,0.8); text-align: center; position: relative; }
-        .menu-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; }
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 10px; font-weight: bold; }
+        .menu-form { background: rgba(0,0,0,0.85); padding: 20px; border: 1px solid #d4af37; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; box-sizing: border-box; }
+        .menu-form input { padding: 10px; width: 100%; margin: 8px 0; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; box-sizing: border-box; }
+        .menu-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+        .menu-card { border: 1px solid #d4af37; padding: 12px; border-radius: 8px; width: 180px; background: rgba(0,0,0,0.8); text-align: center; position: relative; }
+        .menu-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 5px; }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 8px; font-weight: bold; }
         .delete-btn:hover { background: #cc0000; }
         .clear-all-btn { background: #ff4d4d !important; color: white !important; border: 1px solid #ff4d4d !important; }
         .clear-all-btn:hover { background: #cc0000 !important; color: white !important; }
 
         /* Dashboard Overview Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: rgba(20,20,20,0.9); border: 1px solid #333; border-radius: 12px; padding: 20px; border-left: 4px solid #d4af37; }
-        .stat-card h3 { margin: 0; color: #aaa; font-size: 13px; text-transform: uppercase; }
-        .stat-card p { margin: 10px 0 0 0; font-size: 26px; font-weight: bold; color: #fff; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: rgba(20,20,20,0.9); border: 1px solid #333; border-radius: 10px; padding: 18px; border-left: 4px solid #d4af37; }
+        .stat-card h3 { margin: 0; color: #aaa; font-size: 12px; text-transform: uppercase; }
+        .stat-card p { margin: 8px 0 0 0; font-size: 24px; font-weight: bold; color: #fff; }
 
-        .settings-box { background: rgba(0,0,0,0.85); padding: 30px; border: 1px solid #d4af37; border-radius: 12px; width: 420px; box-sizing: border-box; }
-        .settings-box input { width: 100%; padding: 12px; margin: 10px 0 20px 0; background: #000; border: 1px solid #d4af37; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        .settings-box { background: rgba(0,0,0,0.85); padding: 25px; border: 1px solid #d4af37; border-radius: 10px; width: 100%; max-width: 400px; box-sizing: border-box; }
+        .settings-box input { width: 100%; padding: 10px; margin: 8px 0 15px 0; background: #000; border: 1px solid #d4af37; color: #fff; border-radius: 5px; box-sizing: border-box; }
+
+        /* Mobile Responsive Media Queries */
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 15px; }
+            .mobile-toggle { display: flex; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <!-- Sidebar Navigation -->
-    <div class="sidebar">
+    <div class="sidebar" id="appSidebar">
         <div>
             <div class="sidebar-brand">
                 <h2>Golden Spoon</h2>
@@ -114,6 +132,9 @@
 
     <!-- Main Content Container -->
     <div class="main-content">
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-toggle" onclick="toggleMobileSidebar()">☰ Menu</button>
+
         <div class="top-header">
             <div class="welcome-text">
                 <h2>Welcome back, Sumit! 👋</h2>
@@ -123,7 +144,7 @@
                 <!-- Professional Header Live Date & Time Badge -->
                 <div class="header-date-badge">
                     <span>📅</span> <span id="headerLiveDate">Loading date...</span>
-                    <span style="border-left: 1px solid #d4af37; padding-left: 10px;">⏰ <span id="headerLiveClock">00:00:00 PM</span></span>
+                    <span style="border-left: 1px solid #d4af37; padding-left: 8px;">⏰ <span id="headerLiveClock">00:00:00 PM</span></span>
                 </div>
             </div>
         </div>
@@ -171,27 +192,31 @@
             </div>
             
             <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="🔍 Search by Name or ID...">
-            <table id="orderTable">
-                <thead id="tableHead">
-                    <tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th><th>Receipt</th></tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="orderTable">
+                    <thead id="tableHead">
+                        <tr><th>ID</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th><th>Receipt</th></tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <!-- 3. REGISTERED USERS SECTION -->
         <div id="section-users" class="admin-section">
             <h2 style="color: #d4af37;">Registered Customers List</h2>
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                 <button onclick="window.open('/download-users-pdf', '_blank')" class="nav-btn" style="background: #d4af37; color: #000;">📥 Download Users PDF</button>
                 <button onclick="clearAllUsers()" class="nav-btn clear-all-btn">🗑️ Clear All Users</button>
             </div>
-            <table style="width: 100%;">
-                <thead>
-                    <tr><th>User ID</th><th>Customer Name</th><th>Phone Number</th></tr>
-                </thead>
-                <tbody id="usersTableBody"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr><th>User ID</th><th>Customer Name</th><th>Phone Number</th></tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <!-- 4. MENU MANAGEMENT SECTION -->
@@ -200,9 +225,9 @@
             <div class="menu-form">
                 <input type="text" id="menuName" placeholder="Dish Name (e.g. Pasta)">
                 <input type="number" id="menuPrice" placeholder="Price in ₹ (e.g. 350)">
-                <input type="file" id="menuImageFile" accept="image/*" style="padding: 7px; background: #000; color: #fff; border: 1px solid #d4af37; border-radius: 5px; width: 90%;">
+                <input type="file" id="menuImageFile" accept="image/*" style="padding: 7px; background: #000; color: #fff; border: 1px solid #d4af37; border-radius: 5px; width: 100%; box-sizing: border-box;">
                 <br>
-                <button class="login-btn" onclick="addNewMenuItem()" style="margin-top: 10px;">Add Item</button>
+                <button class="login-btn" onclick="addNewMenuItem()" style="margin-top: 10px; width: 100%;">Add Item</button>
             </div>
             <h2 style="color: #d4af37; margin-top: 30px;">Existing Menu Items</h2>
             <div id="menuGrid" class="menu-grid"></div>
@@ -215,7 +240,7 @@
                 <h3 style="color: #fff; margin-top: 0; font-size: 16px;">Reset Admin Password</h3>
                 <label style="font-size: 13px; color: #aaa;">New Admin Password</label>
                 <input type="password" id="newAdminPass" placeholder="Enter new password">
-                <button class="login-btn" onclick="updateAdminPassword()">Update Password</button>
+                <button class="login-btn" onclick="updateAdminPassword()" style="width: 100%;">Update Password</button>
             </div>
         </div>
     </div>
@@ -232,6 +257,12 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        // Mobile Sidebar Toggle
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
 
         function checkPassword() {
             let pass = document.getElementById("adminPass").value;
@@ -278,6 +309,11 @@
                 document.getElementById('section-settings').classList.add('active-section');
                 document.getElementById('menu-settings').classList.add('active');
                 subtitle.innerText = "Admin Account Settings";
+            }
+
+            // Auto close sidebar on mobile after clicking a tab
+            if(window.innerWidth <= 900) {
+                document.getElementById('appSidebar').classList.remove('mobile-open');
             }
         }
 
@@ -385,8 +421,8 @@
                 data.forEach(m => {
                     grid.innerHTML += `<div class="menu-card">
                         <img src="${m[3]}" alt="Dish">
-                        <h4 style="color: #d4af37; margin: 10px 0 5px;">${m[1]}</h4>
-                        <p style="margin: 0; font-weight: bold;">₹${m[2]}</p>
+                        <h4 style="color: #d4af37; margin: 8px 0 4px; font-size: 13px;">${m[1]}</h4>
+                        <p style="margin: 0; font-weight: bold; font-size: 13px;">₹${m[2]}</p>
                         <button class="delete-btn" onclick="deleteMenuItem('${m[0]}')">🗑️ Delete</button>
                     </div>`;
                 });
