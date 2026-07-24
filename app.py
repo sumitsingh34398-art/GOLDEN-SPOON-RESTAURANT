@@ -142,17 +142,25 @@ def get_orders():
 
 @app.route('/update-order/<string:id>', methods=['POST'])
 def update_order(id):
-    new_status = request.json.get('status')
+    # Dono tarike se status lene ki koshish karein (JSON ya Form data)
+    new_status = None
+    if request.is_json and request.json:
+        new_status = request.json.get('status')
+    if not new_status:
+        new_status = request.form.get('status')
+    
+    if not new_status:
+        return jsonify({"success": False, "message": "Status not provided"}), 400
+
     try:
-        # MongoDB ke ObjectId se match karne ke liye try karein
+        # ObjectId se update karne ki koshish
         result = mongo_db.orders.update_one({"_id": ObjectId(id)}, {"$set": {"status": new_status}})
         if result.matched_count == 0:
-            # Agar ObjectId se na mile toh string ID se try karein
             mongo_db.orders.update_one({"_id": id}, {"$set": {"status": new_status}})
     except Exception:
         mongo_db.orders.update_one({"_id": id}, {"$set": {"status": new_status}})
         
-    return jsonify({"message": "Status Updated!"})
+    return jsonify({"success": True, "message": "Status Updated!"})
 
 @app.route('/download-csv')
 def download_csv():
