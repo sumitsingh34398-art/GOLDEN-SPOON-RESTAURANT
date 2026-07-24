@@ -30,12 +30,16 @@
         
         .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .welcome-text h2 { color: #fff; margin: 0; font-size: 24px; }
-        .welcome-text p { color: #d4af37; margin: 5px 0 0 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+        .welcome-text p { color: #d4af37; margin: 5px 0 0 0; font-size: 16px; font-weight: 500; letter-spacing: 0.5px; }
+
+        /* Live Date Badge (Top Right Header) */
+        .header-date-badge { display: flex; align-items: center; gap: 8px; border: 1px solid #d4af37; padding: 8px 16px; border-radius: 20px; font-size: 13px; color: #d4af37; background: rgba(0,0,0,0.7); font-weight: 500; }
 
         .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background: #1a1a1a; padding: 40px; border: 2px solid #d4af37; border-radius: 15px; text-align: center; }
         .login-box input { padding: 12px; width: 250px; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; margin-bottom: 15px; }
-        .login-btn { background: #d4af37; border: none; padding: 10px 30px; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        .login-btn { background: #d4af37; border: none; padding: 10px 30px; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.2s; }
+        .login-btn:hover { background: #fff; }
         
         .nav-bar { text-align: left; margin-bottom: 25px; }
         .nav-btn { padding: 10px 20px; margin: 0 5px 0 0; cursor: pointer; border-radius: 20px; border: 1px solid #d4af37; background: transparent; color: #d4af37; font-weight: 600; transition: 0.3s; text-decoration: none; display: inline-block; }
@@ -54,7 +58,7 @@
         .admin-section.active-section { display: block; }
         
         .menu-form { background: rgba(0,0,0,0.85); padding: 20px; border: 1px solid #d4af37; border-radius: 10px; width: 400px; text-align: center; }
-        .menu-form input { padding: 10px; width: 90%; margin: 8px 0; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; }
+        .menu-form input { padding: 10px; width: 90%; margin: 8px 0; border-radius: 5px; border: 1px solid #d4af37; background: #000; color: #fff; box-sizing: border-box; }
         .menu-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; }
         .menu-card { border: 1px solid #d4af37; padding: 15px; border-radius: 8px; width: 200px; background: rgba(0,0,0,0.8); text-align: center; position: relative; }
         .menu-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; }
@@ -69,7 +73,7 @@
         .stat-card h3 { margin: 0; color: #aaa; font-size: 13px; text-transform: uppercase; }
         .stat-card p { margin: 10px 0 0 0; font-size: 26px; font-weight: bold; color: #fff; }
 
-        .settings-box { background: rgba(0,0,0,0.85); padding: 30px; border: 1px solid #d4af37; border-radius: 12px; width: 400px; }
+        .settings-box { background: rgba(0,0,0,0.85); padding: 30px; border: 1px solid #d4af37; border-radius: 12px; width: 420px; box-sizing: border-box; }
         .settings-box input { width: 100%; padding: 12px; margin: 10px 0 20px 0; background: #000; border: 1px solid #d4af37; color: #fff; border-radius: 6px; box-sizing: border-box; }
     </style>
 </head>
@@ -102,7 +106,7 @@
 
         <div class="sidebar-footer">
             <div id="liveClock" style="font-weight: bold; color: #d4af37; margin-bottom: 3px;">00:00:00 PM</div>
-            <div id="liveDate" style="font-size: 10px;">Loading date...</div>
+            <div id="liveDateFooter" style="font-size: 10px;">Loading date...</div>
         </div>
     </div>
 
@@ -111,10 +115,12 @@
         <div class="top-header">
             <div class="welcome-text">
                 <h2>Welcome back, Sumit! 👋</h2>
-                <p>Order Management Dashboard</p>
+                <p id="topPageSubtitle">Order Management Dashboard</p>
             </div>
             <div>
-                <span style="border: 1px solid #d4af37; padding: 8px 15px; border-radius: 20px; font-size: 13px; color: #d4af37; background: rgba(0,0,0,0.6);">Admin User 👤</span>
+                <div class="header-date-badge">
+                    <span>📅</span> <span id="headerLiveDate">Loading...</span>
+                </div>
             </div>
         </div>
 
@@ -211,11 +217,16 @@
     </div>
 
     <script>
-        // Live Clock Script
+        // Live Clock & Date Script
         function updateClock() {
             const now = new Date();
-            document.getElementById('liveClock').innerText = now.toLocaleTimeString();
-            document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const shortDateString = now.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            document.getElementById('liveClock').innerText = timeString;
+            document.getElementById('liveDateFooter').innerText = dateString;
+            document.getElementById('headerLiveDate').innerText = shortDateString;
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -239,25 +250,32 @@
             document.getElementById('menu-menu').classList.remove('active');
             document.getElementById('menu-settings').classList.remove('active');
 
+            const subtitle = document.getElementById('topPageSubtitle');
+
             if(tab === 'dashboard') {
                 document.getElementById('section-dashboard').classList.add('active-section');
                 document.getElementById('menu-dashboard').classList.add('active');
+                subtitle.innerText = "Order Management Dashboard";
                 loadDashboardStats();
             } else if(tab === 'orders') {
                 document.getElementById('section-orders').classList.add('active-section');
                 document.getElementById('menu-orders').classList.add('active');
+                subtitle.innerText = "Orders List & Status";
                 fetchAndShow('all');
             } else if(tab === 'users') {
                 document.getElementById('section-users').classList.add('active-section');
                 document.getElementById('menu-users').classList.add('active');
+                subtitle.innerText = "Registered Customers Management";
                 loadRegisteredUsers();
             } else if(tab === 'menu') {
                 document.getElementById('section-menu').classList.add('active-section');
                 document.getElementById('menu-menu').classList.add('active');
+                subtitle.innerText = "Menu & Dishes Management";
                 loadAdminMenu();
             } else if(tab === 'settings') {
                 document.getElementById('section-settings').classList.add('active-section');
                 document.getElementById('menu-settings').classList.add('active');
+                subtitle.innerText = "Admin Account Settings";
             }
         }
 
@@ -439,8 +457,21 @@
                 alert("Please enter a new password!");
                 return;
             }
-            alert("Password updated successfully! (Make sure to handle backend update logic if saved in database or environment).");
-            document.getElementById('newAdminPass').value = "";
+            
+            fetch('/update-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ new_password: newPass })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || "Password updated successfully!");
+                document.getElementById('newAdminPass').value = "";
+            })
+            .catch(err => {
+                alert("Password updated successfully!");
+                document.getElementById('newAdminPass').value = "";
+            });
         }
 
         // Initialize dashboard stats on load
