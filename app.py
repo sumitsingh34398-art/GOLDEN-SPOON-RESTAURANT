@@ -26,9 +26,9 @@ ADMIN_USER = "Sumit"
 ADMIN_PASS = "S007"
 
 # --- EMAIL CONFIGURATION FOR OTP ---
-# Apna Gmail aur Gmail App Password yahan update karein
-SENDER_EMAIL = "your_restaurant_email@gmail.com"
-SENDER_PASSWORD = "your_gmail_app_password"
+# Updated with your actual Gmail and App Password
+SENDER_EMAIL = "sumitsingh34398@gmail.com"
+SENDER_PASSWORD = "pdvqxlcygglchqoq"
 otp_storage = {}
 
 # --- MONGODB ATLAS CONFIGURATION ---
@@ -557,14 +557,6 @@ def clear_all_orders():
     try:
         mongo_db.orders.delete_many({})
         return jsonify({"success": True, "message": "All orders cleared successfully!"})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
-
-@app.route('/clear-all-users', methods=['POST'])
-def clear_all_users():
-    try:
-        mongo_db.users.delete_many({})
-        return jsonify({"success": True, "message": "All users cleared successfully!"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
