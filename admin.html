@@ -93,6 +93,43 @@
         .admin-info p { margin: 4px 0 10px 0; color: #aaa; font-size: 13px; }
         .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.1); border: 1px solid #d4af37; padding: 4px 12px; border-radius: 20px; color: #d4af37; font-size: 12px; font-weight: 600; }
 
+        /* High-Professional Sleek Toast Notification Styling */
+        #adminToastNotification {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #1c1c1c 0%, #0d0d0d 100%);
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 10px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            pointer-events: none;
+        }
+        #adminToastNotification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #adminToastNotification .toast-icon {
+            font-size: 18px;
+            background: rgba(212, 175, 55, 0.15);
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d4af37;
+        }
+
         /* Mobile Responsive Media Queries */
         @media (max-width: 900px) {
             .sidebar { transform: translateX(-100%); }
@@ -107,6 +144,15 @@
     </style>
 </head>
 <body>
+
+    <!-- Professional Sleek Toast Popup Container -->
+    <div id="adminToastNotification">
+        <div class="toast-icon">✨</div>
+        <div>
+            <div style="color: #d4af37; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Success</div>
+            <div id="toastMessageText">Profile picture updated successfully!</div>
+        </div>
+    </div>
 
     <!-- Sidebar Navigation -->
     <div class="sidebar" id="appSidebar">
@@ -129,7 +175,6 @@
                 <div class="summary-row"><span>Total Orders</span><span id="sumTotal">0</span></div>
                 <div class="summary-row"><span>Delivered</span><span id="sumDelivered">0</span></div>
                 <div class="summary-row"><span>Out for Delivery</span><span id="sumOut">0</span></div>
-                <!-- Pending text updated with Red Color -->
                 <div class="summary-row"><span>Pending</span><span id="sumPending" style="color: #e74c3c;">0</span></div>
             </div>
         </div>
@@ -150,7 +195,6 @@
                 <p id="topPageSubtitle">Order Management Dashboard</p>
             </div>
             <div>
-                <!-- Professional Header Live Date & Time Badge -->
                 <div class="header-date-badge">
                     <span>📅</span> <span id="headerLiveDate">Loading date...</span>
                     <span style="border-left: 1px solid #d4af37; padding-left: 8px;">⏰ <span id="headerLiveClock">00:00:00 PM</span></span>
@@ -246,10 +290,9 @@
         <div id="section-settings" class="admin-section">
             <h2 style="color: #d4af37; margin-bottom: 20px;">Admin Settings</h2>
             
-            <!-- High Professional Admin Profile Card with Custom Upload Support -->
             <div class="admin-profile-card">
                 <div class="admin-avatar-container">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
                 </div>
                 <div class="admin-info">
                     <h3>Sumit Singh</h3>
@@ -291,6 +334,16 @@
         setInterval(updateClock, 1000);
         updateClock();
 
+        // Professional Toast Notification Function
+        function showAdminToast(message) {
+            const toast = document.getElementById('adminToastNotification');
+            document.getElementById('toastMessageText').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
         // Mobile Sidebar Toggle
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('appSidebar');
@@ -300,18 +353,15 @@
         function checkPassword() {
             let pass = document.getElementById("adminPass").value;
             fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: "Sumit", password: pass}) })
-            .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", loadDashboardStats()) : alert("❌ Wrong Password!"));
+            .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", loadDashboardStats()) : showAdminToast("❌ Wrong Password!"));
         }
 
-        // --- 1. LOAD SIDEBAR TODAY'S SUMMARY ---
         function loadSidebarTodaySummary() {
             fetch('/get-orders?filter=today')
             .then(res => res.json())
             .then(orders => {
                 let total = orders.length;
-                let delivered = 0;
-                let outForDelivery = 0;
-                let pending = 0;
+                let delivered = 0, outForDelivery = 0, pending = 0;
 
                 orders.forEach(order => {
                     let status = (order[7] || "").toLowerCase();
@@ -329,18 +379,15 @@
                 document.getElementById('sumOut').innerText = outForDelivery;
                 document.getElementById('sumPending').innerText = pending;
             })
-            .catch(err => console.error("Error loading today's summary:", err));
+            .catch(err => console.error("Error:", err));
         }
 
-        // --- 2. LOAD DASHBOARD ALL-TIME / LIFETIME STATS ---
         function loadDashboardLifetimeStats() {
             fetch('/get-orders?filter=all')
             .then(res => res.json())
             .then(orders => {
                 let total = orders.length;
-                let delivered = 0;
-                let outForDelivery = 0;
-                let pending = 0;
+                let delivered = 0, outForDelivery = 0, pending = 0;
 
                 orders.forEach(order => {
                     let status = (order[7] || "").toLowerCase();
@@ -360,7 +407,7 @@
                     document.getElementById('statPending').innerText = pending;
                 }
             })
-            .catch(err => console.error("Error loading lifetime stats:", err));
+            .catch(err => console.error("Error:", err));
         }
 
         function loadDashboardStats() {
@@ -377,9 +424,7 @@
                 if (Array.isArray(itemsArray)) {
                     return itemsArray.map(item => `${item.name} (${item.qty || 1})`).join(', ');
                 }
-            } catch (e) {
-                // Fallback for non-JSON string
-            }
+            } catch (e) {}
             return itemStr.replace(/₹\d+/g, '').replace(/\(\s*\)/g, '');
         }
 
@@ -407,7 +452,6 @@
                     }
 
                     let cleanItems = cleanItemNames(order[4]);
-
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${order[0].substring(0, 8)}...</td>
@@ -437,9 +481,7 @@
                 body: JSON.stringify({status: newStatus})
             })
             .then(res => res.json())
-            .then(data => {
-                loadDashboardStats();
-            });
+            .then(data => { loadDashboardStats(); });
         }
 
         function clearAllOrders() {
@@ -447,7 +489,7 @@
                 fetch('/clear-all-orders', {method: 'POST'})
                 .then(res => res.json())
                 .then(data => {
-                    alert(data.message);
+                    showAdminToast(data.message || "All orders cleared!");
                     fetchAndShow('all');
                     loadDashboardStats();
                 });
@@ -503,7 +545,7 @@
             fetch('/add-menu-item', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
-                alert(data.message);
+                showAdminToast(data.message || "Item added successfully!");
                 loadAdminMenu();
                 document.getElementById('menuName').value = '';
                 document.getElementById('menuPrice').value = '';
@@ -517,14 +559,18 @@
                 .then(res => res.json())
                 .then(data => {
                     loadAdminMenu();
+                    showAdminToast("Menu item removed!");
                 });
             }
         }
 
-        // Custom Admin Profile Image Upload Function
+        // Updated High-Professional Profile Upload with Toast Notification
         function updateAdminProfile() {
             let fileInput = document.getElementById('adminProfileImgFile');
-            if(!fileInput.files[0]) return alert("Please select an image file first!");
+            if(!fileInput.files[0]) {
+                showAdminToast("⚠️ Please select an image file first!");
+                return;
+            }
 
             let formData = new FormData();
             formData.append('admin_image', fileInput.files[0]);
@@ -532,18 +578,18 @@
             fetch('/update-admin-profile', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
-                alert(data.message || "Profile picture updated successfully!");
+                showAdminToast(data.message || "Profile picture updated successfully!");
                 document.getElementById('adminProfileImgFile').value = '';
                 loadAdminProfileInfo();
             })
             .catch(err => {
-                // Fallback client-side preview if backend route is added later
                 let reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('adminAvatarImg').src = e.target.result;
-                    alert("Profile picture updated successfully!");
+                    showAdminToast("✨ Profile picture updated successfully!");
                 };
                 reader.readAsDataURL(fileInput.files[0]);
+                document.getElementById('adminProfileImgFile').value = '';
             });
         }
 
@@ -559,7 +605,10 @@
 
         function updateAdminPassword() {
             let newPass = document.getElementById('newAdminPass').value;
-            if(!newPass) return alert("Please enter a new password");
+            if(!newPass) {
+                showAdminToast("⚠️ Please enter a new password");
+                return;
+            }
             fetch('/update-password', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -567,7 +616,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                alert(data.message);
+                showAdminToast(data.message || "Password updated successfully!");
                 document.getElementById('newAdminPass').value = '';
             });
         }
@@ -621,9 +670,12 @@
                 document.getElementById('menu-settings').classList.add('active');
                 subtitle.innerText = "Administrative Settings";
             }
+
+            if (window.innerWidth <= 900) {
+                document.getElementById('appSidebar').classList.remove('mobile-open');
+            }
         }
 
-        // Auto load summary stats on page load
         loadDashboardStats();
     </script>
 </body>
