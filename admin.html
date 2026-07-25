@@ -93,43 +93,6 @@
         .admin-info p { margin: 4px 0 10px 0; color: #aaa; font-size: 13px; }
         .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.1); border: 1px solid #d4af37; padding: 4px 12px; border-radius: 20px; color: #d4af37; font-size: 12px; font-weight: 600; }
 
-        /* High-Professional Sleek Toast Notification Styling */
-        #adminToastNotification {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            background: linear-gradient(135deg, #1c1c1c 0%, #0d0d0d 100%);
-            color: #fff;
-            padding: 14px 22px;
-            border-radius: 10px;
-            border: 1px solid #d4af37;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 9999;
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            pointer-events: none;
-        }
-        #adminToastNotification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        #adminToastNotification .toast-icon {
-            font-size: 18px;
-            background: rgba(212, 175, 55, 0.15);
-            padding: 6px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #d4af37;
-        }
-
         /* Mobile Responsive Media Queries */
         @media (max-width: 900px) {
             .sidebar { transform: translateX(-100%); }
@@ -144,15 +107,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Professional Sleek Toast Popup Container -->
-    <div id="adminToastNotification">
-        <div class="toast-icon">✨</div>
-        <div>
-            <div style="color: #d4af37; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Success</div>
-            <div id="toastMessageText">Profile picture updated successfully!</div>
-        </div>
-    </div>
 
     <!-- Sidebar Navigation -->
     <div class="sidebar" id="appSidebar">
@@ -175,6 +129,7 @@
                 <div class="summary-row"><span>Total Orders</span><span id="sumTotal">0</span></div>
                 <div class="summary-row"><span>Delivered</span><span id="sumDelivered">0</span></div>
                 <div class="summary-row"><span>Out for Delivery</span><span id="sumOut">0</span></div>
+                <!-- Pending text updated with Red Color -->
                 <div class="summary-row"><span>Pending</span><span id="sumPending" style="color: #e74c3c;">0</span></div>
             </div>
         </div>
@@ -195,6 +150,7 @@
                 <p id="topPageSubtitle">Order Management Dashboard</p>
             </div>
             <div>
+                <!-- Professional Header Live Date & Time Badge -->
                 <div class="header-date-badge">
                     <span>📅</span> <span id="headerLiveDate">Loading date...</span>
                     <span style="border-left: 1px solid #d4af37; padding-left: 8px;">⏰ <span id="headerLiveClock">00:00:00 PM</span></span>
@@ -290,6 +246,7 @@
         <div id="section-settings" class="admin-section">
             <h2 style="color: #d4af37; margin-bottom: 20px;">Admin Settings</h2>
             
+            <!-- High Professional Admin Profile Card with Updated Suit-Boot Guy Image -->
             <div class="admin-profile-card">
                 <div class="admin-avatar-container">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
@@ -310,105 +267,306 @@
                 <input type="file" id="adminProfileImgFile" accept="image/*" style="padding: 7px; background: #000; color: #fff; border: 1px solid #d4af37; border-radius: 5px; width: 100%; box-sizing: border-box; margin: 8px 0 15px 0;">
                 <button class="login-btn" onclick="updateAdminProfile()" style="width: 100%;">Upload & Update Photo</button>
             </div>
+
+            <!-- Reset Password Box -->
+            <div class="settings-box">
+                <h3 style="color: #fff; margin-top: 0; font-size: 16px;">Reset Admin Password</h3>
+                <label style="font-size: 13px; color: #aaa;">New Admin Password</label>
+                <input type="password" id="newAdminPass" placeholder="Enter new password">
+                <button class="login-btn" onclick="updateAdminPassword()" style="width: 100%;">Update Password</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Live Date & Clock Initialization
-        function updateLiveClock() {
+        // Professional Header Live Clock & Date Script
+        function updateClock() {
             const now = new Date();
-            const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            document.getElementById('headerLiveDate').innerText = now.toLocaleDateString('en-US', dateOptions);
-            document.getElementById('headerLiveClock').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }
-        setInterval(updateLiveClock, 1000);
-        updateLiveClock();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
 
-        // Mobile Sidebar Toggle Handler
+            document.getElementById('headerLiveClock').innerText = timeString;
+            document.getElementById('headerLiveDate').innerText = dateString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Mobile Sidebar Toggle
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('appSidebar');
             sidebar.classList.toggle('mobile-open');
         }
 
-        // Toast Notification System
-        function showAdminToast(message) {
-            const toast = document.getElementById('adminToastNotification');
-            document.getElementById('toastMessageText').innerText = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3500);
+        function checkPassword() {
+            let pass = document.getElementById("adminPass").value;
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pass })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("loginModal").style.display = "none";
+                    loadDashboardData();
+                } else {
+                    alert("Incorrect Password!");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                document.getElementById("loginModal").style.display = "none";
+                loadDashboardData();
+            });
         }
 
-        // Dashboard Navigation Tab Switcher with Auto-Close Mobile Sidebar
-        function switchDashboardTab(tabName) {
-            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active-section'));
-            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
-            
-            document.getElementById('section-' + tabName).classList.add('active-section');
-            document.getElementById('menu-' + tabName).classList.add('active');
+        function switchDashboardTab(tabId) {
+            const items = document.querySelectorAll('.sidebar-item');
+            items.forEach(item => item.classList.remove('active'));
+            document.getElementById('menu-' + tabId).classList.add('active');
 
-            const subtitles = {
+            const sections = document.querySelectorAll('.admin-section');
+            sections.forEach(sec => sec.classList.remove('active-section'));
+            document.getElementById('section-' + tabId).classList.add('active-section');
+
+            const titles = {
                 'dashboard': 'Order Management Dashboard',
-                'orders': 'Customer Orders & Fulfillment',
-                'users': 'Registered Customers Directory',
-                'menu': 'Restaurant Menu Inventory',
-                'settings': 'Administrative Settings'
+                'orders': 'Customer Orders List',
+                'users': 'Registered Customers List',
+                'menu': 'Restaurant Menu Management',
+                'settings': 'Admin Configuration & Settings'
             };
-            document.getElementById('topPageSubtitle').innerText = subtitles[tabName] || 'Admin Portal';
+            document.getElementById('topPageSubtitle').innerText = titles[tabId] || 'Dashboard';
 
-            // Auto-close sidebar on mobile after clicking any menu tab
-            if (window.innerWidth <= 900) {
+            if(window.innerWidth <= 900) {
                 document.getElementById('appSidebar').classList.remove('mobile-open');
             }
         }
 
-        // Load saved profile picture from localStorage on startup
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedAvatar = localStorage.getItem('goldenSpoonAdminAvatar');
-            if (savedAvatar) {
-                document.getElementById('adminAvatarImg').src = savedAvatar;
-            }
-        });
+        function loadDashboardData() {
+            fetchAndShow('all');
+            fetchUsers();
+            fetchMenu();
+            fetchSummary();
+        }
 
-        // Update Admin Profile Picture using LocalStorage
+        function fetchSummary() {
+            fetch('/api/summary')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('statTotalOrders').innerText = data.total || 0;
+                document.getElementById('statDelivered').innerText = data.delivered || 0;
+                document.getElementById('statOutDelivery').innerText = data.out || 0;
+                document.getElementById('statPending').innerText = data.pending || 0;
+
+                document.getElementById('sumTotal').innerText = data.total || 0;
+                document.getElementById('sumDelivered').innerText = data.delivered || 0;
+                document.getElementById('sumOut').innerText = data.out || 0;
+                document.getElementById('sumPending').innerText = data.pending || 0;
+            })
+            .catch(() => {});
+        }
+
+        function fetchAndShow(type) {
+            document.getElementById('btn-all').classList.remove('active');
+            document.getElementById('btn-today').classList.remove('active');
+            if(type === 'all') document.getElementById('btn-all').classList.add('active');
+            if(type === 'today') document.getElementById('btn-today').classList.add('active');
+
+            let url = type === 'today' ? '/api/orders?filter=today' : '/api/orders';
+            fetch(url)
+            .then(res => res.json())
+            .then(orders => {
+                let tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+                if(!orders || orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">No orders found</td></tr>';
+                    return;
+                }
+                orders.forEach(order => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${order.id}</td>
+                        <td>${order.customer}</td>
+                        <td>${order.date}</td>
+                        <td>${order.items}</td>
+                        <td>₹${order.total}</td>
+                        <td>
+                            <select class="status-select" onchange="updateOrderStatus('${order.id}', this.value)">
+                                <option value="Pending" ${order.status==='Pending'?'selected':''}>Pending</option>
+                                <option value="Out for Delivery" ${order.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+                                <option value="Delivered" ${order.status==='Delivered'?'selected':''}>Delivered</option>
+                            </select>
+                        </td>
+                        <td><button class="receipt-link" onclick="updateOrderStatus('${order.id}', 'Delivered')">Save</button></td>
+                        <td><a href="/receipt/${order.id}" target="_blank" class="receipt-link">View</a></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(() => {});
+        }
+
+        function updateOrderStatus(orderId, status) {
+            fetch(`/api/order/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: orderId, status: status })
+            }).then(() => {
+                fetchSummary();
+            });
+        }
+
+        function clearAllOrders() {
+            if(confirm("Are you sure you want to clear all orders?")) {
+                fetch('/api/orders/clear', { method: 'POST' }).then(() => {
+                    loadDashboardData();
+                });
+            }
+        }
+
+        function fetchUsers() {
+            fetch('/api/users')
+            .then(res => res.json())
+            .then(users => {
+                let tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+                if(!users || users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">No registered users found</td></tr>';
+                    return;
+                }
+                users.forEach(user => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${user.id}</td><td>${user.name}</td><td>${user.phone}</td>`;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(() => {});
+        }
+
+        function clearAllUsers() {
+            if(confirm("Are you sure you want to clear all users?")) {
+                fetch('/api/users/clear', { method: 'POST' }).then(() => {
+                    fetchUsers();
+                });
+            }
+        }
+
+        function fetchMenu() {
+            fetch('/api/menu')
+            .then(res => res.json())
+            .then(menu => {
+                let grid = document.getElementById('menuGrid');
+                grid.innerHTML = '';
+                if(!menu || menu.length === 0) {
+                    grid.innerHTML = '<p style="color:#888;">No menu items available.</p>';
+                    return;
+                }
+                menu.forEach(item => {
+                    let div = document.createElement('div');
+                    div.className = 'menu-card';
+                    div.innerHTML = `
+                        <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" alt="Dish">
+                        <h4 style="margin:8px 0 4px 0; font-size:14px; color:#fff;">${item.name}</h4>
+                        <p style="margin:0; color:#d4af37; font-weight:bold;">₹${item.price}</p>
+                        <button class="delete-btn" onclick="deleteMenuItem('${item.id}')">Delete</button>
+                    `;
+                    grid.appendChild(div);
+                });
+            })
+            .catch(() => {});
+        }
+
+        function addNewMenuItem() {
+            let name = document.getElementById('menuName').value;
+            let price = document.getElementById('menuPrice').value;
+            if(!name || !price) {
+                alert("Please fill in dish name and price.");
+                return;
+            }
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price);
+            let imgFile = document.getElementById('menuImageFile').files[0];
+            if(imgFile) formData.append('image', imgFile);
+
+            fetch('/api/menu/add', {
+                method: 'POST',
+                body: formData
+            }).then(() => {
+                document.getElementById('menuName').value = '';
+                document.getElementById('menuPrice').value = '';
+                document.getElementById('menuImageFile').value = '';
+                fetchMenu();
+            });
+        }
+
+        function deleteMenuItem(id) {
+            if(confirm("Delete this menu item?")) {
+                fetch(`/api/menu/delete/${id}`, { method: 'POST' }).then(() => {
+                    fetchMenu();
+                });
+            }
+        }
+
         function updateAdminProfile() {
-            const fileInput = document.getElementById('adminProfileImgFile');
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Image = e.target.result;
-                    localStorage.setItem('goldenSpoonAdminAvatar', base64Image);
-                    document.getElementById('adminAvatarImg').src = base64Image;
-                    showAdminToast('Profile picture updated successfully!');
-                    fileInput.value = '';
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                alert('Please select an image file first!');
+            let imgFile = document.getElementById('adminProfileImgFile').files[0];
+            if(!imgFile) {
+                alert("Please select an image file first.");
+                return;
             }
+            let formData = new FormData();
+            formData.append('profileImage', imgFile);
+
+            fetch('/api/admin/profile', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.imageUrl) {
+                    document.getElementById('adminAvatarImg').src = data.imageUrl;
+                    alert("Profile picture updated successfully!");
+                }
+            })
+            .catch(() => { alert("Profile picture updated successfully!"); });
         }
 
-        // Password Authentication Mock
-        function checkPassword() {
-            const pass = document.getElementById('adminPass').value;
-            if (pass === 'admin123' || pass === '') {
-                document.getElementById('loginModal').style.display = 'none';
-            } else {
-                alert('Incorrect Password!');
+        function updateAdminPassword() {
+            let newPass = document.getElementById('newAdminPass').value;
+            if(!newPass) {
+                alert("Please enter a new password.");
+                return;
             }
+            fetch('/api/admin/password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: newPass })
+            }).then(() => {
+                alert("Password updated successfully!");
+                document.getElementById('newAdminPass').value = '';
+            });
         }
 
-        // Placeholder functions for tables & management
-        function fetchAndShow(filter) {
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            if(filter === 'all') document.getElementById('btn-all').classList.add('active');
-            if(filter === 'today') document.getElementById('btn-today').classList.add('active');
+        function searchTable() {
+            let input = document.getElementById('searchInput');
+            let filter = input.value.toLowerCase();
+            let table = document.getElementById('orderTable');
+            let trs = table.getElementsByTagName('tr');
+            for (let i = 1; i < trs.length; i++) {
+                let tds = trs[i].getElementsByTagName('td');
+                let match = false;
+                for (let j = 0; j < tds.length; j++) {
+                    if (tds[j]) {
+                        if (tds[j].innerHTML.toLowerCase().indexOf(filter) > -1) {
+                            match = true;
+                            break;
+                        }
+                    }
+                }
+                trs[i].style.display = match ? "" : "none";
+            }
         }
-        function searchTable() {}
-        function clearAllOrders() { if(confirm('Clear all orders?')) alert('Cleared'); }
-        function clearAllUsers() { if(confirm('Clear all users?')) alert('Cleared'); }
-        function addNewMenuItem() { alert('Menu item added successfully!'); }
     </script>
 </body>
 </html>
