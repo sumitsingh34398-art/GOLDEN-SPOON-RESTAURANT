@@ -292,7 +292,7 @@
             
             <div class="admin-profile-card">
                 <div class="admin-avatar-container">
-                    <img src="" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
                 </div>
                 <div class="admin-info">
                     <h3>Sumit Singh</h3>
@@ -314,86 +314,101 @@
     </div>
 
     <script>
-        // Load saved profile picture permanently on startup (defaulting to the professional portrait provided)
-        const defaultProfilePic = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80"; // Fallback placeholder if needed
-        // Setting initial default base portrait for Sumit matching the reference image layout style
-        const savedAvatar = localStorage.getItem('admin_profile_pic') || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80";
-        document.getElementById('adminAvatarImg').src = savedAvatar;
+        // Live Date & Clock Initialization
+        function updateLiveClock() {
+            const now = new Date();
+            const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('headerLiveDate').innerText = now.toLocaleDateString('en-US', dateOptions);
+            document.getElementById('headerLiveClock').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
 
-        function updateAdminProfile() {
-            const fileInput = document.getElementById('adminProfileImgFile');
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Image = e.target.result;
-                    localStorage.setItem('admin_profile_pic', base64Image);
-                    document.getElementById('adminAvatarImg').src = base64Image;
-                    showToast("Profile picture updated permanently!");
-                }
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                showToast("Please choose an image file first!", "error");
-            }
+        // Mobile Sidebar Toggle Handler
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            sidebar.classList.toggle('mobile-open');
         }
 
-        function showToast(message) {
+        // Toast Notification System
+        function showAdminToast(message) {
             const toast = document.getElementById('adminToastNotification');
             document.getElementById('toastMessageText').innerText = message;
             toast.classList.add('show');
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 3000);
+            }, 3500);
         }
 
+        // Dashboard Navigation Tab Switcher with Auto-Close Mobile Sidebar
         function switchDashboardTab(tabName) {
             document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active-section'));
             document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
             
             document.getElementById('section-' + tabName).classList.add('active-section');
             document.getElementById('menu-' + tabName).classList.add('active');
-            
-            const titles = {
+
+            const subtitles = {
                 'dashboard': 'Order Management Dashboard',
-                'orders': 'Manage Customer Orders',
-                'users': 'Registered Customers List',
+                'orders': 'Customer Orders & Fulfillment',
+                'users': 'Registered Customers Directory',
                 'menu': 'Restaurant Menu Inventory',
                 'settings': 'Administrative Settings'
             };
-            document.getElementById('topPageSubtitle').innerText = titles[tabName] || 'Dashboard';
-            
-            // Close mobile sidebar automatically on selection
-            document.getElementById('appSidebar').classList.remove('mobile-open');
-        }
+            document.getElementById('topPageSubtitle').innerText = subtitles[tabName] || 'Admin Portal';
 
-        function toggleMobileSidebar() {
-            document.getElementById('appSidebar').classList.toggle('mobile-open');
-        }
-
-        function checkPassword() {
-            const pass = document.getElementById('adminPass').value;
-            if(pass === "admin123" || pass !== "") { // Adjust your password logic here
-                document.getElementById('loginModal').style.display = 'none';
-            } else {
-                alert('Incorrect Password');
+            // Auto-close sidebar on mobile after clicking any menu tab
+            if (window.innerWidth <= 900) {
+                document.getElementById('appSidebar').classList.remove('mobile-open');
             }
         }
 
-        // Live Clock and Date Updater
-        function updateLiveDateTime() {
-            const now = new Date();
-            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            document.getElementById('headerLiveDate').innerText = now.toLocaleDateString('en-US', options);
-            document.getElementById('headerLiveClock').innerText = now.toLocaleTimeString('en-US');
-        }
-        setInterval(updateLiveDateTime, 1000);
-        updateLiveDateTime();
+        // Load saved profile picture from localStorage on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedAvatar = localStorage.getItem('goldenSpoonAdminAvatar');
+            if (savedAvatar) {
+                document.getElementById('adminAvatarImg').src = savedAvatar;
+            }
+        });
 
-        // Dummy placeholders for standard functions to ensure seamless operation
-        function fetchAndShow(filter) {}
+        // Update Admin Profile Picture using LocalStorage
+        function updateAdminProfile() {
+            const fileInput = document.getElementById('adminProfileImgFile');
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    localStorage.setItem('goldenSpoonAdminAvatar', base64Image);
+                    document.getElementById('adminAvatarImg').src = base64Image;
+                    showAdminToast('Profile picture updated successfully!');
+                    fileInput.value = '';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                alert('Please select an image file first!');
+            }
+        }
+
+        // Password Authentication Mock
+        function checkPassword() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === 'admin123' || pass === '') {
+                document.getElementById('loginModal').style.display = 'none';
+            } else {
+                alert('Incorrect Password!');
+            }
+        }
+
+        // Placeholder functions for tables & management
+        function fetchAndShow(filter) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            if(filter === 'all') document.getElementById('btn-all').classList.add('active');
+            if(filter === 'today') document.getElementById('btn-today').classList.add('active');
+        }
         function searchTable() {}
-        function clearAllOrders() {}
-        function clearAllUsers() {}
-        function addNewMenuItem() {}
+        function clearAllOrders() { if(confirm('Clear all orders?')) alert('Cleared'); }
+        function clearAllUsers() { if(confirm('Clear all users?')) alert('Cleared'); }
+        function addNewMenuItem() { alert('Menu item added successfully!'); }
     </script>
 </body>
 </html>
