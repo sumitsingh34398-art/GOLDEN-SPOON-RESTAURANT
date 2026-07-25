@@ -93,43 +93,6 @@
         .admin-info p { margin: 4px 0 10px 0; color: #aaa; font-size: 13px; }
         .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.1); border: 1px solid #d4af37; padding: 4px 12px; border-radius: 20px; color: #d4af37; font-size: 12px; font-weight: 600; }
 
-        /* High-Professional Sleek Toast Notification Styling */
-        #adminToastNotification {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            background: linear-gradient(135deg, #1c1c1c 0%, #0d0d0d 100%);
-            color: #fff;
-            padding: 14px 22px;
-            border-radius: 10px;
-            border: 1px solid #d4af37;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 9999;
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            pointer-events: none;
-        }
-        #adminToastNotification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        #adminToastNotification .toast-icon {
-            font-size: 18px;
-            background: rgba(212, 175, 55, 0.15);
-            padding: 6px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #d4af37;
-        }
-
         /* Mobile Responsive Media Queries */
         @media (max-width: 900px) {
             .sidebar { transform: translateX(-100%); }
@@ -144,15 +107,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Professional Sleek Toast Popup Container -->
-    <div id="adminToastNotification">
-        <div class="toast-icon">✨</div>
-        <div>
-            <div style="color: #d4af37; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Success</div>
-            <div id="toastMessageText">Profile picture updated successfully!</div>
-        </div>
-    </div>
 
     <!-- Sidebar Navigation -->
     <div class="sidebar" id="appSidebar">
@@ -169,12 +123,13 @@
                 <div class="sidebar-item" id="menu-settings" onclick="switchDashboardTab('settings')">⚙️ Settings</div>
             </div>
 
-            <!-- Today's Summary Section inside Sidebar (Strictly Current Day Only) -->
+            <!-- Today's Summary Section inside Sidebar -->
             <div class="sidebar-summary">
                 <h4>📅 Today's Summary</h4>
                 <div class="summary-row"><span>Total Orders</span><span id="sumTotal">0</span></div>
                 <div class="summary-row"><span>Delivered</span><span id="sumDelivered">0</span></div>
                 <div class="summary-row"><span>Out for Delivery</span><span id="sumOut">0</span></div>
+                <!-- Pending text updated with Red Color -->
                 <div class="summary-row"><span>Pending</span><span id="sumPending" style="color: #e74c3c;">0</span></div>
             </div>
         </div>
@@ -195,6 +150,7 @@
                 <p id="topPageSubtitle">Order Management Dashboard</p>
             </div>
             <div>
+                <!-- Professional Header Live Date & Time Badge -->
                 <div class="header-date-badge">
                     <span>📅</span> <span id="headerLiveDate">Loading date...</span>
                     <span style="border-left: 1px solid #d4af37; padding-left: 8px;">⏰ <span id="headerLiveClock">00:00:00 PM</span></span>
@@ -290,6 +246,7 @@
         <div id="section-settings" class="admin-section">
             <h2 style="color: #d4af37; margin-bottom: 20px;">Admin Settings</h2>
             
+            <!-- High Professional Admin Profile Card with Updated Suit-Boot Guy Image -->
             <div class="admin-profile-card">
                 <div class="admin-avatar-container">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
@@ -310,7 +267,368 @@
                 <input type="file" id="adminProfileImgFile" accept="image/*" style="padding: 7px; background: #000; color: #fff; border: 1px solid #d4af37; border-radius: 5px; width: 100%; box-sizing: border-box; margin: 8px 0 15px 0;">
                 <button class="login-btn" onclick="updateAdminProfile()" style="width: 100%;">Upload & Update Photo</button>
             </div>
+
+            <!-- Reset Password Box -->
+            <div class="settings-box">
+                <h3 style="color: #fff; margin-top: 0; font-size: 16px;">Reset Admin Password</h3>
+                <label style="font-size: 13px; color: #aaa;">New Admin Password</label>
+                <input type="password" id="newAdminPass" placeholder="Enter new password">
+                <button class="login-btn" onclick="updateAdminPassword()" style="width: 100%;">Update Password</button>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Professional Header Live Clock & Date Script
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
+
+            document.getElementById('headerLiveClock').innerText = timeString;
+            document.getElementById('headerLiveDate').innerText = dateString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Mobile Sidebar Toggle
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('appSidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+
+        function checkPassword() {
+            let pass = document.getElementById("adminPass").value;
+            fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: "Sumit", password: pass}) })
+            .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", loadDashboardStats()) : alert("❌ Wrong Password!"));
+        }
+
+        // --- 1. LOAD SIDEBAR TODAY'S SUMMARY ---
+        function loadSidebarTodaySummary() {
+            fetch('/get-orders?filter=today')
+            .then(res => res.json())
+            .then(orders => {
+                let total = orders.length;
+                let delivered = 0;
+                let outForDelivery = 0;
+                let pending = 0;
+
+                orders.forEach(order => {
+                    let status = (order[7] || "").toLowerCase();
+                    if (status.includes('deliver') && !status.includes('out')) {
+                        delivered++;
+                    } else if (status.includes('out') || status.includes('dispatch')) {
+                        outForDelivery++;
+                    } else {
+                        pending++;
+                    }
+                });
+
+                document.getElementById('sumTotal').innerText = total;
+                document.getElementById('sumDelivered').innerText = delivered;
+                document.getElementById('sumOut').innerText = outForDelivery;
+                document.getElementById('sumPending').innerText = pending;
+            })
+            .catch(err => console.error("Error loading today's summary:", err));
+        }
+
+        // --- 2. LOAD DASHBOARD ALL-TIME / LIFETIME STATS ---
+        function loadDashboardLifetimeStats() {
+            fetch('/get-orders?filter=all')
+            .then(res => res.json())
+            .then(orders => {
+                let total = orders.length;
+                let delivered = 0;
+                let outForDelivery = 0;
+                let pending = 0;
+
+                orders.forEach(order => {
+                    let status = (order[7] || "").toLowerCase();
+                    if (status.includes('deliver') && !status.includes('out')) {
+                        delivered++;
+                    } else if (status.includes('out') || status.includes('dispatch')) {
+                        outForDelivery++;
+                    } else {
+                        pending++;
+                    }
+                });
+
+                if(document.getElementById('statTotalOrders')) {
+                    document.getElementById('statTotalOrders').innerText = total;
+                    document.getElementById('statDelivered').innerText = delivered;
+                    document.getElementById('statOutDelivery').innerText = outForDelivery;
+                    document.getElementById('statPending').innerText = pending;
+                }
+            })
+            .catch(err => console.error("Error loading lifetime stats:", err));
+        }
+
+        function loadDashboardStats() {
+            loadSidebarTodaySummary();
+            loadDashboardLifetimeStats();
+            loadAdminProfileInfo();
+        }
+
+        function cleanItemNames(itemStr) {
+            if (!itemStr) return '';
+            try {
+                let formattedStr = itemStr.replace(/'/g, '"');
+                let itemsArray = JSON.parse(formattedStr);
+                if (Array.isArray(itemsArray)) {
+                    return itemsArray.map(item => `${item.name} (${item.qty || 1})`).join(', ');
+                }
+            } catch (e) {
+                // Fallback for non-JSON string
+            }
+            return itemStr.replace(/₹\d+/g, '').replace(/\(\s*\)/g, '');
+        }
+
+        function fetchAndShow(filterType) {
+            if(filterType === 'all') {
+                document.getElementById('btn-all').classList.add('active');
+                document.getElementById('btn-today').classList.remove('active');
+            } else {
+                document.getElementById('btn-today').classList.add('active');
+                document.getElementById('btn-all').classList.remove('active');
+            }
+
+            fetch(`/get-orders?filter=${filterType}`)
+            .then(res => res.json())
+            .then(orders => {
+                let tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+                orders.forEach(order => {
+                    let statusVal = (order[7] || "").toLowerCase();
+                    let statusColor = '#e74c3c'; 
+                    if (statusVal.includes('deliver') && !statusVal.includes('out')) {
+                        statusColor = '#2ecc71'; 
+                    } else if (statusVal.includes('out') || statusVal.includes('dispatch')) {
+                        statusColor = '#e67e22'; 
+                    }
+
+                    let cleanItems = cleanItemNames(order[4]);
+
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${order[0].substring(0, 8)}...</td>
+                        <td>${order[1]}<br><small style="color:#aaa">${order[2]}</small></td>
+                        <td>${order[6]}</td>
+                        <td style="font-size:11px; text-align:left; max-width:200px; color: #d4af37; font-weight: 500;">${cleanItems}</td>
+                        <td>₹${order[5]}</td>
+                        <td><span style="font-weight:600; color:${statusColor}">${order[7]}</span></td>
+                        <td>
+                            <select class="status-select" onchange="updateStatus('${order[0]}', this.value)">
+                                <option value="pending" ${order[7]=='pending'?'selected':''}>Pending</option>
+                                <option value="out for delivery" ${order[7]=='out for delivery'?'selected':''}>Out for Delivery</option>
+                                <option value="delivered" ${order[7]=='delivered'?'selected':''}>Delivered</option>
+                            </select>
+                        </td>
+                        <td><a href="/receipt/${order[0]}" target="_blank" class="receipt-link">View</a></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function updateStatus(orderId, newStatus) {
+            fetch(`/update-order/${orderId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({status: newStatus})
+            })
+            .then(res => res.json())
+            .then(data => {
+                loadDashboardStats();
+            });
+        }
+
+        function clearAllOrders() {
+            if(confirm("Are you sure you want to clear all orders?")) {
+                fetch('/clear-all-orders', {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    fetchAndShow('all');
+                    loadDashboardStats();
+                });
+            }
+        }
+
+        function loadRegisteredUsers() {
+            fetch('/get-users')
+            .then(res => res.json())
+            .then(users => {
+                let tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+                users.forEach(u => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${u[0]}</td><td>${u[1]}</td><td>${u[2]}</td>`;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function loadAdminMenu() {
+            fetch('/get-menu')
+            .then(res => res.json())
+            .then(items => {
+                let grid = document.getElementById('menuGrid');
+                grid.innerHTML = '';
+                items.forEach(item => {
+                    let card = document.createElement('div');
+                    card.className = 'menu-card';
+                    card.innerHTML = `
+                        <img src="${item[3]}" alt="${item[1]}">
+                        <h4 style="margin:8px 0 4px 0; font-size:13px; color:#fff;">${item[1]}</h4>
+                        <p style="margin:0; font-size:12px; color:#d4af37;">₹${item[2]}</p>
+                        <button class="delete-btn" onclick="deleteMenuItem('${item[0]}')">Delete</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        function addNewMenuItem() {
+            let name = document.getElementById('menuName').value;
+            let price = document.getElementById('menuPrice').value;
+            let fileInput = document.getElementById('menuImageFile');
+
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price);
+            if(fileInput.files[0]) {
+                formData.append('image', fileInput.files[0]);
+            }
+
+            fetch('/add-menu-item', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                loadAdminMenu();
+                document.getElementById('menuName').value = '';
+                document.getElementById('menuPrice').value = '';
+                document.getElementById('menuImageFile').value = '';
+            });
+        }
+
+        function deleteMenuItem(id) {
+            if(confirm("Remove this item from menu?")) {
+                fetch(`/delete-menu-item/${id}`, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    loadAdminMenu();
+                });
+            }
+        }
+
+        // Custom Admin Profile Image Upload Function
+        function updateAdminProfile() {
+            let fileInput = document.getElementById('adminProfileImgFile');
+            if(!fileInput.files[0]) return alert("Please select an image file first!");
+
+            let formData = new FormData();
+            formData.append('admin_image', fileInput.files[0]);
+
+            fetch('/update-admin-profile', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || "Profile picture updated successfully!");
+                document.getElementById('adminProfileImgFile').value = '';
+                loadAdminProfileInfo();
+            })
+            .catch(err => {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('adminAvatarImg').src = e.target.result;
+                    alert("Profile picture updated successfully!");
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            });
+        }
+
+        function loadAdminProfileInfo() {
+            fetch('/get-admin-profile')
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.image_url) {
+                    document.getElementById('adminAvatarImg').src = data.image_url;
+                }
+            }).catch(e => {});
+        }
+
+        function updateAdminPassword() {
+            let newPass = document.getElementById('newAdminPass').value;
+            if(!newPass) return alert("Please enter a new password");
+            fetch('/update-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({new_password: newPass})
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById('newAdminPass').value = '';
+            });
+        }
+
+        function searchTable() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let rows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for(let i = 0; i < rows.length; i++) {
+                let text = rows[i].innerText.toLowerCase();
+                rows[i].style.display = text.includes(input) ? '' : 'none';
+            }
+        }
+
+        function switchDashboardTab(tab) {
+            document.getElementById('section-dashboard').classList.remove('active-section');
+            document.getElementById('section-orders').classList.remove('active-section');
+            document.getElementById('section-users').classList.remove('active-section');
+            document.getElementById('section-menu').classList.remove('active-section');
+            document.getElementById('section-settings').classList.remove('active-section');
+
+            document.getElementById('menu-dashboard').classList.remove('active');
+            document.getElementById('menu-orders').classList.remove('active');
+            document.getElementById('menu-users').classList.remove('active');
+            document.getElementById('menu-menu').classList.remove('active');
+            document.getElementById('menu-settings').classList.remove('active');
+
+            const subtitle = document.getElementById('topPageSubtitle');
+
+            if(tab === 'dashboard') {
+                document.getElementById('section-dashboard').classList.add('active-section');
+                document.getElementById('menu-dashboard').classList.add('active');
+                subtitle.innerText = "Order Management Dashboard";
+                loadDashboardStats();
+            } else if(tab === 'orders') {
+                document.getElementById('section-orders').classList.add('active-section');
+                document.getElementById('menu-orders').classList.add('active');
+                subtitle.innerText = "Orders List & Status";
+                fetchAndShow('all');
+            } else if(tab === 'users') {
+                document.getElementById('section-users').classList.add('active-section');
+                document.getElementById('menu-users').classList.add('active');
+                subtitle.innerText = "Registered Customers Management";
+                loadRegisteredUsers();
+            } else if(tab === 'menu') {
+                document.getElementById('section-menu').classList.add('active-section');
+                document.getElementById('menu-menu').classList.add('active');
+                subtitle.innerText = "Menu & Dishes Management";
+                loadAdminMenu();
+            } else if(tab === 'settings') {
+                document.getElementById('section-settings').classList.add('active-section');
+                document.getElementById('menu-settings').classList.add('active');
+                subtitle.innerText = "Administrative Settings";
+            }
+
+            // Auto-close sidebar on mobile view after clicking any menu tab
+            if (window.innerWidth <= 900) {
+                document.getElementById('appSidebar').classList.remove('mobile-open');
+            }
+        }
+
+        // Auto load summary stats on page load
+        loadDashboardStats();
+    </script>
 </body>
 </html>
