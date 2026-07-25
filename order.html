@@ -346,12 +346,12 @@
     // Initialize quantity and id for static dishes
     dishes.forEach((d, i) => { d.qty = 0; d.id = i; });
 
-    // Database se naye items fetch karke append karne ka function
+    // Database se naye items fetch karke append karne ka function (Updated & Fixed)
     function fetchExtraMenu() {
         fetch('/get-menu')
         .then(res => res.json())
         .then(data => {
-            data.forEach((d, index) => {
+            data.forEach((d) => {
                 let exists = dishes.some(item => item.name.toLowerCase() === d[1].toLowerCase());
                 if (!exists) {
                     dishes.push({
