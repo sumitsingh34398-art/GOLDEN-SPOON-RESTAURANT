@@ -82,8 +82,16 @@
         .stat-card h3 { margin: 0; color: #aaa; font-size: 12px; text-transform: uppercase; }
         .stat-card p { margin: 8px 0 0 0; font-size: 24px; font-weight: bold; color: #fff; }
 
-        .settings-box { background: rgba(0,0,0,0.85); padding: 25px; border: 1px solid #d4af37; border-radius: 10px; width: 100%; max-width: 400px; box-sizing: border-box; }
+        .settings-box { background: rgba(0,0,0,0.85); padding: 25px; border: 1px solid #d4af37; border-radius: 10px; width: 100%; max-width: 420px; box-sizing: border-box; margin-bottom: 20px; }
         .settings-box input { width: 100%; padding: 10px; margin: 8px 0 15px 0; background: #000; border: 1px solid #d4af37; color: #fff; border-radius: 5px; box-sizing: border-box; }
+
+        /* High Professional Admin Profile Card Style */
+        .admin-profile-card { background: rgba(18, 18, 18, 0.95); border: 1px solid #d4af37; border-radius: 14px; padding: 20px 25px; display: flex; align-items: center; gap: 22px; width: 100%; max-width: 420px; box-sizing: border-box; box-shadow: 0 8px 25px rgba(0,0,0,0.6); margin-bottom: 20px; }
+        .admin-avatar-container { position: relative; width: 85px; height: 85px; flex-shrink: 0; }
+        .admin-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.4); }
+        .admin-info h3 { margin: 0; color: #fff; font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+        .admin-info p { margin: 4px 0 10px 0; color: #aaa; font-size: 13px; }
+        .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.1); border: 1px solid #d4af37; padding: 4px 12px; border-radius: 20px; color: #d4af37; font-size: 12px; font-weight: 600; }
 
         /* Mobile Responsive Media Queries */
         @media (max-width: 900px) {
@@ -236,7 +244,23 @@
 
         <!-- 5. SETTINGS SECTION -->
         <div id="section-settings" class="admin-section">
-            <h2 style="color: #d4af37;">Admin Settings</h2>
+            <h2 style="color: #d4af37; margin-bottom: 20px;">Admin Settings</h2>
+            
+            <!-- High Professional Admin Profile Card (Placed Above) -->
+            <div class="admin-profile-card">
+                <div class="admin-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
+                </div>
+                <div class="admin-info">
+                    <h3>Sumit Singh</h3>
+                    <p>Administrator</p>
+                    <div class="admin-badge">
+                        <span>⭐</span> Admin
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reset Password Box -->
             <div class="settings-box">
                 <h3 style="color: #fff; margin-top: 0; font-size: 16px;">Reset Admin Password</h3>
                 <label style="font-size: 13px; color: #aaa;">New Admin Password</label>
