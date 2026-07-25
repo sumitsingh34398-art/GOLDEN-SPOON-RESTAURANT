@@ -337,9 +337,18 @@
             loadDashboardLifetimeStats();
         }
 
-        // Helper function to clean item text (remove prices if present in the string)
+        // Helper function updated to parse JSON string/array and extract only dish names and quantities
         function cleanItemNames(itemStr) {
             if (!itemStr) return '';
+            try {
+                let formattedStr = itemStr.replace(/'/g, '"');
+                let itemsArray = JSON.parse(formattedStr);
+                if (Array.isArray(itemsArray)) {
+                    return itemsArray.map(item => `${item.name} (${item.qty || 1})`).join(', ');
+                }
+            } catch (e) {
+                // Fallback for non-JSON string
+            }
             return itemStr.replace(/₹\d+/g, '').replace(/\(\s*\)/g, '');
         }
 
@@ -373,7 +382,7 @@
                         <td>${order[0].substring(0, 8)}...</td>
                         <td>${order[1]}<br><small style="color:#aaa">${order[2]}</small></td>
                         <td>${order[6]}</td>
-                        <td style="font-size:11px; text-align:left; max-width:200px;">${cleanItems}</td>
+                        <td style="font-size:11px; text-align:left; max-width:200px; color: #d4af37; font-weight: 500;">${cleanItems}</td>
                         <td>₹${order[5]}</td>
                         <td><span style="font-weight:600; color:${statusColor}">${order[7]}</span></td>
                         <td>
