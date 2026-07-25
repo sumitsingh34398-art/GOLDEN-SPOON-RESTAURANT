@@ -93,6 +93,43 @@
         .admin-info p { margin: 4px 0 10px 0; color: #aaa; font-size: 13px; }
         .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.1); border: 1px solid #d4af37; padding: 4px 12px; border-radius: 20px; color: #d4af37; font-size: 12px; font-weight: 600; }
 
+        /* High-Professional Sleek Toast Notification Styling */
+        #adminToastNotification {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #1c1c1c 0%, #0d0d0d 100%);
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 10px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            pointer-events: none;
+        }
+        #adminToastNotification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #adminToastNotification .toast-icon {
+            font-size: 18px;
+            background: rgba(212, 175, 55, 0.15);
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d4af37;
+        }
+
         /* Mobile Responsive Media Queries */
         @media (max-width: 900px) {
             .sidebar { transform: translateX(-100%); }
@@ -107,6 +144,15 @@
     </style>
 </head>
 <body>
+
+    <!-- Professional Sleek Toast Popup Container -->
+    <div id="adminToastNotification">
+        <div class="toast-icon">✨</div>
+        <div>
+            <div style="color: #d4af37; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Success</div>
+            <div id="toastMessageText">Profile picture updated successfully!</div>
+        </div>
+    </div>
 
     <!-- Sidebar Navigation -->
     <div class="sidebar" id="appSidebar">
@@ -129,7 +175,6 @@
                 <div class="summary-row"><span>Total Orders</span><span id="sumTotal">0</span></div>
                 <div class="summary-row"><span>Delivered</span><span id="sumDelivered">0</span></div>
                 <div class="summary-row"><span>Out for Delivery</span><span id="sumOut">0</span></div>
-                <!-- Pending text updated with Red Color -->
                 <div class="summary-row"><span>Pending</span><span id="sumPending" style="color: #e74c3c;">0</span></div>
             </div>
         </div>
@@ -150,7 +195,6 @@
                 <p id="topPageSubtitle">Order Management Dashboard</p>
             </div>
             <div>
-                <!-- Professional Header Live Date & Time Badge -->
                 <div class="header-date-badge">
                     <span>📅</span> <span id="headerLiveDate">Loading date...</span>
                     <span style="border-left: 1px solid #d4af37; padding-left: 8px;">⏰ <span id="headerLiveClock">00:00:00 PM</span></span>
@@ -246,7 +290,6 @@
         <div id="section-settings" class="admin-section">
             <h2 style="color: #d4af37; margin-bottom: 20px;">Admin Settings</h2>
             
-            <!-- High Professional Admin Profile Card with Updated Suit-Boot Guy Image -->
             <div class="admin-profile-card">
                 <div class="admin-avatar-container">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
@@ -291,6 +334,16 @@
         setInterval(updateClock, 1000);
         updateClock();
 
+        // Professional Toast Notification Function
+        function showAdminToast(message) {
+            const toast = document.getElementById('adminToastNotification');
+            document.getElementById('toastMessageText').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
         // Mobile Sidebar Toggle
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('appSidebar');
@@ -299,274 +352,331 @@
 
         function checkPassword() {
             let pass = document.getElementById("adminPass").value;
-            fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: pass })
-            })
+            fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: "Sumit", password: pass}) })
+            .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", loadDashboardStats()) : showAdminToast("❌ Wrong Password!"));
+        }
+
+        function loadSidebarTodaySummary() {
+            fetch('/get-orders?filter=today')
             .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById("loginModal").style.display = "none";
-                    loadDashboardData();
-                } else {
-                    alert("Incorrect Password!");
+            .then(orders => {
+                let total = orders.length;
+                let delivered = 0, outForDelivery = 0, pending = 0;
+
+                orders.forEach(order => {
+                    let status = (order[7] || "").toLowerCase();
+                    if (status.includes('deliver') && !status.includes('out')) {
+                        delivered++;
+                    } else if (status.includes('out') || status.includes('dispatch')) {
+                        outForDelivery++;
+                    } else {
+                        pending++;
+                    }
+                });
+
+                document.getElementById('sumTotal').innerText = total;
+                document.getElementById('sumDelivered').innerText = delivered;
+                document.getElementById('sumOut').innerText = outForDelivery;
+                document.getElementById('sumPending').innerText = pending;
+            })
+            .catch(err => console.error("Error:", err));
+        }
+
+        function loadDashboardLifetimeStats() {
+            fetch('/get-orders?filter=all')
+            .then(res => res.json())
+            .then(orders => {
+                let total = orders.length;
+                let delivered = 0, outForDelivery = 0, pending = 0;
+
+                orders.forEach(order => {
+                    let status = (order[7] || "").toLowerCase();
+                    if (status.includes('deliver') && !status.includes('out')) {
+                        delivered++;
+                    } else if (status.includes('out') || status.includes('dispatch')) {
+                        outForDelivery++;
+                    } else {
+                        pending++;
+                    }
+                });
+
+                if(document.getElementById('statTotalOrders')) {
+                    document.getElementById('statTotalOrders').innerText = total;
+                    document.getElementById('statDelivered').innerText = delivered;
+                    document.getElementById('statOutDelivery').innerText = outForDelivery;
+                    document.getElementById('statPending').innerText = pending;
                 }
             })
-            .catch(err => {
-                console.error('Error:', err);
-                document.getElementById("loginModal").style.display = "none";
-                loadDashboardData();
-            });
+            .catch(err => console.error("Error:", err));
         }
 
-        function switchDashboardTab(tabId) {
-            const items = document.querySelectorAll('.sidebar-item');
-            items.forEach(item => item.classList.remove('active'));
-            document.getElementById('menu-' + tabId).classList.add('active');
+        function loadDashboardStats() {
+            loadSidebarTodaySummary();
+            loadDashboardLifetimeStats();
+            loadAdminProfileInfo();
+        }
 
-            const sections = document.querySelectorAll('.admin-section');
-            sections.forEach(sec => sec.classList.remove('active-section'));
-            document.getElementById('section-' + tabId).classList.add('active-section');
+        function cleanItemNames(itemStr) {
+            if (!itemStr) return '';
+            try {
+                let formattedStr = itemStr.replace(/'/g, '"');
+                let itemsArray = JSON.parse(formattedStr);
+                if (Array.isArray(itemsArray)) {
+                    return itemsArray.map(item => `${item.name} (${item.qty || 1})`).join(', ');
+                }
+            } catch (e) {}
+            return itemStr.replace(/₹\d+/g, '').replace(/\(\s*\)/g, '');
+        }
 
-            const titles = {
-                'dashboard': 'Order Management Dashboard',
-                'orders': 'Customer Orders List',
-                'users': 'Registered Customers List',
-                'menu': 'Restaurant Menu Management',
-                'settings': 'Admin Configuration & Settings'
-            };
-            document.getElementById('topPageSubtitle').innerText = titles[tabId] || 'Dashboard';
-
-            if(window.innerWidth <= 900) {
-                document.getElementById('appSidebar').classList.remove('mobile-open');
+        function fetchAndShow(filterType) {
+            if(filterType === 'all') {
+                document.getElementById('btn-all').classList.add('active');
+                document.getElementById('btn-today').classList.remove('active');
+            } else {
+                document.getElementById('btn-today').classList.add('active');
+                document.getElementById('btn-all').classList.remove('active');
             }
-        }
 
-        function loadDashboardData() {
-            fetchAndShow('all');
-            fetchUsers();
-            fetchMenu();
-            fetchSummary();
-        }
-
-        function fetchSummary() {
-            fetch('/api/summary')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('statTotalOrders').innerText = data.total || 0;
-                document.getElementById('statDelivered').innerText = data.delivered || 0;
-                document.getElementById('statOutDelivery').innerText = data.out || 0;
-                document.getElementById('statPending').innerText = data.pending || 0;
-
-                document.getElementById('sumTotal').innerText = data.total || 0;
-                document.getElementById('sumDelivered').innerText = data.delivered || 0;
-                document.getElementById('sumOut').innerText = data.out || 0;
-                document.getElementById('sumPending').innerText = data.pending || 0;
-            })
-            .catch(() => {});
-        }
-
-        function fetchAndShow(type) {
-            document.getElementById('btn-all').classList.remove('active');
-            document.getElementById('btn-today').classList.remove('active');
-            if(type === 'all') document.getElementById('btn-all').classList.add('active');
-            if(type === 'today') document.getElementById('btn-today').classList.add('active');
-
-            let url = type === 'today' ? '/api/orders?filter=today' : '/api/orders';
-            fetch(url)
+            fetch(`/get-orders?filter=${filterType}`)
             .then(res => res.json())
             .then(orders => {
                 let tbody = document.getElementById('tableBody');
                 tbody.innerHTML = '';
-                if(!orders || orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">No orders found</td></tr>';
-                    return;
-                }
                 orders.forEach(order => {
+                    let statusVal = (order[7] || "").toLowerCase();
+                    let statusColor = '#e74c3c'; 
+                    if (statusVal.includes('deliver') && !statusVal.includes('out')) {
+                        statusColor = '#2ecc71'; 
+                    } else if (statusVal.includes('out') || statusVal.includes('dispatch')) {
+                        statusColor = '#e67e22'; 
+                    }
+
+                    let cleanItems = cleanItemNames(order[4]);
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${order.customer}</td>
-                        <td>${order.date}</td>
-                        <td>${order.items}</td>
-                        <td>₹${order.total}</td>
+                        <td>${order[0].substring(0, 8)}...</td>
+                        <td>${order[1]}<br><small style="color:#aaa">${order[2]}</small></td>
+                        <td>${order[6]}</td>
+                        <td style="font-size:11px; text-align:left; max-width:200px; color: #d4af37; font-weight: 500;">${cleanItems}</td>
+                        <td>₹${order[5]}</td>
+                        <td><span style="font-weight:600; color:${statusColor}">${order[7]}</span></td>
                         <td>
-                            <select class="status-select" onchange="updateOrderStatus('${order.id}', this.value)">
-                                <option value="Pending" ${order.status==='Pending'?'selected':''}>Pending</option>
-                                <option value="Out for Delivery" ${order.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
-                                <option value="Delivered" ${order.status==='Delivered'?'selected':''}>Delivered</option>
+                            <select class="status-select" onchange="updateStatus('${order[0]}', this.value)">
+                                <option value="pending" ${order[7]=='pending'?'selected':''}>Pending</option>
+                                <option value="out for delivery" ${order[7]=='out for delivery'?'selected':''}>Out for Delivery</option>
+                                <option value="delivered" ${order[7]=='delivered'?'selected':''}>Delivered</option>
                             </select>
                         </td>
-                        <td><button class="receipt-link" onclick="updateOrderStatus('${order.id}', 'Delivered')">Save</button></td>
-                        <td><a href="/receipt/${order.id}" target="_blank" class="receipt-link">View</a></td>
+                        <td><a href="/receipt/${order[0]}" target="_blank" class="receipt-link">View</a></td>
                     `;
                     tbody.appendChild(tr);
                 });
-            })
-            .catch(() => {});
+            });
         }
 
-        function updateOrderStatus(orderId, status) {
-            fetch(`/api/order/status`, {
+        function updateStatus(orderId, newStatus) {
+            fetch(`/update-order/${orderId}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: orderId, status: status })
-            }).then(() => {
-                fetchSummary();
-            });
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({status: newStatus})
+            })
+            .then(res => res.json())
+            .then(data => { loadDashboardStats(); });
         }
 
         function clearAllOrders() {
             if(confirm("Are you sure you want to clear all orders?")) {
-                fetch('/api/orders/clear', { method: 'POST' }).then(() => {
-                    loadDashboardData();
+                fetch('/clear-all-orders', {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    showAdminToast(data.message || "All orders cleared!");
+                    fetchAndShow('all');
+                    loadDashboardStats();
                 });
             }
         }
 
-        function fetchUsers() {
-            fetch('/api/users')
+        function loadRegisteredUsers() {
+            fetch('/get-users')
             .then(res => res.json())
             .then(users => {
                 let tbody = document.getElementById('usersTableBody');
                 tbody.innerHTML = '';
-                if(!users || users.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">No registered users found</td></tr>';
-                    return;
-                }
-                users.forEach(user => {
+                users.forEach(u => {
                     let tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${user.id}</td><td>${user.name}</td><td>${user.phone}</td>`;
+                    tr.innerHTML = `<td>${u[0]}</td><td>${u[1]}</td><td>${u[2]}</td>`;
                     tbody.appendChild(tr);
                 });
-            })
-            .catch(() => {});
+            });
         }
 
-        function clearAllUsers() {
-            if(confirm("Are you sure you want to clear all users?")) {
-                fetch('/api/users/clear', { method: 'POST' }).then(() => {
-                    fetchUsers();
-                });
-            }
-        }
-
-        function fetchMenu() {
-            fetch('/api/menu')
+        function loadAdminMenu() {
+            fetch('/get-menu')
             .then(res => res.json())
-            .then(menu => {
+            .then(items => {
                 let grid = document.getElementById('menuGrid');
                 grid.innerHTML = '';
-                if(!menu || menu.length === 0) {
-                    grid.innerHTML = '<p style="color:#888;">No menu items available.</p>';
-                    return;
-                }
-                menu.forEach(item => {
-                    let div = document.createElement('div');
-                    div.className = 'menu-card';
-                    div.innerHTML = `
-                        <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}" alt="Dish">
-                        <h4 style="margin:8px 0 4px 0; font-size:14px; color:#fff;">${item.name}</h4>
-                        <p style="margin:0; color:#d4af37; font-weight:bold;">₹${item.price}</p>
-                        <button class="delete-btn" onclick="deleteMenuItem('${item.id}')">Delete</button>
+                items.forEach(item => {
+                    let card = document.createElement('div');
+                    card.className = 'menu-card';
+                    card.innerHTML = `
+                        <img src="${item[3]}" alt="${item[1]}">
+                        <h4 style="margin:8px 0 4px 0; font-size:13px; color:#fff;">${item[1]}</h4>
+                        <p style="margin:0; font-size:12px; color:#d4af37;">₹${item[2]}</p>
+                        <button class="delete-btn" onclick="deleteMenuItem('${item[0]}')">Delete</button>
                     `;
-                    grid.appendChild(div);
+                    grid.appendChild(card);
                 });
-            })
-            .catch(() => {});
+            });
         }
 
         function addNewMenuItem() {
             let name = document.getElementById('menuName').value;
             let price = document.getElementById('menuPrice').value;
-            if(!name || !price) {
-                alert("Please fill in dish name and price.");
-                return;
-            }
+            let fileInput = document.getElementById('menuImageFile');
+
             let formData = new FormData();
             formData.append('name', name);
             formData.append('price', price);
-            let imgFile = document.getElementById('menuImageFile').files[0];
-            if(imgFile) formData.append('image', imgFile);
+            if(fileInput.files[0]) {
+                formData.append('image', fileInput.files[0]);
+            }
 
-            fetch('/api/menu/add', {
-                method: 'POST',
-                body: formData
-            }).then(() => {
+            fetch('/add-menu-item', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                showAdminToast(data.message || "Item added successfully!");
+                loadAdminMenu();
                 document.getElementById('menuName').value = '';
                 document.getElementById('menuPrice').value = '';
                 document.getElementById('menuImageFile').value = '';
-                fetchMenu();
             });
         }
 
         function deleteMenuItem(id) {
-            if(confirm("Delete this menu item?")) {
-                fetch(`/api/menu/delete/${id}`, { method: 'POST' }).then(() => {
-                    fetchMenu();
+            if(confirm("Remove this item from menu?")) {
+                fetch(`/delete-menu-item/${id}`, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    loadAdminMenu();
+                    showAdminToast("Menu item removed!");
                 });
             }
         }
 
+        // Updated High-Professional Profile Upload with Toast Notification
         function updateAdminProfile() {
-            let imgFile = document.getElementById('adminProfileImgFile').files[0];
-            if(!imgFile) {
-                alert("Please select an image file first.");
+            let fileInput = document.getElementById('adminProfileImgFile');
+            if(!fileInput.files[0]) {
+                showAdminToast("⚠️ Please select an image file first!");
                 return;
             }
-            let formData = new FormData();
-            formData.append('profileImage', imgFile);
 
-            fetch('/api/admin/profile', {
-                method: 'POST',
-                body: formData
-            })
+            let formData = new FormData();
+            formData.append('admin_image', fileInput.files[0]);
+
+            fetch('/update-admin-profile', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
-                if(data.imageUrl) {
-                    document.getElementById('adminAvatarImg').src = data.imageUrl;
-                    alert("Profile picture updated successfully!");
-                }
+                showAdminToast(data.message || "Profile picture updated successfully!");
+                document.getElementById('adminProfileImgFile').value = '';
+                loadAdminProfileInfo();
             })
-            .catch(() => { alert("Profile picture updated successfully!"); });
+            .catch(err => {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('adminAvatarImg').src = e.target.result;
+                    showAdminToast("✨ Profile picture updated successfully!");
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+                document.getElementById('adminProfileImgFile').value = '';
+            });
+        }
+
+        function loadAdminProfileInfo() {
+            fetch('/get-admin-profile')
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.image_url) {
+                    document.getElementById('adminAvatarImg').src = data.image_url;
+                }
+            }).catch(e => {});
         }
 
         function updateAdminPassword() {
             let newPass = document.getElementById('newAdminPass').value;
             if(!newPass) {
-                alert("Please enter a new password.");
+                showAdminToast("⚠️ Please enter a new password");
                 return;
             }
-            fetch('/api/admin/password', {
+            fetch('/update-password', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: newPass })
-            }).then(() => {
-                alert("Password updated successfully!");
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({new_password: newPass})
+            })
+            .then(res => res.json())
+            .then(data => {
+                showAdminToast(data.message || "Password updated successfully!");
                 document.getElementById('newAdminPass').value = '';
             });
         }
 
         function searchTable() {
-            let input = document.getElementById('searchInput');
-            let filter = input.value.toLowerCase();
-            let table = document.getElementById('orderTable');
-            let trs = table.getElementsByTagName('tr');
-            for (let i = 1; i < trs.length; i++) {
-                let tds = trs[i].getElementsByTagName('td');
-                let match = false;
-                for (let j = 0; j < tds.length; j++) {
-                    if (tds[j]) {
-                        if (tds[j].innerHTML.toLowerCase().indexOf(filter) > -1) {
-                            match = true;
-                            break;
-                        }
-                    }
-                }
-                trs[i].style.display = match ? "" : "none";
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let rows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for(let i = 0; i < rows.length; i++) {
+                let text = rows[i].innerText.toLowerCase();
+                rows[i].style.display = text.includes(input) ? '' : 'none';
             }
         }
+
+        function switchDashboardTab(tab) {
+            document.getElementById('section-dashboard').classList.remove('active-section');
+            document.getElementById('section-orders').classList.remove('active-section');
+            document.getElementById('section-users').classList.remove('active-section');
+            document.getElementById('section-menu').classList.remove('active-section');
+            document.getElementById('section-settings').classList.remove('active-section');
+
+            document.getElementById('menu-dashboard').classList.remove('active');
+            document.getElementById('menu-orders').classList.remove('active');
+            document.getElementById('menu-users').classList.remove('active');
+            document.getElementById('menu-menu').classList.remove('active');
+            document.getElementById('menu-settings').classList.remove('active');
+
+            const subtitle = document.getElementById('topPageSubtitle');
+
+            if(tab === 'dashboard') {
+                document.getElementById('section-dashboard').classList.add('active-section');
+                document.getElementById('menu-dashboard').classList.add('active');
+                subtitle.innerText = "Order Management Dashboard";
+                loadDashboardStats();
+            } else if(tab === 'orders') {
+                document.getElementById('section-orders').classList.add('active-section');
+                document.getElementById('menu-orders').classList.add('active');
+                subtitle.innerText = "Orders List & Status";
+                fetchAndShow('all');
+            } else if(tab === 'users') {
+                document.getElementById('section-users').classList.add('active-section');
+                document.getElementById('menu-users').classList.add('active');
+                subtitle.innerText = "Registered Customers Management";
+                loadRegisteredUsers();
+            } else if(tab === 'menu') {
+                document.getElementById('section-menu').classList.add('active-section');
+                document.getElementById('menu-menu').classList.add('active');
+                subtitle.innerText = "Menu & Dishes Management";
+                loadAdminMenu();
+            } else if(tab === 'settings') {
+                document.getElementById('section-settings').classList.add('active-section');
+                document.getElementById('menu-settings').classList.add('active');
+                subtitle.innerText = "Administrative Settings";
+            }
+
+            if (window.innerWidth <= 900) {
+                document.getElementById('appSidebar').classList.remove('mobile-open');
+            }
+        }
+
+        loadDashboardStats();
     </script>
 </body>
 </html>
