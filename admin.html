@@ -29,7 +29,7 @@
         .sidebar-footer { padding: 15px; border-top: 1px solid #1f1f1f; font-size: 11px; color: #666; text-align: center; background: #0e0e0e; }
 
         /* Mobile Menu Toggle Button */
-        .mobile-toggle { display: none; background: #1a1a1a; border: 1px solid #d4af37; color: #d4af37; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 15px; align-items: center; gap: 8px; width: fit-content; }
+        .mobile-toggle { display: none; background: #1a1a1a; border: 1px solid #d4af37; color: #d4af37; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 15px; align-items: center; gap: 8px; width: fit-content; z-index: 1001; position: relative; }
 
         /* Main Content */
         .main-content { margin-left: 270px; flex: 1; padding: 25px; background: linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.88)), url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-attachment: fixed; min-height: 100vh; box-sizing: border-box; transition: margin-left 0.3s ease; }
@@ -85,14 +85,13 @@
         .settings-box { background: rgba(0,0,0,0.85); padding: 25px; border: 1px solid #d4af37; border-radius: 10px; width: 100%; max-width: 420px; box-sizing: border-box; margin-bottom: 20px; }
         .settings-box input { width: 100%; padding: 10px; margin: 8px 0 15px 0; background: #000; border: 1px solid #d4af37; color: #fff; border-radius: 5px; box-sizing: border-box; }
 
-        /* High Professional Admin Profile Card Style with Premium Vibe */
-        .admin-profile-card { background: rgba(18, 18, 18, 0.95); border: 1px solid #d4af37; border-radius: 14px; padding: 20px 25px; display: flex; align-items: center; gap: 22px; width: 100%; max-width: 420px; box-sizing: border-box; box-shadow: 0 8px 25px rgba(0,0,0,0.6); margin-bottom: 20px; position: relative; overflow: hidden; }
-        .admin-profile-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #d4af37; }
+        /* High Professional Admin Profile Card Style */
+        .admin-profile-card { background: rgba(18, 18, 18, 0.95); border: 1px solid #d4af37; border-radius: 14px; padding: 20px 25px; display: flex; align-items: center; gap: 22px; width: 100%; max-width: 420px; box-sizing: border-box; box-shadow: 0 8px 25px rgba(0,0,0,0.6); margin-bottom: 20px; }
         .admin-avatar-container { position: relative; width: 85px; height: 85px; flex-shrink: 0; }
         .admin-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.4); }
         .admin-info h3 { margin: 0; color: #fff; font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
         .admin-info p { margin: 4px 0 10px 0; color: #aaa; font-size: 13px; }
-        .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; padding: 4px 12px; border-radius: 20px; color: #d4af37; font-size: 12px; font-weight: 600; box-shadow: inset 0 0 10px rgba(212,175,55,0.1); }
+        .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.1); border: 1px solid #d4af37; padding: 4px 12px; border-radius: 20px; color: #d4af37; font-size: 12px; font-weight: 600; }
 
         /* Mobile Responsive Media Queries */
         @media (max-width: 900px) {
@@ -247,18 +246,26 @@
         <div id="section-settings" class="admin-section">
             <h2 style="color: #d4af37; margin-bottom: 20px;">Admin Settings</h2>
             
-            <!-- High Professional Admin Profile Card with Young Man Premium Photo -->
+            <!-- High Professional Admin Profile Card with Custom Upload Support -->
             <div class="admin-profile-card">
                 <div class="admin-avatar-container">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
                 </div>
                 <div class="admin-info">
                     <h3>Sumit Singh</h3>
-                    <p>Lead Administrator</p>
+                    <p>Administrator</p>
                     <div class="admin-badge">
-                        <span>⭐</span> Super Admin
+                        <span>⭐</span> Admin
                     </div>
                 </div>
+            </div>
+
+            <!-- Upload Custom Profile Picture Box -->
+            <div class="settings-box">
+                <h3 style="color: #fff; margin-top: 0; font-size: 16px;">Update Profile Picture</h3>
+                <label style="font-size: 13px; color: #aaa;">Choose your photo</label>
+                <input type="file" id="adminProfileImgFile" accept="image/*" style="padding: 7px; background: #000; color: #fff; border: 1px solid #d4af37; border-radius: 5px; width: 100%; box-sizing: border-box; margin: 8px 0 15px 0;">
+                <button class="login-btn" onclick="updateAdminProfile()" style="width: 100%;">Upload & Update Photo</button>
             </div>
 
             <!-- Reset Password Box -->
@@ -356,13 +363,12 @@
             .catch(err => console.error("Error loading lifetime stats:", err));
         }
 
-        // Combine for initialization
         function loadDashboardStats() {
             loadSidebarTodaySummary();
             loadDashboardLifetimeStats();
+            loadAdminProfileInfo();
         }
 
-        // Helper function updated to parse JSON string/array and extract only dish names and quantities
         function cleanItemNames(itemStr) {
             if (!itemStr) return '';
             try {
@@ -393,11 +399,11 @@
                 tbody.innerHTML = '';
                 orders.forEach(order => {
                     let statusVal = (order[7] || "").toLowerCase();
-                    let statusColor = '#e74c3c'; // Default Red for pending
+                    let statusColor = '#e74c3c'; 
                     if (statusVal.includes('deliver') && !statusVal.includes('out')) {
-                        statusColor = '#2ecc71'; // Green
+                        statusColor = '#2ecc71'; 
                     } else if (statusVal.includes('out') || statusVal.includes('dispatch')) {
-                        statusColor = '#e67e22'; // Orange
+                        statusColor = '#e67e22'; 
                     }
 
                     let cleanItems = cleanItemNames(order[4]);
@@ -513,6 +519,42 @@
                     loadAdminMenu();
                 });
             }
+        }
+
+        // Custom Admin Profile Image Upload Function
+        function updateAdminProfile() {
+            let fileInput = document.getElementById('adminProfileImgFile');
+            if(!fileInput.files[0]) return alert("Please select an image file first!");
+
+            let formData = new FormData();
+            formData.append('admin_image', fileInput.files[0]);
+
+            fetch('/update-admin-profile', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || "Profile picture updated successfully!");
+                document.getElementById('adminProfileImgFile').value = '';
+                loadAdminProfileInfo();
+            })
+            .catch(err => {
+                // Fallback client-side preview if backend route is added later
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('adminAvatarImg').src = e.target.result;
+                    alert("Profile picture updated successfully!");
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            });
+        }
+
+        function loadAdminProfileInfo() {
+            fetch('/get-admin-profile')
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.image_url) {
+                    document.getElementById('adminAvatarImg').src = data.image_url;
+                }
+            }).catch(e => {});
         }
 
         function updateAdminPassword() {
