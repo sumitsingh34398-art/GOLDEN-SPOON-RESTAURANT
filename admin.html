@@ -270,6 +270,196 @@
             .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", loadDashboardStats()) : alert("❌ Wrong Password!"));
         }
 
+        // --- FETCH ONLY TODAY'S ORDERS FOR SUMMARY & STATS ---
+        function loadDashboardStats() {
+            fetch('/get-orders?filter=today')
+            .then(res => res.json())
+            .then(orders => {
+                let total = orders.length;
+                let delivered = 0;
+                let outForDelivery = 0;
+                let pending = 0;
+
+                orders.forEach(order => {
+                    let status = (order[7] || "").toLowerCase();
+                    if (status.includes('deliver') && !status.includes('out')) {
+                        delivered++;
+                    } else if (status.includes('out') || status.includes('dispatch')) {
+                        outForDelivery++;
+                    } else {
+                        pending++;
+                    }
+                });
+
+                // Update Sidebar Summary Box
+                document.getElementById('sumTotal').innerText = total;
+                document.getElementById('sumDelivered').innerText = delivered;
+                document.getElementById('sumOut').innerText = outForDelivery;
+                document.getElementById('sumPending').innerText = pending;
+
+                // Update Dashboard Overview Cards
+                if(document.getElementById('statTotalOrders')) {
+                    document.getElementById('statTotalOrders').innerText = total;
+                    document.getElementById('statDelivered').innerText = delivered;
+                    document.getElementById('statOutDelivery').innerText = outForDelivery;
+                    document.getElementById('statPending').innerText = pending;
+                }
+            })
+            .catch(err => console.error("Error loading today's stats:", err));
+        }
+
+        function fetchAndShow(filterType) {
+            if(filterType === 'all') {
+                document.getElementById('btn-all').classList.add('active');
+                document.getElementById('btn-today').classList.remove('active');
+            } else {
+                document.getElementById('btn-today').classList.add('active');
+                document.getElementById('btn-all').classList.remove('active');
+            }
+
+            fetch(`/get-orders?filter=${filterType}`)
+            .then(res => res.json())
+            .then(orders => {
+                let tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+                orders.forEach(order => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${order[0].substring(0, 8)}...</td>
+                        <td>${order[1]}<br><small style="color:#aaa">${order[2]}</small></td>
+                        <td>${order[6]}</td>
+                        <td style="font-size:11px; text-align:left; max-width:200px;">${order[4]}</td>
+                        <td>₹${order[5]}</td>
+                        <td><span style="font-weight:600; color:${order[7]=='delivered'?'#2ecc71':'#e74c3c'}">${order[7]}</span></td>
+                        <td>
+                            <select class="status-select" onchange="updateStatus('${order[0]}', this.value)">
+                                <option value="pending" ${order[7]=='pending'?'selected':''}>Pending</option>
+                                <option value="out for delivery" ${order[7]=='out for delivery'?'selected':''}>Out for Delivery</option>
+                                <option value="delivered" ${order[7]=='delivered'?'selected':''}>Delivered</option>
+                            </select>
+                        </td>
+                        <td><a href="/receipt/${order[0]}" target="_blank" class="receipt-link">View</a></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function updateStatus(orderId, newStatus) {
+            fetch(`/update-order/${orderId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({status: newStatus})
+            })
+            .then(res => res.json())
+            .then(data => {
+                loadDashboardStats();
+            });
+        }
+
+        function clearAllOrders() {
+            if(confirm("Are you sure you want to clear all orders?")) {
+                fetch('/clear-all-orders', {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    fetchAndShow('all');
+                    loadDashboardStats();
+                });
+            }
+        }
+
+        function loadRegisteredUsers() {
+            fetch('/get-users')
+            .then(res => res.json())
+            .then(users => {
+                let tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+                users.forEach(u => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${u[0]}</td><td>${u[1]}</td><td>${u[2]}</td>`;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function loadAdminMenu() {
+            fetch('/get-menu')
+            .then(res => res.json())
+            .then(items => {
+                let grid = document.getElementById('menuGrid');
+                grid.innerHTML = '';
+                items.forEach(item => {
+                    let card = document.createElement('div');
+                    card.className = 'menu-card';
+                    card.innerHTML = `
+                        <img src="${item[3]}" alt="${item[1]}">
+                        <h4 style="margin:8px 0 4px 0; font-size:13px; color:#fff;">${item[1]}</h4>
+                        <p style="margin:0; font-size:12px; color:#d4af37;">₹${item[2]}</p>
+                        <button class="delete-btn" onclick="deleteMenuItem('${item[0]}')">Delete</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        function addNewMenuItem() {
+            let name = document.getElementById('menuName').value;
+            let price = document.getElementById('menuPrice').value;
+            let fileInput = document.getElementById('menuImageFile');
+
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price);
+            if(fileInput.files[0]) {
+                formData.append('image', fileInput.files[0]);
+            }
+
+            fetch('/add-menu-item', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                loadAdminMenu();
+                document.getElementById('menuName').value = '';
+                document.getElementById('menuPrice').value = '';
+                document.getElementById('menuImageFile').value = '';
+            });
+        }
+
+        function deleteMenuItem(id) {
+            if(confirm("Remove this item from menu?")) {
+                fetch(`/delete-menu-item/${id}`, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    loadAdminMenu();
+                });
+            }
+        }
+
+        function updateAdminPassword() {
+            let newPass = document.getElementById('newAdminPass').value;
+            if(!newPass) return alert("Please enter a new password");
+            fetch('/update-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({new_password: newPass})
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById('newAdminPass').value = '';
+            });
+        }
+
+        function searchTable() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let rows = document.getElementById('tableBody').getElementsByTagName('tr');
+            for(let i = 0; i < rows.length; i++) {
+                let text = rows[i].innerText.toLowerCase();
+                rows[i].style.display = text.includes(input) ? '' : 'none';
+            }
+        }
+
         function switchDashboardTab(tab) {
             document.getElementById('section-dashboard').classList.remove('active-section');
             document.getElementById('section-orders').classList.remove('active-section');
@@ -308,211 +498,11 @@
             } else if(tab === 'settings') {
                 document.getElementById('section-settings').classList.add('active-section');
                 document.getElementById('menu-settings').classList.add('active');
-                subtitle.innerText = "Admin Account Settings";
-            }
-
-            // Auto close sidebar on mobile after clicking a tab
-            if(window.innerWidth <= 900) {
-                document.getElementById('appSidebar').classList.remove('mobile-open');
+                subtitle.innerText = "Administrative Settings";
             }
         }
 
-        function loadDashboardStats() {
-            fetch('/get-orders?filter=all')
-            .then(res => res.json())
-            .then(data => {
-                let total = data.length;
-                let delivered = 0, out = 0, pending = 0;
-                data.forEach(o => {
-                    let st = (o[7] || 'pending').toLowerCase();
-                    if(st === 'delivered') delivered++;
-                    else if(st.includes('out')) out++;
-                    else pending++;
-                });
-                document.getElementById('statTotalOrders').innerText = total;
-                document.getElementById('statDelivered').innerText = delivered;
-                document.getElementById('statOutDelivery').innerText = out;
-                document.getElementById('statPending').innerText = pending;
-
-                // Update Sidebar Summary too
-                document.getElementById('sumTotal').innerText = total;
-                document.getElementById('sumDelivered').innerText = delivered;
-                document.getElementById('sumOut').innerText = out;
-                document.getElementById('sumPending').innerText = pending;
-            });
-        }
-
-        function fetchAndShow(filter) {
-            if(filter === 'all') {
-                document.getElementById('btn-all').classList.add('active');
-                document.getElementById('btn-today').classList.remove('active');
-            } else {
-                document.getElementById('btn-today').classList.add('active');
-                document.getElementById('btn-all').classList.remove('active');
-            }
-
-            fetch(`/get-orders?filter=${filter}`)
-            .then(res => res.json())
-            .then(data => {
-                const body = document.getElementById('tableBody');
-                body.innerHTML = "";
-                data.forEach(o => {
-                    let status = o[7] ? o[7] : 'pending'; 
-                    body.innerHTML += `<tr>
-                        <td>${o[0]}</td>
-                        <td>${o[1]}</td>
-                        <td>${o[6]}</td>
-                        <td>${parseItems(o[4])}</td>
-                        <td>₹${o[5]}</td>
-                        <td>${status.toUpperCase()}</td>
-                        <td><select class="status-select" onchange="updateStatus('${o[0]}', this.value)">
-                            <option value="pending" ${status=='pending'?'selected':''}>Pending</option>
-                            <option value="preparing" ${status=='preparing'?'selected':''}>Preparing</option>
-                            <option value="out for delivery" ${status=='out for delivery'?'selected':''}>Out for Delivery</option>
-                            <option value="delivered" ${status=='delivered'?'selected':''}>Delivered</option>
-                        </select></td>
-                        <td><a href="/receipt/${o[0]}" target="_blank" class="receipt-link">🖨️ View Receipt</a></td>
-                    </tr>`;
-                });
-            });
-        }
-
-        function parseItems(raw) { try { return JSON.parse(raw.replace(/'/g, '"')).map(i => `${i.name}(${i.qty})`).join(', '); } catch { return raw; } }
-        
-        function updateStatus(id, newStatus) { 
-            fetch(`/update-order/${id}`, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({status: newStatus}) 
-            })
-            .then(res => res.json())
-            .then(data => {
-                fetchAndShow('all');
-                loadDashboardStats();
-            }); 
-        }
-
-        function searchTable() { 
-            let input = document.getElementById("searchInput").value.toUpperCase(); 
-            let rows = document.getElementById("tableBody").getElementsByTagName("tr"); 
-            for (let i = 0; i < rows.length; i++) { 
-                rows[i].style.display = rows[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; 
-            } 
-        }
-
-        function loadRegisteredUsers() {
-            fetch('/get-users')
-            .then(res => res.json())
-            .then(data => {
-                let tbody = document.getElementById('usersTableBody');
-                tbody.innerHTML = "";
-                data.forEach(u => {
-                    tbody.innerHTML += `<tr><td>#${u[0]}</td><td>${u[1]}</td><td>${u[2]}</td></tr>`;
-                });
-            });
-        }
-
-        function loadAdminMenu() {
-            fetch('/get-menu')
-            .then(res => res.json())
-            .then(data => {
-                let grid = document.getElementById('menuGrid');
-                grid.innerHTML = "";
-                data.forEach(m => {
-                    grid.innerHTML += `<div class="menu-card">
-                        <img src="${m[3]}" alt="Dish">
-                        <h4 style="color: #d4af37; margin: 8px 0 4px; font-size: 13px;">${m[1]}</h4>
-                        <p style="margin: 0; font-weight: bold; font-size: 13px;">₹${m[2]}</p>
-                        <button class="delete-btn" onclick="deleteMenuItem('${m[0]}')">🗑️ Delete</button>
-                    </div>`;
-                });
-            });
-        }
-
-        function addNewMenuItem() {
-            let name = document.getElementById('menuName').value;
-            let price = document.getElementById('menuPrice').value;
-            let imageFile = document.getElementById('menuImageFile').files[0];
-
-            if(!name || !price || !imageFile) {
-                alert("Please fill all fields and select an image file!");
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append('name', name);
-            formData.append('price', price);
-            formData.append('image', imageFile);
-
-            fetch('/add-menu-item', { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message);
-                document.getElementById('menuName').value = "";
-                document.getElementById('menuPrice').value = "";
-                document.getElementById('menuImageFile').value = "";
-                loadAdminMenu();
-            });
-        }
-
-        function deleteMenuItem(id) {
-            if(confirm("Are you sure you want to delete this dish?")) {
-                fetch(`/delete-menu-item/${id}`, { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    alert(data.message);
-                    loadAdminMenu();
-                });
-            }
-        }
-
-        function clearAllOrders() {
-            if(confirm("⚠️ Warning: Are you sure you want to delete ALL orders permanently?")) {
-                fetch('/clear-all-orders', { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    alert(data.message);
-                    fetchAndShow('all');
-                    loadDashboardStats();
-                });
-            }
-        }
-
-        function clearAllUsers() {
-            if(confirm("⚠️ Warning: Are you sure you want to delete ALL registered users permanently?")) {
-                fetch('/clear-all-users', { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    alert(data.message);
-                    loadRegisteredUsers();
-                });
-            }
-        }
-
-        function updateAdminPassword() {
-            let newPass = document.getElementById('newAdminPass').value;
-            if(!newPass) {
-                alert("Please enter a new password!");
-                return;
-            }
-            
-            fetch('/update-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ new_password: newPass })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message || "Password updated successfully!");
-                document.getElementById('newAdminPass').value = "";
-            })
-            .catch(err => {
-                alert("Password updated successfully!");
-                document.getElementById('newAdminPass').value = "";
-            });
-        }
-
-        // Initialize dashboard stats on load
+        // Auto load summary stats on page load
         loadDashboardStats();
     </script>
 </body>
