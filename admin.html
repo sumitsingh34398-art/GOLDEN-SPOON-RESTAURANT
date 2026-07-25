@@ -121,7 +121,8 @@
                 <div class="summary-row"><span>Total Orders</span><span id="sumTotal">0</span></div>
                 <div class="summary-row"><span>Delivered</span><span id="sumDelivered">0</span></div>
                 <div class="summary-row"><span>Out for Delivery</span><span id="sumOut">0</span></div>
-                <div class="summary-row"><span>Pending</span><span id="sumPending">0</span></div>
+                <!-- Pending text updated with Red Color -->
+                <div class="summary-row"><span>Pending</span><span id="sumPending" style="color: #e74c3c;">0</span></div>
             </div>
         </div>
 
@@ -270,8 +271,8 @@
             .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", loadDashboardStats()) : alert("❌ Wrong Password!"));
         }
 
-        // --- FETCH ONLY TODAY'S ORDERS FOR SUMMARY & STATS ---
-        function loadDashboardStats() {
+        // --- 1. LOAD SIDEBAR TODAY'S SUMMARY ---
+        function loadSidebarTodaySummary() {
             fetch('/get-orders?filter=today')
             .then(res => res.json())
             .then(orders => {
@@ -291,13 +292,35 @@
                     }
                 });
 
-                // Update Sidebar Summary Box
                 document.getElementById('sumTotal').innerText = total;
                 document.getElementById('sumDelivered').innerText = delivered;
                 document.getElementById('sumOut').innerText = outForDelivery;
                 document.getElementById('sumPending').innerText = pending;
+            })
+            .catch(err => console.error("Error loading today's summary:", err));
+        }
 
-                // Update Dashboard Overview Cards
+        // --- 2. LOAD DASHBOARD ALL-TIME / LIFETIME STATS ---
+        function loadDashboardLifetimeStats() {
+            fetch('/get-orders?filter=all')
+            .then(res => res.json())
+            .then(orders => {
+                let total = orders.length;
+                let delivered = 0;
+                let outForDelivery = 0;
+                let pending = 0;
+
+                orders.forEach(order => {
+                    let status = (order[7] || "").toLowerCase();
+                    if (status.includes('deliver') && !status.includes('out')) {
+                        delivered++;
+                    } else if (status.includes('out') || status.includes('dispatch')) {
+                        outForDelivery++;
+                    } else {
+                        pending++;
+                    }
+                });
+
                 if(document.getElementById('statTotalOrders')) {
                     document.getElementById('statTotalOrders').innerText = total;
                     document.getElementById('statDelivered').innerText = delivered;
@@ -305,7 +328,19 @@
                     document.getElementById('statPending').innerText = pending;
                 }
             })
-            .catch(err => console.error("Error loading today's stats:", err));
+            .catch(err => console.error("Error loading lifetime stats:", err));
+        }
+
+        // Combine for initialization
+        function loadDashboardStats() {
+            loadSidebarTodaySummary();
+            loadDashboardLifetimeStats();
+        }
+
+        // Helper function to clean item text (remove prices if present in the string)
+        function cleanItemNames(itemStr) {
+            if (!itemStr) return '';
+            return itemStr.replace(/₹\d+/g, '').replace(/\(\s*\)/g, '');
         }
 
         function fetchAndShow(filterType) {
@@ -323,14 +358,24 @@
                 let tbody = document.getElementById('tableBody');
                 tbody.innerHTML = '';
                 orders.forEach(order => {
+                    let statusVal = (order[7] || "").toLowerCase();
+                    let statusColor = '#e74c3c'; // Default Red for pending
+                    if (statusVal.includes('deliver') && !statusVal.includes('out')) {
+                        statusColor = '#2ecc71'; // Green
+                    } else if (statusVal.includes('out') || statusVal.includes('dispatch')) {
+                        statusColor = '#e67e22'; // Orange
+                    }
+
+                    let cleanItems = cleanItemNames(order[4]);
+
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${order[0].substring(0, 8)}...</td>
                         <td>${order[1]}<br><small style="color:#aaa">${order[2]}</small></td>
                         <td>${order[6]}</td>
-                        <td style="font-size:11px; text-align:left; max-width:200px;">${order[4]}</td>
+                        <td style="font-size:11px; text-align:left; max-width:200px;">${cleanItems}</td>
                         <td>₹${order[5]}</td>
-                        <td><span style="font-weight:600; color:${order[7]=='delivered'?'#2ecc71':'#e74c3c'}">${order[7]}</span></td>
+                        <td><span style="font-weight:600; color:${statusColor}">${order[7]}</span></td>
                         <td>
                             <select class="status-select" onchange="updateStatus('${order[0]}', this.value)">
                                 <option value="pending" ${order[7]=='pending'?'selected':''}>Pending</option>
