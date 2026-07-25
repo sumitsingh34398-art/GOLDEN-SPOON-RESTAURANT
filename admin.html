@@ -493,6 +493,11 @@
             let price = document.getElementById('menuPrice').value;
             let fileInput = document.getElementById('menuImageFile');
 
+            if(!name || !price) {
+                alert("Please enter dish name and price!");
+                return;
+            }
+
             let formData = new FormData();
             formData.append('name', name);
             formData.append('price', price);
@@ -500,6 +505,22 @@
                 formData.append('image', fileInput.files[0]);
             }
 
+            fetch('/add-menu-item', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || "Menu item added successfully!");
+                document.getElementById('menuName').value = '';
+                document.getElementById('menuPrice').value = '';
+                document.getElementById('menuImageFile').value = '';
+                loadAdminMenu();
+            })
+            .catch(err => {
+                alert("Error adding menu item!");
+                console.error(err);
+            });
         }
 
         function deleteMenuItem(id) {
@@ -558,7 +579,7 @@
             .then(res => res.json())
             .then(data => {
                 alert(data.message);
-                document.getElementById('newAdminPass').value = '--';
+                document.getElementById('newAdminPass').value = '';
             });
         }
 
@@ -612,7 +633,6 @@
                 subtitle.innerText = "Administrative Settings";
             }
 
-            // Automatically close the sidebar on mobile view when any menu tab is clicked
             document.getElementById('appSidebar').classList.remove('mobile-open');
         }
 
