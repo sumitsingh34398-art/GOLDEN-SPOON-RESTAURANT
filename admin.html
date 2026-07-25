@@ -595,7 +595,7 @@
                 document.getElementById('section-orders').classList.add('active-section');
                 document.getElementById('menu-orders').classList.add('active');
                 subtitle.innerText = "Orders List & Status";
-                fetchAndStatus('all');
+                fetchAndShow('all');
             } else if(tab === 'users') {
                 document.getElementById('section-users').classList.add('active-section');
                 document.getElementById('menu-users').classList.add('active');
@@ -612,10 +612,8 @@
                 subtitle.innerText = "Administrative Settings";
             }
 
-            // Auto-close sidebar on mobile view after clicking any menu tab
-            if (window.innerWidth <= 900) {
-                document.getElementById('appSidebar').classList.remove('mobile-open');
-            }
+            // Automatically close the sidebar on mobile view when any menu tab is clicked
+            document.getElementById('appSidebar').classList.remove('mobile-open');
         }
 
         // Auto load summary stats on page load
