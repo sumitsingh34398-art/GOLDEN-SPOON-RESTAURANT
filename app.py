@@ -23,7 +23,7 @@ app.secret_key = 'golden_spoon_secret'
 CORS(app)
 
 ADMIN_USER = "Sumit"
-ADMIN_PASS = "S1947"
+ADMIN_PASS = "S432"
 
 # --- EMAIL CONFIGURATION FOR OTP ---
 SENDER_EMAIL = "sumitsingh34398@gmail.com"
