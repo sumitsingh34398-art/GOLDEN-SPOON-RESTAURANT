@@ -201,7 +201,7 @@
             color: #f3e5ab; 
         }
 
-        /* Professional Luxury Modal Box (Matching Previous Theme) */
+        /* High Professional Luxury Modal Box */
         .custom-modal {
             display: none; 
             position: fixed; 
@@ -220,7 +220,7 @@
             text-align: center; 
             color: #fff; 
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.1);
             animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -229,13 +229,13 @@
             100% { transform: scale(1); opacity: 1; }
         }
         .modal-logo {
-            width: 55px; height: 55px;
+            width: 60px; height: 60px;
             border: 2px solid #d4af37; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             margin: 0 auto 15px auto;
             background: rgba(212, 175, 55, 0.1);
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-            font-size: 24px;
+            font-size: 26px;
         }
         .modal-btn {
             background: linear-gradient(135deg, #d4af37, #aa8c2c); 
@@ -246,8 +246,9 @@
             border-radius: 8px; 
             color: #000;
             width: 100%;
-            margin-top: 15px;
+            margin-top: 20px;
             font-size: 14px;
+            letter-spacing: 0.5px;
             box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
             transition: all 0.3s;
         }
@@ -292,14 +293,14 @@
     <button class="logout-btn" onclick="logout()">LOGOUT</button>
 </div>
 
-<!-- Luxury Custom Modal Box -->
+<!-- High Professional Luxury Custom Modal Box -->
 <div id="orderModal" class="custom-modal">
     <div class="modal-box-content">
-        <div class="modal-logo">🍽️</div>
-        <h2 id="modalTitle" style="color:#d4af37; font-family:'Playfair Display', serif; font-size:22px; margin-bottom:8px;">Order Status</h2>
-        <div style="font-size: 13px; color: #bbb; margin-bottom: 15px;">Golden Spoon Restaurant</div>
-        <p id="modalMsg" style="margin:10px 0 20px 0; font-size:14px; color:#ddd; line-height:1.5;"></p>
-        <button class="modal-btn" onclick="closeModal()">CONTINUE</button>
+        <div class="modal-logo" id="modalIcon">🍽️</div>
+        <h2 id="modalTitle" style="color:#d4af37; font-family:'Playfair Display', serif; font-size:22px; margin-bottom:6px;">Order Status</h2>
+        <div style="font-size: 12px; color: #a0a0a0; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Golden Spoon Restaurant</div>
+        <p id="modalMsg" style="margin:10px 0 15px 0; font-size:14px; color:#ddd; line-height:1.6;"></p>
+        <button class="modal-btn" onclick="closeModal()">PROCEED & CONTINUE</button>
     </div>
 </div>
 
@@ -346,7 +347,7 @@
     // Initialize quantity and id for static dishes
     dishes.forEach((d, i) => { d.qty = 0; d.id = i; });
 
-    // Database se naye items fetch karke append karne ka function (Updated & Fixed)
+    // Database se naye items fetch karke append karne ka function
     function fetchExtraMenu() {
         fetch('/get-menu')
         .then(res => res.json())
@@ -414,6 +415,25 @@
     }
 
     async function placeOrder() {
+        // Timing Restriction Check
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const totalMinutes = hours * 60 + minutes;
+        
+        // 12:00 AM to 5:00 AM (0 to 300 minutes)
+        const isNightClosed = (totalMinutes >= 0 && totalMinutes < 300);
+        // 11:00 AM to 11:15 AM (660 to 675 minutes)
+        const isMorningClosed = (totalMinutes >= 660 && totalMinutes < 675);
+
+        if (isNightClosed || isMorningClosed) {
+            document.getElementById('modalIcon').innerText = "⏳";
+            document.getElementById('modalTitle').innerText = "Restaurant Temporarily Closed";
+            document.getElementById('modalMsg').innerText = "Golden Spoon kitchen operations remain offline during scheduled maintenance windows (11:00 AM - 11:15 AM & 12:00 AM - 5:00 AM). Please place your order later.";
+            document.getElementById('orderModal').style.display = 'flex';
+            return;
+        }
+
         const name = document.getElementById('userName').value;
         const phone = document.getElementById('userPhone').value;
         const address = document.getElementById('userAddress').value;
@@ -442,16 +462,18 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
+                document.getElementById('modalIcon').innerText = "✨";
+                document.getElementById('modalTitle').innerText = "Order Placed Successfully";
+                document.getElementById('modalMsg').innerText = "Your premium order including Service Charge and GST has been securely recorded and dispatched via WhatsApp.";
                 document.getElementById('orderModal').style.display = 'flex';
-                document.getElementById('modalTitle').innerText = "Order Successful";
-                document.getElementById('modalMsg').innerText = "Your order with Service Charge and GST has been placed successfully!";
             } catch (e) {
                 console.log("Error:", e);
             }
         } else {
+            document.getElementById('modalIcon').innerText = "⚠️";
+            document.getElementById('modalTitle').innerText = "Incomplete Information";
+            document.getElementById('modalMsg').innerText = "Kindly complete all delivery fields (Name, Phone, Address) and select at least one item from the menu before placing your order.";
             document.getElementById('orderModal').style.display = 'flex';
-            document.getElementById('modalTitle').innerText = "Incomplete Details";
-            document.getElementById('modalMsg').innerText = "Please fill all your details and select items to place an order.";
         }
     }
 
