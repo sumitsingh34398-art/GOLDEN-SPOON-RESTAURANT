@@ -14,13 +14,24 @@
             color: #fff; 
             display: flex; 
             flex-direction: row;
-            min-height: 100vh; 
+            height: 100vh; 
+            overflow: hidden; /* Poori body ko lock kar diya taaki double scroll na aaye */
         }
         
-        /* Layout Structure */
-        .menu-section { width: 70%; padding: 40px; }
+        /* Layout Structure - Sirf Menu Section Scroll Hoga */
+        .menu-section { 
+            width: 70%; 
+            padding: 40px; 
+            height: 100vh;
+            overflow-y: auto; /* Yahan scrollable banaya hai */
+        }
+        .menu-section::-webkit-scrollbar { width: 6px; }
+        .menu-section::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 4px; }
+
+        /* Checkout Section apni jagah Fixed/Static rahega */
         .checkout-section { 
             width: 30%; 
+            height: 100vh;
             background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%); 
             padding: 30px; 
             border-left: 2px solid #d4af37; 
@@ -28,6 +39,7 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            overflow-y: auto;
         }
 
         h1 { 
@@ -57,7 +69,7 @@
         }
 
         /* Menu Grid System */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-bottom: 40px; }
         .card { 
             background: rgba(15, 15, 15, 0.9); 
             border: 1px solid #333; 
@@ -128,7 +140,7 @@
             margin: 15px 0; 
             font-size: 13px; 
             color: #cccccc; 
-            max-height: 180px; 
+            max-height: 150px; 
             overflow-y: auto; 
             padding-right: 5px;
         }
@@ -201,7 +213,7 @@
             color: #f3e5ab; 
         }
 
-        /* High Professional Luxury Modal Box */
+        /* High Professional Luxury Custom Modal Box */
         .custom-modal {
             display: none; 
             position: fixed; 
@@ -256,9 +268,9 @@
 
         /* Responsive Breakpoints for Mobile & Tablet */
         @media(max-width: 1024px) {
-            body { flex-direction: column; }
-            .menu-section { width: 100%; padding: 20px; }
-            .checkout-section { width: 100%; border-left: none; border-top: 2px solid #d4af37; padding: 25px 20px; }
+            body { flex-direction: column; height: auto; overflow: auto; }
+            .menu-section { width: 100%; height: auto; overflow-y: visible; padding: 20px; }
+            .checkout-section { width: 100%; height: auto; border-left: none; border-top: 2px solid #d4af37; padding: 25px 20px; }
             .grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
         }
         @media(max-width: 580px) {
