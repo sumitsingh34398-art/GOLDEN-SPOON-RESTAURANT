@@ -8,16 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* Poore page par single continuous background image */
         body {
             font-family: 'Poppins', sans-serif;
-            background: #0c0c0c;
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), url('assets/background.jpg') no-repeat center center fixed;
+            background-size: cover;
             color: #fff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Navbar Styling - Made Transparent to match continuous background */
+        /* Navbar Styling - Transparent to match continuous background */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -51,16 +54,21 @@
         /* Hero Section */
         .hero {
             flex: 1;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/background.jpg') no-repeat center center;
-            background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
+        }
+        .hero-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
         }
         
-        /* Updated: Cursive writing font for Welcome To */
+        /* Welcome To in Cursive Font */
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
             font-size: 32px; 
@@ -91,9 +99,9 @@
         .divider::before { right: 105%; }
         .divider::after { left: 105%; }
 
-        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 35px; font-weight: 300; }
+        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 30px; font-weight: 300; }
         
-        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 50px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 35px; }
         .btn-primary, .btn-secondary {
             padding: 14px 28px;
             font-size: 13px;
@@ -110,17 +118,19 @@
         .btn-secondary:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-2px); }
 
         /* Professional Developer Credit Card Box */
-        .dev-card-wrapper {
+        .dev-section {
             display: flex;
             justify-content: center;
-            width: 100%;
-            margin-top: 10px;
+            align-items: center;
+            padding: 20px 20px 40px 20px;
+            background: transparent;
         }
         .dev-card {
             border: 1px solid #d4af37;
             padding: 22px 35px;
             border-radius: 12px;
-            background: rgba(18, 18, 18, 0.9);
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(8px);
             max-width: 460px;
             width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 12px rgba(212, 175, 55, 0.15);
@@ -186,17 +196,17 @@
                 <a href="schedule.html" class="btn-primary">EXPLORE MENU</a>
                 <a href="order.html" class="btn-secondary">BOOK A TABLE</a>
             </div>
-
-            <!-- Developer Credit Box -->
-            <div class="dev-card-wrapper">
-                <div class="dev-card">
-                    <h3>Developed by Sumit Singh</h3>
-                    <p>Unofficial education study project</p>
-                    <div class="copyright">&#169; 2026 golden spoon restaurant</div>
-                </div>
-            </div>
         </div>
     </header>
+
+    <!-- Developer Credit Box -->
+    <section class="dev-section">
+        <div class="dev-card">
+            <h3>Developed by Sumit Singh</h3>
+            <p>Unofficial education study project</p>
+            <div class="copyright">&#169; 2026 golden spoon restaurant</div>
+        </div>
+    </section>
 
 </body>
 </html>
