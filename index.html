@@ -36,7 +36,7 @@
             z-index: 10;
         }
         
-        /* Logo with exact Spoon Vector Icon matching your reference image */
+        /* Logo with exact Spoon Vector Icon */
         .brand-logo {
             display: flex;
             align-items: center;
@@ -50,7 +50,8 @@
         }
         .logo-area { display: flex; flex-direction: column; }
         .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; line-height: 1.1; }
-        .sub-logo { font-size: 9px; letter-spacing: 4px; color: #aaa; text-align: left; }
+        /* Professional refined subtitle spacing */
+        .sub-logo { font-size: 9.5px; letter-spacing: 5px; color: #c2c2c2; text-align: left; font-weight: 500; margin-top: 2px; }
         
         .nav-links { display: flex; list-style: none; gap: 26px; align-items: center; }
         .nav-links a { text-decoration: none; color: #ddd; font-size: 13px; font-weight: 500; letter-spacing: 1px; transition: color 0.3s; }
@@ -78,7 +79,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 30px 20px;
+            padding: 20px 20px;
         }
         
         .hero-overlay {
@@ -89,14 +90,14 @@
             max-width: 950px;
         }
 
-        /* "Welcome to" with exact long side lines matching reference image */
+        /* "Welcome to" with exact long side lines */
         .welcome-container {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
-            max-width: 600px;
-            margin-bottom: 2px;
+            max-width: 550px;
+            margin-bottom: -2px;
         }
         .welcome-line {
             flex: 1;
@@ -105,28 +106,28 @@
         }
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
-            font-size: 40px; 
+            font-size: 38px; 
             letter-spacing: 2px; 
             color: #d4af37; 
-            padding: 0 20px;
+            padding: 0 18px;
             font-weight: 600; 
         }
 
-        /* Main title */
+        /* Main title - Reduced gap */
         .main-title { 
             font-family: 'Playfair Display', serif; 
             color: #ffffff; 
-            font-size: 56px; 
+            font-size: 54px; 
             letter-spacing: 5px; 
-            margin-bottom: 2px; 
+            margin-bottom: -4px; 
         }
         
-        /* Divider lines matching reference image */
+        /* Divider lines matching reference image - Reduced gap */
         .divider {
-            font-size: 13px;
+            font-size: 12px;
             letter-spacing: 8px;
             color: #d4af37;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
             position: relative;
             display: inline-block;
             font-weight: 500;
@@ -135,16 +136,16 @@
             content: '';
             position: absolute;
             top: 50%;
-            width: 90px;
+            width: 80px;
             height: 1px;
             background: rgba(212, 175, 55, 0.7);
         }
         .divider::before { right: 110%; }
         .divider::after { left: 110%; }
 
-        .desc { font-size: 13px; color: #ccc; letter-spacing: 2px; margin-bottom: 30px; font-weight: 300; }
+        .desc { font-size: 13px; color: #ccc; letter-spacing: 2px; margin-bottom: 24px; font-weight: 300; }
         
-        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 28px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; }
         .btn-primary, .btn-secondary {
             padding: 12px 26px;
             font-size: 13px;
@@ -168,13 +169,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             background: rgba(10, 10, 10, 0.85);
             margin-top: auto;
         }
         .dev-card {
             border: 1px solid #d4af37;
-            padding: 15px 30px;
+            padding: 12px 25px;
             border-radius: 8px;
             background: rgba(18, 18, 18, 0.9);
             backdrop-filter: blur(8px);
@@ -186,13 +187,13 @@
         .dev-card h3 {
             font-family: 'Playfair Display', serif;
             color: #d4af37;
-            font-size: 16px;
-            margin-bottom: 3px;
+            font-size: 15px;
+            margin-bottom: 2px;
         }
         .dev-card p {
             color: #cccccc;
             font-size: 11px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             font-weight: 300;
         }
         .dev-card .copyright {
@@ -209,7 +210,7 @@
         @media(max-width: 768px) {
             .navbar { padding: 15px 20px; flex-direction: column; gap: 12px; }
             .nav-links { gap: 10px; flex-wrap: wrap; justify-content: center; }
-            .main-title { font-size: 34px; letter-spacing: 3px; }
+            .main-title { font-size: 32px; letter-spacing: 3px; }
             .hero-btns { flex-direction: column; align-items: center; }
             .btn-primary, .btn-secondary { width: 100%; max-width: 280px; justify-content: center; }
         }
