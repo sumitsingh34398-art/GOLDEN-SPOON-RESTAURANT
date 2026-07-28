@@ -50,7 +50,7 @@
         }
         .book-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
 
-        /* Hero Section - Balanced spacing */
+        /* Hero Section */
         .hero {
             flex: 1;
             background: transparent;
@@ -68,13 +68,26 @@
             max-width: 900px;
         }
         
-        /* "Welcome To" - Ab main heading ke theek upar professional style mein hai */
+        /* "Welcome to" with side divider lines matching your reference photo */
+        .welcome-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .welcome-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(212, 175, 55, 0.6);
+            max-width: 120px;
+        }
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
             font-size: 38px; 
             letter-spacing: 2px; 
             color: #d4af37; 
-            margin-bottom: 5px; 
+            padding: 0 20px;
             font-weight: 600; 
         }
 
@@ -191,7 +204,11 @@
 
     <header class="hero">
         <div class="hero-overlay">
-            <p class="welcome-text">Welcome To</p>
+            <div class="welcome-container">
+                <div class="welcome-line"></div>
+                <p class="welcome-text">Welcome to</p>
+                <div class="welcome-line"></div>
+            </div>
             <h1 class="main-title">GOLDEN SPOON</h1>
             <div class="divider">RESTAURANT</div>
             <p class="desc">EXPERIENCE THE FINEST BLEND OF FLAVOR AND ELEGANCE</p>
