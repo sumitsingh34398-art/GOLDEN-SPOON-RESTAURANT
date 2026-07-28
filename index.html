@@ -17,13 +17,13 @@
             flex-direction: column;
         }
 
-        /* Navbar Styling */
+        /* Navbar Styling - Made Transparent to match continuous background */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 50px;
-            background: rgba(12, 12, 12, 0.95);
+            background: transparent;
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
             position: sticky;
             top: 0;
@@ -60,25 +60,18 @@
             padding: 80px 20px;
         }
         
-        /* Updated: Welcome to in Golden color & slightly larger */
+        /* Updated: Cursive writing font for Welcome To */
         .welcome-text { 
-            font-family: 'Playfair Display', serif;
-            font-size: 20px; 
-            letter-spacing: 4px; 
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px; 
+            letter-spacing: 2px; 
             color: #d4af37; 
-            margin-bottom: 10px; 
-            font-weight: 500; 
+            margin-bottom: 5px; 
+            font-weight: 600; 
         }
 
-        /* Updated: GOLDEN SPOON in Pure White color */
-        .main-title { 
-            font-family: 'Playfair Display', serif; 
-            color: #ffffff; 
-            font-size: 52px; 
-            letter-spacing: 4px; 
-            margin-bottom: 10px; 
-        }
-
+        .main-title { font-family: 'Playfair Display', serif; color: #ffffff; font-size: 52px; letter-spacing: 4px; margin-bottom: 10px; }
+        
         .divider {
             font-size: 12px;
             letter-spacing: 6px;
@@ -184,7 +177,7 @@
 
     <header class="hero">
         <div class="hero-overlay">
-            <p class="welcome-text">WELCOME TO</p>
+            <p class="welcome-text">Welcome To</p>
             <h1 class="main-title">GOLDEN SPOON</h1>
             <div class="divider">RESTAURANT</div>
             <p class="desc">EXPERIENCE THE FINEST BLEND OF FLAVOR AND ELEGANCE</p>
