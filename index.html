@@ -9,13 +9,17 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Poore page par single continuous fixed background image */
+        /* Smooth scrolling aur fixed background setup */
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), url('assets/background.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
             min-height: 100vh;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
         }
@@ -26,9 +30,13 @@
             justify-content: space-between;
             align-items: center;
             padding: 22px 50px;
-            background: transparent;
+            background: rgba(10, 10, 10, 0.9);
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
             width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
         .logo-area { display: flex; flex-direction: column; }
         .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; }
@@ -50,45 +58,47 @@
         }
         .book-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
 
-        /* Hero Section */
+        /* Hero Section - Navbar ke niche proper space ke sath */
         .hero {
             flex: 1;
             background: transparent;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px 20px;
-        }
-        .hero-overlay {
-            display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 900px;
+            text-align: center;
+            padding: 30px 20px 50px 20px;
         }
         
-        /* "Welcome to" with side divider lines matching your reference photo */
+        /* "Welcome to" - Navbar ke theek niche aur side lines ke sath */
         .welcome-container {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
-            margin-bottom: 5px;
+            max-width: 600px;
+            margin-top: 20px;
+            margin-bottom: 25px;
         }
         .welcome-line {
             flex: 1;
             height: 1px;
             background: rgba(212, 175, 55, 0.6);
-            max-width: 120px;
         }
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
             font-size: 38px; 
             letter-spacing: 2px; 
             color: #d4af37; 
-            padding: 0 20px;
+            padding: 0 25px;
             font-weight: 600; 
+        }
+
+        .hero-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
         }
 
         .main-title { font-family: 'Playfair Display', serif; color: #ffffff; font-size: 50px; letter-spacing: 4px; margin-bottom: 12px; }
@@ -203,12 +213,13 @@
     </nav>
 
     <header class="hero">
+        <div class="welcome-container">
+            <div class="welcome-line"></div>
+            <p class="welcome-text">Welcome to</p>
+            <div class="welcome-line"></div>
+        </div>
+
         <div class="hero-overlay">
-            <div class="welcome-container">
-                <div class="welcome-line"></div>
-                <p class="welcome-text">Welcome to</p>
-                <div class="welcome-line"></div>
-            </div>
             <h1 class="main-title">GOLDEN SPOON</h1>
             <div class="divider">RESTAURANT</div>
             <p class="desc">EXPERIENCE THE FINEST BLEND OF FLAVOR AND ELEGANCE</p>
