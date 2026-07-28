@@ -15,17 +15,17 @@
             color: #fff;
             min-height: 100vh;
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
-            padding: 30px 50px;
+            padding: 30px 20px;
         }
 
-        /* Main Schedule Card aligned to the Left Side */
+        /* Main Schedule Card Centered on Desktop/Laptop */
         .schedule-card {
             background: rgba(10, 10, 10, 0.94);
             border: 2px solid #d4af37;
             border-radius: 4px;
-            max-width: 620px;
+            max-width: 640px;
             width: 100%;
             padding: 24px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.95), inset 0 0 20px rgba(212, 175, 55, 0.15);
@@ -84,6 +84,7 @@
             font-size: 11px;
             color: #e0e0e0;
             font-weight: 400;
+            white-space: nowrap;
         }
         .schedule-table tr:nth-child(even) {
             background: rgba(255, 255, 255, 0.02);
@@ -222,23 +223,23 @@
                 letter-spacing: 2px; 
             }
             .schedule-table th { 
-                font-size: 9.5px; 
+                font-size: 9px; 
                 padding: 6px 2px; 
                 letter-spacing: 0.5px; 
             }
             .schedule-table td { 
-                font-size: 9px; 
+                font-size: 8.5px; 
                 padding: 6px 2px; 
             }
             .day-col { 
-                font-size: 9.5px; 
+                font-size: 9px; 
             }
             .open-badge { 
                 padding: 1px 4px; 
-                font-size: 8.5px; 
+                font-size: 8px; 
             }
             .timing-row { 
-                font-size: 9.5px; 
+                font-size: 9px; 
                 flex-direction: column; 
                 gap: 2px; 
                 text-align: center; 
@@ -275,11 +276,11 @@
         <table class="schedule-table">
             <thead>
                 <tr>
-                    <th style="width: 22%;">DAY</th>
-                    <th style="width: 18%;">STATUS</th>
-                    <th style="width: 20%;">OPEN</th>
-                    <th style="width: 20%;">CLOSE</th>
-                    <th style="width: 20%;">TIMING</th>
+                    <th style="width: 20%;">DAY</th>
+                    <th style="width: 16%;">STATUS</th>
+                    <th style="width: 19%;">OPEN</th>
+                    <th style="width: 19%;">CLOSE</th>
+                    <th style="width: 26%;">TIMING</th>
                 </tr>
             </thead>
             <tbody>
