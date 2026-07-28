@@ -1,1 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Spoon | Restaurant Schedule</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('assets/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 15px;
+        }
 
+        /* Main Schedule Card Frame matching photo */
+        .schedule-card {
+            background: rgba(12, 12, 12, 0.92);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            max-width: 650px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212, 175, 55, 0.15);
+            position: relative;
+        }
+
+        /* Header Area */
+        .schedule-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 15px;
+        }
+        .header-spoon svg {
+            width: 38px;
+            height: 38px;
+            fill: #d4af37;
+            margin-bottom: 5px;
+        }
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            color: #d4af37;
+            font-size: 32px;
+            letter-spacing: 4px;
+            line-height: 1.1;
+        }
+        .sub-title {
+            font-family: 'Playfair Display', serif;
+            color: #e6c547;
+            font-size: 14px;
+            letter-spacing: 3px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* Schedule Table Design */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .schedule-table th {
+            background: linear-gradient(135deg, #d4af37, #aa8c2c);
+            color: #000;
+            font-family: 'Playfair Display', serif;
+            font-size: 13px;
+            letter-spacing: 1px;
+            padding: 10px 5px;
+            border: 1px solid #d4af37;
+        }
+        .schedule-table td {
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            padding: 10px 5px;
+            font-size: 12px;
+            color: #e0e0e0;
+            font-weight: 400;
+        }
+        .schedule-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .day-col {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+        .open-badge {
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 3px;
+            display: inline-block;
+            letter-spacing: 1px;
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        /* Order Timing Section */
+        .order-timing-box {
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            background: rgba(20, 20, 20, 0.7);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .order-timing-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            color: #d4af37;
+            font-size: 15px;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .timing-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            margin-bottom: 8px;
+            font-size: 11.5px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 3px;
+        }
+        .timing-row.closed-row {
+            border-color: rgba(217, 4, 4, 0.4);
+        }
+        .closed-text {
+            color: #ff3333;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Continue Order Banner */
+        .continue-banner {
+            border: 1px solid #d4af37;
+            text-align: center;
+            padding: 10px;
+            font-family: 'Playfair Display', serif;
+            color: #d4af37;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            background: rgba(212, 175, 55, 0.06);
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        /* Footer Notes & Contact */
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            padding-top: 15px;
+        }
+        .notes-area {
+            font-size: 10px;
+            color: #aaa;
+            line-height: 1.5;
+            max-width: 330px;
+        }
+        .notes-area strong {
+            color: #d4af37;
+            letter-spacing: 0.5px;
+        }
+        .notes-area ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 3px;
+        }
+        .contact-area {
+            text-align: right;
+        }
+        .contact-title {
+            font-family: 'Playfair Display', serif;
+            color: #d4af37;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+        .contact-number {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive */
+        @media(max-width: 600px) {
+            .schedule-card { padding: 15px; }
+            .brand-title { font-size: 24px; }
+            .footer-info { flex-direction: column; text-align: center; align-items: center; }
+            .contact-area { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="schedule-card">
+        <!-- Header -->
+        <div class="schedule-header">
+            <div class="header-spoon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C9.24 2 7 4.24 7 7c0 2.21 1.43 4.08 3.42 4.74L9.5 21h2l.08-9.26C13.57 11.08 15 9.21 15 7c0-2.76-2.24-5-5-5zm0 2c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3z"/></svg>
+            </div>
+            <h1 class="brand-title">GOLDEN SPOON</h1>
+            <div class="sub-title">&#x2014; RESTAURANT SCHEDULE &#x2014;</div>
+        </div>
+
+        <!-- Schedule Table -->
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>DAY</th>
+                    <th>OPEN</th>
+                    <th>CLOSE</th>
+                    <th>TIMING</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="day-col">SUNDAY</td>
+                    <td><span class="open-badge">OPEN</span></td>
+                    <td>10:00 AM</td>
+                    <td>10:30 PM</td>
+                    <td>10:00 AM – 10:30 PM</td>
+                </tr>
+                <tr>
+                    <td class="day-col">MONDAY</td>
+                    <td><span class="open-badge">OPEN</span></td>
+                    <td>11:00 AM</td>
+                    <td>10:30 PM</td>
+                    <td>11:00 AM – 10:30 PM</td>
+                </tr>
+                <tr>
+                    <td class="day-col">TUESDAY</td>
+                    <td><span class="open-badge">OPEN</span></td>
+                    <td>11:00 AM</td>
+                    <td>10:30 PM</td>
+                    <td>11:00 AM – 10:30 PM</td>
+                </tr>
+                <tr>
+                    <td class="day-col">WEDNESDAY</td>
+                    <td><span class="open-badge">OPEN</span></td>
+                    <td>11:00 AM</td>
+                    <td>10:30 PM</td>
+                    <td>11:00 AM – 10:30 PM</td>
+                </tr>
+                <tr>
+                    <td class="day-col">THURSDAY</td>
+                    <td><span class="open-badge">OPEN</span></td>
+                    <td>11:00 AM</td>
+                    <td>11:00 PM</td>
+                    <td>11:00 AM – 11:00 PM</td>
+                </tr>
+                <tr>
+                    <td class="day-col">FRIDAY</td>
+                    <td><span class="open-badge">OPEN</span></td>
+                    <td>11:00 AM</td>
+                    <td>11:30 PM</td>
+                    <td>11:00 AM – 11:30 PM</td>
+                </tr>
+                <tr>
+                    <td class="day-col">SATURDAY</td>
+                    <td><span class="open-badge">OPEN</span></td>
+                    <td>10:00 AM</td>
+                    <td>11:30 PM</td>
+                    <td>10:00 AM – 11:30 PM</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Order Timing Section -->
+        <div class="order-timing-box">
+            <div class="order-timing-title">
+                <span>&#128336;</span> ORDER TIMING
+            </div>
+            <div class="timing-row">
+                <span>11:00 AM – 11:15 AM</span>
+                <span style="color:#d4af37;">(Early Order Window)</span>
+            </div>
+            <div class="timing-row closed-row">
+                <span>12:00 AM – 05:00 AM</span>
+                <span class="closed-text">ORDER CLOSE ONLINE</span>
+            </div>
+        </div>
+
+        <!-- Continue Order Banner -->
+        <div class="continue-banner">
+            &#x21bb; CONTINUE ORDER NEXT HOUR
+        </div>
+
+        <!-- Footer Notes & Contact -->
+        <div class="footer-info">
+            <div class="notes-area">
+                <strong>NOTE:</strong>
+                <ul>
+                    <li>• Timings may vary on public holidays.</li>
+                    <li>• For special events & reservations, please contact us.</li>
+                    <li>• We are open all days to serve you better!</li>
+                </ul>
+            </div>
+            <div class="contact-area">
+                <div class="contact-title">CONTACT US</div>
+                <div class="contact-number">&#128222; +91 12345 67890</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
