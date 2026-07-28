@@ -20,26 +20,26 @@
             flex-direction: column;
         }
 
-        /* Navbar Styling */
+        /* Navbar Styling - Optimized padding for perfect desktop fit */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 25px 60px;
+            padding: 18px 40px;
             background: transparent;
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
             width: 100%;
         }
         .logo-area { display: flex; flex-direction: column; }
-        .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 26px; letter-spacing: 2px; }
-        .sub-logo { font-size: 10px; letter-spacing: 4px; color: #aaa; text-align: center; }
-        .nav-links { display: flex; list-style: none; gap: 28px; align-items: center; }
+        .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; }
+        .sub-logo { font-size: 9px; letter-spacing: 4px; color: #aaa; text-align: center; }
+        .nav-links { display: flex; list-style: none; gap: 24px; align-items: center; }
         .nav-links a { text-decoration: none; color: #ddd; font-size: 13px; font-weight: 500; letter-spacing: 1px; transition: color 0.3s; }
         .nav-links a:hover { color: #d4af37; }
         .book-btn {
             background: linear-gradient(135deg, #d4af37, #aa8c2c);
             color: #000;
-            padding: 10px 20px;
+            padding: 9px 18px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: 600;
@@ -50,7 +50,7 @@
         }
         .book-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
 
-        /* Hero Section - Perfectly balanced spacing */
+        /* Hero Section - Balanced spacing to prevent overlapping */
         .hero {
             flex: 1;
             background: transparent;
@@ -58,7 +58,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 40px 20px;
+            padding: 20px 20px 10px 20px;
         }
         .hero-overlay {
             display: flex;
@@ -68,24 +68,24 @@
             max-width: 900px;
         }
         
-        /* "Welcome To" - Ab navbar se proper gap ke sath bilkul center mein balanced hai */
+        /* "Welcome To" - Properly spaced and centered with clean gap */
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
-            font-size: 38px; 
+            font-size: 34px; 
             letter-spacing: 2px; 
             color: #d4af37; 
-            margin-top: 25px;
-            margin-bottom: 15px; 
+            margin-top: 10px;
+            margin-bottom: 8px; 
             font-weight: 600; 
         }
 
-        .main-title { font-family: 'Playfair Display', serif; color: #ffffff; font-size: 56px; letter-spacing: 4px; margin-bottom: 15px; }
+        .main-title { font-family: 'Playfair Display', serif; color: #ffffff; font-size: 50px; letter-spacing: 4px; margin-bottom: 12px; }
         
         .divider {
-            font-size: 12px;
+            font-size: 11px;
             letter-spacing: 6px;
             color: #d4af37;
-            margin-bottom: 25px;
+            margin-bottom: 18px;
             position: relative;
             display: inline-block;
         }
@@ -93,18 +93,18 @@
             content: '';
             position: absolute;
             top: 50%;
-            width: 45px;
+            width: 40px;
             height: 1px;
             background: #d4af37;
         }
         .divider::before { right: 105%; }
         .divider::after { left: 105%; }
 
-        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 40px; font-weight: 300; }
+        .desc { font-size: 14px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 28px; font-weight: 300; }
         
-        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 35px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 25px; }
         .btn-primary, .btn-secondary {
-            padding: 14px 30px;
+            padding: 12px 26px;
             font-size: 13px;
             font-weight: 600;
             text-decoration: none;
@@ -118,21 +118,21 @@
         .btn-secondary { background: transparent; color: #d4af37; border: 1px solid #d4af37; }
         .btn-secondary:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-2px); }
 
-        /* Professional Developer Credit Card Box - Buttons ke niche proper spacing ke sath */
+        /* Professional Developer Credit Card Box - Positioned cleanly at the bottom */
         .dev-section {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px 20px 45px 20px;
+            padding: 10px 20px 30px 20px;
             background: transparent;
         }
         .dev-card {
             border: 1px solid #d4af37;
-            padding: 22px 40px;
-            border-radius: 12px;
+            padding: 18px 35px;
+            border-radius: 10px;
             background: rgba(18, 18, 18, 0.85);
             backdrop-filter: blur(8px);
-            max-width: 480px;
+            max-width: 450px;
             width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 12px rgba(212, 175, 55, 0.15);
             text-align: center;
@@ -140,31 +140,31 @@
         .dev-card h3 {
             font-family: 'Playfair Display', serif;
             color: #d4af37;
-            font-size: 20px;
-            margin-bottom: 6px;
+            font-size: 18px;
+            margin-bottom: 4px;
             letter-spacing: 0.5px;
         }
         .dev-card p {
             color: #cccccc;
-            font-size: 13px;
-            margin-bottom: 8px;
+            font-size: 12px;
+            margin-bottom: 6px;
             font-weight: 300;
         }
         .dev-card .copyright {
             color: #999;
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 0.5px;
         }
 
         /* Responsive Design for Laptop & Desktop */
         @media(max-width: 1024px) {
-            .navbar { padding: 20px 30px; }
-            .nav-links { gap: 18px; }
+            .navbar { padding: 18px 25px; }
+            .nav-links { gap: 15px; }
         }
         @media(max-width: 900px) {
-            .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .nav-links { gap: 12px; flex-wrap: wrap; justify-content: center; }
-            .main-title { font-size: 40px; }
+            .navbar { padding: 15px 20px; flex-direction: column; gap: 12px; }
+            .nav-links { gap: 10px; flex-wrap: wrap; justify-content: center; }
+            .main-title { font-size: 36px; }
             .hero-btns { flex-direction: column; align-items: center; }
             .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
         }
