@@ -33,6 +33,37 @@
             backdrop-filter: blur(6px);
         }
 
+        /* Live Day Badge on Top Right Corner */
+        .live-day-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid #d4af37;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: #d4af37;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #2ecc71;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
         /* Header Area */
         .schedule-header {
             text-align: center;
@@ -162,11 +193,11 @@
             margin-bottom: 15px;
         }
 
-        /* Footer Notes & Contact */
+        /* Footer Notes & Back Home Button */
         .footer-info {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             gap: 10px;
             border-top: 1px solid rgba(212, 175, 55, 0.3);
             padding-top: 12px;
@@ -175,7 +206,7 @@
             font-size: 9.5px;
             color: #aaa;
             line-height: 1.4;
-            max-width: 330px;
+            max-width: 350px;
         }
         .notes-area strong {
             color: #d4af37;
@@ -186,21 +217,31 @@
             padding-left: 0;
             margin-top: 2px;
         }
-        .contact-area {
+        
+        /* Professional Back Home Button */
+        .home-btn-area {
             text-align: right;
         }
-        .contact-title {
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #d4af37, #aa8c2c);
+            color: #000;
+            padding: 8px 14px;
             font-family: 'Playfair Display', serif;
-            color: #d4af37;
             font-size: 11px;
+            font-weight: 700;
             letter-spacing: 1px;
-            margin-bottom: 2px;
+            text-decoration: none;
+            border-radius: 2px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
         }
-        .contact-number {
-            color: #fff;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+        .back-home-btn:hover {
+            background: linear-gradient(135deg, #e6c547, #d4af37);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
         }
 
         /* Advanced Phone Responsive Design */
@@ -213,6 +254,11 @@
             .schedule-card { 
                 padding: 12px; 
                 max-width: 100%; 
+            }
+            .live-day-badge {
+                position: static;
+                margin: 0 auto 10px auto;
+                width: fit-content;
             }
             .brand-title { 
                 font-size: 22px; 
@@ -254,7 +300,7 @@
                 max-width: 100%; 
                 font-size: 9px; 
             }
-            .contact-area { 
+            .home-btn-area { 
                 text-align: center; 
             }
         }
@@ -263,6 +309,12 @@
 <body>
 
     <div class="schedule-card">
+        <!-- Live Day Indicator Badge -->
+        <div class="live-day-badge">
+            <span class="live-dot"></span>
+            <span id="current-day-text">TODAY</span>
+        </div>
+
         <!-- Header -->
         <div class="schedule-header">
             <div class="header-spoon">
@@ -284,49 +336,49 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr id="row-sunday">
                     <td class="day-col">SUNDAY</td>
                     <td><span class="open-badge">OPEN</span></td>
                     <td>10:00 AM</td>
                     <td>10:30 PM</td>
                     <td>10:00 AM – 10:30 PM</td>
                 </tr>
-                <tr>
+                <tr id="row-monday">
                     <td class="day-col">MONDAY</td>
                     <td><span class="open-badge">OPEN</span></td>
                     <td>11:00 AM</td>
                     <td>10:30 PM</td>
                     <td>11:00 AM – 10:30 PM</td>
                 </tr>
-                <tr>
+                <tr id="row-tuesday">
                     <td class="day-col">TUESDAY</td>
                     <td><span class="open-badge">OPEN</span></td>
                     <td>11:00 AM</td>
                     <td>10:30 PM</td>
                     <td>11:00 AM – 10:30 PM</td>
                 </tr>
-                <tr>
+                <tr id="row-wednesday">
                     <td class="day-col">WEDNESDAY</td>
                     <td><span class="open-badge">OPEN</span></td>
                     <td>11:00 AM</td>
                     <td>10:30 PM</td>
                     <td>11:00 AM – 10:30 PM</td>
                 </tr>
-                <tr>
+                <tr id="row-thursday">
                     <td class="day-col">THURSDAY</td>
                     <td><span class="open-badge">OPEN</span></td>
                     <td>11:00 AM</td>
                     <td>11:00 PM</td>
                     <td>11:00 AM – 11:00 PM</td>
                 </tr>
-                <tr>
+                <tr id="row-friday">
                     <td class="day-col">FRIDAY</td>
                     <td><span class="open-badge">OPEN</span></td>
                     <td>11:00 AM</td>
                     <td>11:30 PM</td>
                     <td>11:00 AM – 11:30 PM</td>
                 </tr>
-                <tr>
+                <tr id="row-saturday">
                     <td class="day-col">SATURDAY</td>
                     <td><span class="open-badge">OPEN</span></td>
                     <td>10:00 AM</td>
@@ -356,7 +408,7 @@
             &#x21bb; CONTINUE ORDER NEXT HOUR
         </div>
 
-        <!-- Footer Notes & Contact -->
+        <!-- Footer Notes & Back Home Button -->
         <div class="footer-info">
             <div class="notes-area">
                 <strong>NOTE:</strong>
@@ -366,12 +418,30 @@
                     <li>• We are open all days to serve you better!</li>
                 </ul>
             </div>
-            <div class="contact-area">
-                <div class="contact-title">CONTACT US</div>
-                <div class="contact-number">&#128222; +91 96026 97303</div>
+            <div class="home-btn-area">
+                <a href="index.html" class="back-home-btn">
+                    &#8592; BACK HOME
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- JavaScript to automatically highlight Today's Day -->
+    <script>
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const todayIndex = new Date().getDay();
+        const currentDayName = days[todayIndex];
+        
+        // Update Live Badge Text
+        document.getElementById('current-day-text').innerText = currentDayName.toUpperCase();
+
+        // Highlight Today's Row in Table
+        const todayRow = document.getElementById('row-' + currentDayName);
+        if(todayRow) {
+            todayRow.style.background = 'rgba(212, 175, 55, 0.15)';
+            todayRow.style.borderLeft = '3px solid #d4af37';
+        }
+    </script>
 
 </body>
 </html>
