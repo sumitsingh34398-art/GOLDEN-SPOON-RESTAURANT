@@ -9,7 +9,6 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Smooth scrolling aur single continuous fixed background setup */
         html {
             scroll-behavior: smooth;
         }
@@ -24,7 +23,7 @@
             flex-direction: column;
         }
 
-        /* Navbar Styling - Normal Flow (Scroll ke sath upar jayega) */
+        /* Navbar Styling */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -36,9 +35,23 @@
             position: relative;
             z-index: 10;
         }
+        
+        /* Logo with Icon Layout matching second image */
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+        .brand-icon {
+            font-size: 32px;
+            color: #d4af37;
+            transform: rotate(-45deg);
+        }
         .logo-area { display: flex; flex-direction: column; }
-        .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; }
-        .sub-logo { font-size: 9px; letter-spacing: 4px; color: #aaa; text-align: center; }
+        .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; line-height: 1.1; }
+        .sub-logo { font-size: 9px; letter-spacing: 4px; color: #aaa; text-align: left; }
+        
         .nav-links { display: flex; list-style: none; gap: 26px; align-items: center; }
         .nav-links a { text-decoration: none; color: #ddd; font-size: 13px; font-weight: 500; letter-spacing: 1px; transition: color 0.3s; }
         .nav-links a:hover { color: #d4af37; }
@@ -76,58 +89,47 @@
             max-width: 950px;
         }
 
-        /* "Welcome to" with side divider lines */
-        .welcome-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 480px;
-            margin-bottom: 4px;
-        }
-        .welcome-line {
-            flex: 1;
-            height: 1px;
-            background: rgba(212, 175, 55, 0.6);
-        }
+        /* "Welcome to" Styling */
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
-            font-size: 36px; 
+            font-size: 42px; 
             letter-spacing: 2px; 
             color: #d4af37; 
-            padding: 0 18px;
+            margin-bottom: -5px;
             font-weight: 600; 
         }
 
-        /* Main title styled for clean professional width and balance */
+        /* Main title */
         .main-title { 
             font-family: 'Playfair Display', serif; 
             color: #ffffff; 
-            font-size: 52px; 
+            font-size: 56px; 
             letter-spacing: 5px; 
-            margin-bottom: 6px; 
+            margin-bottom: 2px; 
         }
         
+        /* Divider lines matching second image */
         .divider {
-            font-size: 11px;
-            letter-spacing: 6px;
+            font-size: 13px;
+            letter-spacing: 8px;
             color: #d4af37;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             position: relative;
             display: inline-block;
+            font-weight: 500;
         }
         .divider::before, .divider::after {
             content: '';
             position: absolute;
             top: 50%;
-            width: 40px;
+            width: 90px;
             height: 1px;
-            background: #d4af37;
+            background: rgba(212, 175, 55, 0.7);
         }
-        .divider::before { right: 105%; }
-        .divider::after { left: 105%; }
+        .divider::before { right: 110%; }
+        .divider::after { left: 110%; }
 
-        .desc { font-size: 14px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 26px; font-weight: 300; }
+        .desc { font-size: 13px; color: #ccc; letter-spacing: 2px; margin-bottom: 30px; font-weight: 300; }
         
         .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 28px; }
         .btn-primary, .btn-secondary {
@@ -138,6 +140,9 @@
             border-radius: 4px;
             letter-spacing: 1px;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .btn-primary { background: linear-gradient(135deg, #d4af37, #aa8c2c); color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
         .btn-primary:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); transform: translateY(-2px); }
@@ -183,7 +188,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Responsive Design for Laptop & Desktop */
+        /* Responsive Design */
         @media(max-width: 1024px) {
             .navbar { padding: 18px 25px; }
             .nav-links { gap: 15px; }
@@ -191,18 +196,21 @@
         @media(max-width: 768px) {
             .navbar { padding: 15px 20px; flex-direction: column; gap: 12px; }
             .nav-links { gap: 10px; flex-wrap: wrap; justify-content: center; }
-            .main-title { font-size: 32px; letter-spacing: 4px; }
+            .main-title { font-size: 34px; letter-spacing: 3px; }
             .hero-btns { flex-direction: column; align-items: center; }
-            .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
+            .btn-primary, .btn-secondary { width: 100%; max-width: 280px; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="logo-area">
-            <h2 class="logo-text">GOLDEN SPOON</h2>
-            <p class="sub-logo">RESTAURANT</p>
+        <div class="brand-logo">
+            <span class="brand-icon">&#129371;</span>
+            <div class="logo-area">
+                <h2 class="logo-text">GOLDEN SPOON</h2>
+                <p class="sub-logo">RESTAURANT</p>
+            </div>
         </div>
         <ul class="nav-links">
             <li><a href="index.html">HOME</a></li>
@@ -219,19 +227,18 @@
 
     <header class="hero">
         <div class="hero-overlay">
-            <div class="welcome-container">
-                <div class="welcome-line"></div>
-                <p class="welcome-text">Welcome to</p>
-                <div class="welcome-line"></div>
-            </div>
-
+            <p class="welcome-text">Welcome to</p>
             <h1 class="main-title">GOLDEN SPOON</h1>
             <div class="divider">RESTAURANT</div>
             <p class="desc">EXPERIENCE THE FINEST BLEND OF FLAVOR AND ELEGANCE</p>
             
             <div class="hero-btns">
-                <a href="schedule.html" class="btn-primary">EXPLORE MENU</a>
-                <a href="order.html" class="btn-secondary">BOOK A TABLE</a>
+                <a href="schedule.html" class="btn-primary">
+                    <span>&#127860;</span> EXPLORE MENU
+                </a>
+                <a href="order.html" class="btn-secondary">
+                    <span>&#128197;</span> BOOK A TABLE
+                </a>
             </div>
         </div>
     </header>
