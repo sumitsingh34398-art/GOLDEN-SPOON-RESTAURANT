@@ -5,7 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golden Spoon | Fine Dining</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Developer Card Luxury Styling matching your reference image */
+        .dev-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+            background: #0c0c0c;
+        }
+        .dev-card {
+            border: 1px solid #d4af37;
+            padding: 30px 45px;
+            border-radius: 12px;
+            background: rgba(15, 15, 15, 0.95);
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(212, 175, 55, 0.15);
+            text-align: center;
+        }
+        .dev-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: #d4af37;
+            font-size: 22px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .dev-card p {
+            color: #cccccc;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 300;
+        }
+        .dev-card .copyright {
+            color: #999999;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+    </style>
 </head>
 <body>
 
@@ -40,22 +78,12 @@
         </div>
     </header>
 
-    <section class="features">
-        <div class="feature-item">
-            <h3>EXPERT CHEFS</h3>
-            <p>Passionate & Experienced</p>
-        </div>
-        <div class="feature-item">
-            <h3>QUALITY FOOD</h3>
-            <p>Finest Ingredients</p>
-        </div>
-        <div class="feature-item">
-            <h3>FINE DINING</h3>
-            <p>Elegant Atmosphere</p>
-        </div>
-        <div class="feature-item">
-            <h3>BEST SERVICE</h3>
-            <p>Customer Satisfaction</p>
+    <!-- Replaced Expert Chefs section with Developer Credit Box -->
+    <section class="dev-section">
+        <div class="dev-card">
+            <h3>Developed by Sumit Singh</h3>
+            <p>Unofficial education study project</p>
+            <div class="copyright">&#169; 2026 golden spoon restaurant</div>
         </div>
     </section>
 
