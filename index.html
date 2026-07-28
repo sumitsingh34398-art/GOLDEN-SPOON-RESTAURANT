@@ -9,7 +9,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Smooth scrolling aur fixed background setup */
+        /* Smooth scrolling aur single continuous fixed background setup */
         html {
             scroll-behavior: smooth;
         }
@@ -24,19 +24,17 @@
             flex-direction: column;
         }
 
-        /* Navbar Styling - Professional & Clean */
+        /* Navbar Styling - Normal Flow (Scroll ke sath upar jayega) */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 22px 50px;
-            background: rgba(15, 15, 15, 0.85);
+            background: rgba(10, 10, 10, 0.75);
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
             width: 100%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
         }
         .logo-area { display: flex; flex-direction: column; }
         .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; }
@@ -58,7 +56,7 @@
         }
         .book-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
 
-        /* Hero Section - Perfect Centering & Spacing */
+        /* Hero Section */
         .hero {
             flex: 1;
             background: transparent;
