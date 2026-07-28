@@ -7,41 +7,150 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Developer Card Luxury Styling matching your reference image */
-        .dev-section {
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* Poore page par single continuous background image */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), url('assets/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(12, 12, 12, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; }
+        .sub-logo { font-size: 10px; letter-spacing: 4px; color: #aaa; text-align: center; }
+        .nav-links { display: flex; list-style: none; gap: 25px; }
+        .nav-links a { text-decoration: none; color: #ddd; font-size: 13px; font-weight: 500; letter-spacing: 1px; transition: color 0.3s; }
+        .nav-links a:hover { color: #d4af37; }
+        .book-btn {
+            background: linear-gradient(135deg, #d4af37, #aa8c2c);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s;
+        }
+        .book-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
+
+        /* Hero & Main Content Section */
+        .hero {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .hero-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+        }
+        .welcome-text { font-size: 16px; letter-spacing: 3px; color: #ddd; margin-bottom: 10px; font-weight: 300; }
+        .main-title { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 52px; letter-spacing: 4px; margin-bottom: 10px; }
+        
+        .divider {
+            font-size: 12px;
+            letter-spacing: 6px;
+            color: #d4af37;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40px;
+            height: 1px;
+            background: #d4af37;
+        }
+        .divider::before { right: 105%; }
+        .divider::after { left: 105%; }
+
+        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 30px; font-weight: 300; }
+        
+        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 35px; }
+        .btn-primary, .btn-secondary {
+            padding: 14px 28px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: linear-gradient(135deg, #d4af37, #aa8c2c); color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
+        .btn-primary:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); transform: translateY(-2px); }
+        
+        .btn-secondary { background: transparent; color: #d4af37; border: 1px solid #d4af37; }
+        .btn-secondary:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-2px); }
+
+        /* Developer Credit Card Box with transparent/glass effect over background */
+        .dev-card-wrapper {
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 60px 20px;
-            background: #0c0c0c;
+            width: 100%;
         }
         .dev-card {
             border: 1px solid #d4af37;
-            padding: 30px 45px;
+            padding: 22px 35px;
             border-radius: 12px;
-            background: rgba(15, 15, 15, 0.95);
-            max-width: 520px;
+            background: rgba(15, 15, 15, 0.75);
+            backdrop-filter: blur(8px);
+            max-width: 480px;
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 12px rgba(212, 175, 55, 0.15);
             text-align: center;
         }
         .dev-card h3 {
             font-family: 'Playfair Display', serif;
             color: #d4af37;
-            font-size: 22px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
         .dev-card p {
             color: #cccccc;
-            font-size: 14px;
-            margin-bottom: 12px;
+            font-size: 13px;
+            margin-bottom: 8px;
             font-weight: 300;
         }
         .dev-card .copyright {
-            color: #999999;
-            font-size: 12px;
+            color: #aaa;
+            font-size: 11px;
             letter-spacing: 0.5px;
+        }
+
+        /* Responsive Design */
+        @media(max-width: 900px) {
+            .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; }
+            .main-title { font-size: 38px; }
+            .hero-btns { flex-direction: column; align-items: center; width: 100%; }
+            .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
         }
     </style>
 </head>
@@ -67,25 +176,26 @@
 
     <header class="hero">
         <div class="hero-overlay">
-            <p class="welcome-text">Welcome to</p>
+            <p class="welcome-text">WELCOME TO</p>
             <h1 class="main-title">GOLDEN SPOON</h1>
             <div class="divider">RESTAURANT</div>
             <p class="desc">EXPERIENCE THE FINEST BLEND OF FLAVOR AND ELEGANCE</p>
+            
             <div class="hero-btns">
                 <a href="menu.html" class="btn-primary">EXPLORE MENU</a>
                 <a href="order.html" class="btn-secondary">BOOK A TABLE</a>
             </div>
+
+            <!-- Developer Credit Box with continuous background -->
+            <div class="dev-card-wrapper">
+                <div class="dev-card">
+                    <h3>Developed by Sumit Singh</h3>
+                    <p>Unofficial education study project</p>
+                    <div class="copyright">&#169; 2026 golden spoon restaurant</div>
+                </div>
+            </div>
         </div>
     </header>
-
-    <!-- Replaced Expert Chefs section with Developer Credit Box -->
-    <section class="dev-section">
-        <div class="dev-card">
-            <h3>Developed by Sumit Singh</h3>
-            <p>Unofficial education study project</p>
-            <div class="copyright">&#169; 2026 golden spoon restaurant</div>
-        </div>
-    </section>
 
 </body>
 </html>
