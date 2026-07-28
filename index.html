@@ -8,25 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        /* Poore page par single continuous background image */
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), url('assets/background.jpg') no-repeat center center fixed;
-            background-size: cover;
+            background: #0c0c0c;
             color: #fff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Navbar Styling - Transparent to show background image continuously */
+        /* Navbar Styling */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 50px;
-            background: transparent;
+            background: rgba(12, 12, 12, 0.95);
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
             position: sticky;
             top: 0;
@@ -54,31 +51,26 @@
         /* Hero Section */
         .hero {
             flex: 1;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/background.jpg') no-repeat center center;
+            background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 60px 20px;
-        }
-        .hero-overlay {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 800px;
+            padding: 80px 20px;
         }
         
-        /* Updated: "Welcome to" in Golden color & slightly larger */
+        /* Updated: Welcome to in Golden color & slightly larger */
         .welcome-text { 
             font-family: 'Playfair Display', serif;
-            font-size: 22px; 
+            font-size: 20px; 
             letter-spacing: 4px; 
             color: #d4af37; 
             margin-bottom: 10px; 
             font-weight: 500; 
         }
 
-        /* Updated: "GOLDEN SPOON" title in White color */
+        /* Updated: GOLDEN SPOON in Pure White color */
         .main-title { 
             font-family: 'Playfair Display', serif; 
             color: #ffffff; 
@@ -86,7 +78,7 @@
             letter-spacing: 4px; 
             margin-bottom: 10px; 
         }
-        
+
         .divider {
             font-size: 12px;
             letter-spacing: 6px;
@@ -106,9 +98,9 @@
         .divider::before { right: 105%; }
         .divider::after { left: 105%; }
 
-        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 30px; font-weight: 300; }
+        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 35px; font-weight: 300; }
         
-        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 35px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 50px; }
         .btn-primary, .btn-secondary {
             padding: 14px 28px;
             font-size: 13px;
@@ -124,42 +116,49 @@
         .btn-secondary { background: transparent; color: #d4af37; border: 1px solid #d4af37; }
         .btn-secondary:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-2px); }
 
-        /* Developer Card Luxury Styling with continuous background */
-        .dev-section {
+        /* Professional Developer Credit Card Box */
+        .dev-card-wrapper {
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 20px 20px 60px 20px;
-            background: transparent;
+            width: 100%;
+            margin-top: 10px;
         }
         .dev-card {
             border: 1px solid #d4af37;
-            padding: 30px 45px;
+            padding: 22px 35px;
             border-radius: 12px;
-            background: rgba(15, 15, 15, 0.85);
-            backdrop-filter: blur(8px);
-            max-width: 520px;
+            background: rgba(18, 18, 18, 0.9);
+            max-width: 460px;
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 12px rgba(212, 175, 55, 0.15);
             text-align: center;
         }
         .dev-card h3 {
             font-family: 'Playfair Display', serif;
             color: #d4af37;
-            font-size: 22px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
         .dev-card p {
             color: #cccccc;
-            font-size: 14px;
-            margin-bottom: 12px;
+            font-size: 13px;
+            margin-bottom: 8px;
             font-weight: 300;
         }
         .dev-card .copyright {
-            color: #999999;
-            font-size: 12px;
+            color: #999;
+            font-size: 11px;
             letter-spacing: 0.5px;
+        }
+
+        /* Responsive Design */
+        @media(max-width: 900px) {
+            .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; }
+            .main-title { font-size: 38px; }
+            .hero-btns { flex-direction: column; align-items: center; }
+            .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
         }
     </style>
 </head>
@@ -185,25 +184,26 @@
 
     <header class="hero">
         <div class="hero-overlay">
-            <p class="welcome-text">Welcome to</p>
+            <p class="welcome-text">WELCOME TO</p>
             <h1 class="main-title">GOLDEN SPOON</h1>
             <div class="divider">RESTAURANT</div>
             <p class="desc">EXPERIENCE THE FINEST BLEND OF FLAVOR AND ELEGANCE</p>
+            
             <div class="hero-btns">
                 <a href="schedule.html" class="btn-primary">EXPLORE MENU</a>
                 <a href="order.html" class="btn-secondary">BOOK A TABLE</a>
             </div>
+
+            <!-- Developer Credit Box -->
+            <div class="dev-card-wrapper">
+                <div class="dev-card">
+                    <h3>Developed by Sumit Singh</h3>
+                    <p>Unofficial education study project</p>
+                    <div class="copyright">&#169; 2026 golden spoon restaurant</div>
+                </div>
+            </div>
         </div>
     </header>
-
-    <!-- Developer Credit Box with continuous background matching the image -->
-    <section class="dev-section">
-        <div class="dev-card">
-            <h3>Developed by Sumit Singh</h3>
-            <p>Unofficial education study project</p>
-            <div class="copyright">&#169; 2026 golden spoon restaurant</div>
-        </div>
-    </section>
 
 </body>
 </html>
