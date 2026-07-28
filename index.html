@@ -9,7 +9,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Poore page par single continuous background image */
+        /* Poore page par single continuous fixed background image */
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), url('assets/background.jpg') no-repeat center center fixed;
@@ -51,9 +51,10 @@
         }
         .book-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
 
-        /* Hero Section */
+        /* Hero Section - Background removed from here to make it fully continuous */
         .hero {
             flex: 1;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -68,7 +69,7 @@
             max-width: 800px;
         }
         
-        /* Welcome To in Cursive Font */
+        /* Cursive writing font for Welcome To */
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
             font-size: 32px; 
@@ -122,7 +123,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px 20px 40px 20px;
+            padding: 20px 20px 50px 20px;
             background: transparent;
         }
         .dev-card {
