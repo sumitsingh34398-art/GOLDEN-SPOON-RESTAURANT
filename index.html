@@ -9,7 +9,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Poore page par single continuous fixed background image */
+        /* Poore page par ek hi continuous background jisse sab kuch ek sath scroll ho */
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), url('assets/background.jpg') no-repeat center center fixed;
@@ -20,21 +20,20 @@
             flex-direction: column;
         }
 
-        /* Navbar Styling - Transparent to match continuous background */
+        /* Navbar Styling - Sticky hata kar normal flow me kiya taaki ye bhi baaki content ke sath scroll ho */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 50px;
+            padding: 25px 60px;
             background: transparent;
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            width: 100%;
         }
-        .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 24px; letter-spacing: 2px; }
+        .logo-area { display: flex; flex-direction: column; }
+        .logo-text { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 26px; letter-spacing: 2px; }
         .sub-logo { font-size: 10px; letter-spacing: 4px; color: #aaa; text-align: center; }
-        .nav-links { display: flex; list-style: none; gap: 25px; }
+        .nav-links { display: flex; list-style: none; gap: 28px; align-items: center; }
         .nav-links a { text-decoration: none; color: #ddd; font-size: 13px; font-weight: 500; letter-spacing: 1px; transition: color 0.3s; }
         .nav-links a:hover { color: #d4af37; }
         .book-btn {
@@ -51,7 +50,7 @@
         }
         .book-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
 
-        /* Hero Section - Background removed from here to make it fully continuous */
+        /* Hero Section */
         .hero {
             flex: 1;
             background: transparent;
@@ -59,27 +58,27 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 60px 20px;
+            padding: 70px 20px;
         }
         .hero-overlay {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
         }
         
         /* Cursive writing font for Welcome To */
         .welcome-text { 
             font-family: 'Dancing Script', cursive;
-            font-size: 32px; 
+            font-size: 34px; 
             letter-spacing: 2px; 
             color: #d4af37; 
             margin-bottom: 5px; 
             font-weight: 600; 
         }
 
-        .main-title { font-family: 'Playfair Display', serif; color: #ffffff; font-size: 52px; letter-spacing: 4px; margin-bottom: 10px; }
+        .main-title { font-family: 'Playfair Display', serif; color: #ffffff; font-size: 56px; letter-spacing: 4px; margin-bottom: 10px; }
         
         .divider {
             font-size: 12px;
@@ -93,18 +92,18 @@
             content: '';
             position: absolute;
             top: 50%;
-            width: 40px;
+            width: 45px;
             height: 1px;
             background: #d4af37;
         }
         .divider::before { right: 105%; }
         .divider::after { left: 105%; }
 
-        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 30px; font-weight: 300; }
+        .desc { font-size: 15px; color: #ccc; letter-spacing: 1.5px; margin-bottom: 35px; font-weight: 300; }
         
-        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 35px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; margin-bottom: 40px; }
         .btn-primary, .btn-secondary {
-            padding: 14px 28px;
+            padding: 14px 30px;
             font-size: 13px;
             font-weight: 600;
             text-decoration: none;
@@ -128,11 +127,11 @@
         }
         .dev-card {
             border: 1px solid #d4af37;
-            padding: 22px 35px;
+            padding: 24px 40px;
             border-radius: 12px;
             background: rgba(18, 18, 18, 0.85);
             backdrop-filter: blur(8px);
-            max-width: 460px;
+            max-width: 480px;
             width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 12px rgba(212, 175, 55, 0.15);
             text-align: center;
@@ -156,11 +155,15 @@
             letter-spacing: 0.5px;
         }
 
-        /* Responsive Design */
+        /* Responsive Design for Laptop & Desktop */
+        @media(max-width: 1024px) {
+            .navbar { padding: 20px 30px; }
+            .nav-links { gap: 18px; }
+        }
         @media(max-width: 900px) {
             .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; }
-            .main-title { font-size: 38px; }
+            .nav-links { gap: 12px; flex-wrap: wrap; justify-content: center; }
+            .main-title { font-size: 40px; }
             .hero-btns { flex-direction: column; align-items: center; }
             .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
         }
