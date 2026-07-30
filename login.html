@@ -56,7 +56,7 @@
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
         }
-        /* Eye Icon for Password Visibility */
+        /* Luxury Enhanced Eye Icon for Password Visibility */
         .eye-icon {
             position: absolute;
             right: 15px;
@@ -64,11 +64,15 @@
             transform: translateY(-50%);
             cursor: pointer;
             fill: #d4af37;
-            width: 20px;
-            height: 20px;
-            transition: opacity 0.3s;
+            width: 22px;
+            height: 22px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
         }
-        .eye-icon:hover { opacity: 0.8; }
+        .eye-icon:hover { 
+            fill: #f3e5ab;
+            transform: translateY(-50%) scale(1.1); 
+        }
 
         button {
             width: 100%;
@@ -207,7 +211,7 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Feature Icons Grid */
+        /* Feature Icons Grid Matching Image Reference */
         .modal-features {
             display: flex;
             justify-content: space-around;
@@ -274,7 +278,7 @@
                 <input type="text" id="phone" placeholder="Enter Phone Number">
             </div>
             
-            <!-- Password Field with Interactive Eye Icon -->
+            <!-- Password Field with Interactive Luxury Eye Icon -->
             <div class="input-group">
                 <input type="password" id="password" placeholder="Enter Password">
                 <svg id="togglePassword" class="eye-icon" viewBox="0 0 24 24" onclick="togglePassVisibility()">
@@ -364,14 +368,13 @@
 
         // Professional Luxury Modal Function
         function showWelcomeModal(username, callback = null) {
-            document.getElementById('modalUsername').innerText = (username || "Customer") + "!";
+            document.getElementById('modalUsername').innerText = (username || "Valued Guest") + "!";
             document.getElementById('customModal').classList.remove('hidden');
             window.modalCallback = callback;
         }
 
         // Standard Alert Function for Errors / OTP
         function showCustomAlert(message, callback = null, title = "GOLDEN SPOON", subtitle = "Notification") {
-            // Reusing basic alert style or routing to standard notification if needed
             alert(message);
             if (callback) callback();
         }
@@ -384,7 +387,7 @@
             }
         }
 
-        // Toggle Password Visibility Function
+        // Toggle Password Visibility Function with Luxury Glow
         function togglePassVisibility() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('togglePassword');
@@ -413,8 +416,8 @@
             
             const result = await res.json();
             if(result.success) { 
-                // Pull username from backend response if available, fallback to phone
-                const userName = result.name || result.username || phoneVal;
+                // Updated to correctly pull username/name from backend instead of phone number
+                const userName = result.name || result.username || "Valued Guest";
                 showWelcomeModal(userName, () => { 
                     window.location.href = 'order.html'; 
                 }); 
