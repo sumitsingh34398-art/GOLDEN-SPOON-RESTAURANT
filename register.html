@@ -31,10 +31,14 @@
             box-sizing: border-box;
             box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 25px rgba(212, 175, 55, 0.2);
         }
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin: 12px 0;
+        }
         input {
             width: 100%;
             padding: 12px 15px;
-            margin: 12px 0;
             border: 1px solid #d4af37;
             background: rgba(255, 255, 255, 0.05);
             color: white;
@@ -42,13 +46,32 @@
             box-sizing: border-box;
             font-size: 14px;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
         }
         input:focus {
-            outline: none;
             border-color: #f3e5ab;
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
         }
+        /* Luxury Enhanced Eye Icon for Password Visibility */
+        .eye-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            fill: #d4af37;
+            width: 22px;
+            height: 22px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.5));
+        }
+        .eye-icon:hover { 
+            fill: #f3e5ab;
+            transform: translateY(-50%) scale(1.1); 
+        }
+
         button {
             width: 100%;
             padding: 12px;
@@ -177,19 +200,35 @@
     <div class="register-box">
         <h2>CREATE ACCOUNT</h2>
         
-        <!-- Step 1: Details Form (Name, Phone, Email & Password) -->
+        <!-- Step 1: Details Form (Name, Phone, Email & Password with Eye Icon) -->
         <div id="step1Form">
-            <input type="text" id="name" placeholder="Enter Full Name">
-            <input type="text" id="phone" placeholder="Enter Phone Number">
-            <input type="email" id="email" placeholder="Enter Gmail (e.g. user@gmail.com)">
-            <input type="password" id="password" placeholder="Create Password">
+            <div class="input-group">
+                <input type="text" id="name" placeholder="Enter Full Name">
+            </div>
+            <div class="input-group">
+                <input type="text" id="phone" placeholder="Enter Phone Number">
+            </div>
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Enter Gmail (e.g. user@gmail.com)">
+            </div>
+            
+            <!-- Password Field with Interactive Luxury Eye Icon -->
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Create Password">
+                <svg id="togglePassword" class="eye-icon" viewBox="0 0 24 24" onclick="togglePassVisibility()">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                </svg>
+            </div>
+
             <button onclick="sendOtpRequest()">SEND OTP</button>
         </div>
 
         <!-- Step 2: OTP Verification Form (Initially Hidden) -->
         <div id="step2Form" class="hidden">
             <p style="font-size: 13px; color: #d4af37; margin-bottom: 12px; font-weight: 500;">Please enter your 4-digit verification code below:</p>
-            <input type="text" id="enteredOtp" placeholder="Enter 4-digit OTP" maxlength="4" style="text-align: center; font-size: 18px; letter-spacing: 5px;">
+            <div class="input-group">
+                <input type="text" id="enteredOtp" placeholder="Enter 4-digit OTP" maxlength="4" style="text-align: center; font-size: 18px; letter-spacing: 5px;">
+            </div>
             <button onclick="verifyAndRegister()">VERIFY & SIGN UP</button>
         </div>
 
@@ -213,6 +252,20 @@
 
     <script>
         let globalData = {};
+
+        // Toggle Password Visibility Function with Luxury Glow
+        function togglePassVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('togglePassword');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.style.fill = '#ffffff';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.style.fill = '#d4af37';
+            }
+        }
 
         function showCustomAlert(message, callback = null, title = "GOLDEN SPOON", subtitle = "Notification") {
             document.getElementById('modalTitle').innerText = title;
