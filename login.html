@@ -30,11 +30,17 @@
             margin: 15px;
             box-sizing: border-box;
             box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 25px rgba(212, 175, 55, 0.2);
+            position: relative;
+            z-index: 5;
+        }
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin: 12px 0;
         }
         input {
             width: 100%;
             padding: 12px 15px;
-            margin: 12px 0;
             border: 1px solid #d4af37;
             background: rgba(255, 255, 255, 0.05);
             color: white;
@@ -43,13 +49,27 @@
             font-size: 14px;
             transition: all 0.3s ease;
             font-family: 'Poppins', sans-serif;
+            outline: none;
         }
         input:focus {
-            outline: none;
             border-color: #f3e5ab;
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
         }
+        /* Eye Icon for Password Visibility */
+        .eye-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            fill: #d4af37;
+            width: 20px;
+            height: 20px;
+            transition: opacity 0.3s;
+        }
+        .eye-icon:hover { opacity: 0.8; }
+
         button {
             width: 100%;
             padding: 12px;
@@ -92,7 +112,7 @@
         
         .hidden { display: none !important; }
 
-        /* Professional Luxury Custom Modal Styles (Matching Ref Image) */
+        /* Professional Luxury Custom Modal Styles (Matching Reference Image) */
         .custom-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -108,7 +128,7 @@
         .modal-content {
             background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%);
             border: 2px solid #d4af37;
-            padding: 35px 30px;
+            padding: 30px 25px;
             border-radius: 20px;
             text-align: center;
             width: 100%;
@@ -124,7 +144,26 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .modal-logo {
+        .modal-brand-header {
+            margin-bottom: 15px;
+        }
+        .modal-brand-header .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: #d4af37;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .modal-brand-header .brand-sub {
+            font-size: 9px;
+            color: #bbb;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .modal-user-avatar {
             width: 55px;
             height: 55px;
             border: 2px solid #d4af37;
@@ -132,44 +171,78 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 auto 15px auto;
+            margin: 0 auto 12px auto;
             background: rgba(212, 175, 55, 0.1);
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
-        .modal-logo span {
-            font-size: 24px;
+        .modal-user-avatar svg {
+            width: 28px;
+            height: 28px;
+            fill: #d4af37;
         }
 
-        .modal-title {
+        .modal-welcome-text {
+            font-family: 'Playfair Display', serif;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .modal-username {
             font-family: 'Playfair Display', serif;
             color: #d4af37;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
-            margin: 0 0 8px 0;
+            margin: 0 0 12px 0;
             letter-spacing: 0.5px;
         }
 
-        .modal-subtitle {
+        .modal-content p {
             font-size: 13px;
-            color: #e0e0e0;
-            margin-bottom: 20px;
-            font-weight: 400;
+            margin: 0 auto 18px auto;
+            line-height: 1.5;
+            color: #cccccc;
+            max-width: 360px;
             font-family: 'Poppins', sans-serif;
         }
 
-        .modal-content p {
-            font-size: 14px;
-            margin-bottom: 25px;
-            line-height: 1.6;
-            white-space: pre-line;
-            color: #cccccc;
-            letter-spacing: 0.3px;
-            font-family: 'Poppins', sans-serif;
+        /* Feature Icons Grid */
+        .modal-features {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 12px 0;
         }
+        .feature-item {
+            text-align: center;
+            flex: 1;
+        }
+        .feature-icon-box {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 5px auto;
+            background: rgba(212, 175, 55, 0.08);
+            font-size: 15px;
+        }
+        .feature-label {
+            font-size: 10px;
+            color: #bbb;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.2;
+        }
+
         .modal-btn {
             background: linear-gradient(135deg, #d4af37, #aa8c2c);
             border: none;
-            padding: 13px 20px;
+            padding: 12px 20px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
@@ -180,6 +253,10 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
             font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
         .modal-btn:hover {
             background: linear-gradient(135deg, #e6c547, #d4af37);
@@ -193,8 +270,18 @@
         <!-- Login Form -->
         <div id="loginSection">
             <h2>LOGIN</h2>
-            <input type="text" id="phone" placeholder="Enter Phone Number">
-            <input type="password" id="password" placeholder="Enter Password">
+            <div class="input-group">
+                <input type="text" id="phone" placeholder="Enter Phone Number">
+            </div>
+            
+            <!-- Password Field with Interactive Eye Icon -->
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Enter Password">
+                <svg id="togglePassword" class="eye-icon" viewBox="0 0 24 24" onclick="togglePassVisibility()">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                </svg>
+            </div>
+
             <button onclick="login()">LOGIN</button>
             <p style="font-size: 13px; margin-top: 15px;">
                 <a onclick="showForgot()">Forgot Password?</a>
@@ -207,12 +294,18 @@
         <!-- Forgot Password / OTP Section -->
         <div id="forgotSection" class="hidden">
             <h2>RESET PASSWORD</h2>
-            <input type="text" id="resetPhone" placeholder="Enter Registered Phone">
+            <div class="input-group">
+                <input type="text" id="resetPhone" placeholder="Enter Registered Phone">
+            </div>
             <button id="sendOtpBtn" onclick="sendOtp()">SEND OTP</button>
             
             <div id="otpBlock" class="hidden">
-                <input type="text" id="enteredOtp" placeholder="Enter 4-Digit OTP" maxlength="4" style="text-align: center; font-size: 18px; letter-spacing: 5px;">
-                <input type="password" id="newPassword" placeholder="Enter New Password">
+                <div class="input-group">
+                    <input type="text" id="enteredOtp" placeholder="Enter 4-Digit OTP" maxlength="4" style="text-align: center; font-size: 18px; letter-spacing: 5px;">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="newPassword" placeholder="Enter New Password">
+                </div>
                 <button onclick="verifyAndReset()">UPDATE PASSWORD</button>
             </div>
             <p style="font-size: 13px; margin-top: 15px;">
@@ -221,29 +314,66 @@
         </div>
     </div>
 
-    <!-- Custom Professional Alert Modal Container (Default Hidden) -->
+    <!-- Custom Professional Luxury Modal Container (Default Hidden) -->
     <div id="customModal" class="custom-modal hidden">
         <div class="modal-content">
-            <div class="modal-logo">
-                <span>🍽️</span>
+            <div class="modal-brand-header">
+                <h4 class="brand-title">GOLDEN SPOON</h4>
+                <div class="brand-sub">RESTAURANT</div>
             </div>
-            <h3 class="modal-title" id="modalTitle">GOLDEN SPOON</h3>
-            <div class="modal-subtitle" id="modalSub">Restaurant Notification</div>
-            <p id="modalMessage">Message here</p>
-            <button class="modal-btn" onclick="closeModal()">Continue</button>
+
+            <div class="modal-user-avatar">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </div>
+
+            <div class="modal-welcome-text">Welcome,</div>
+            <h3 class="modal-username" id="modalUsername">Sahil!</h3>
+            
+            <p id="modalMessage">We're thrilled to have you back.<br>Explore our menu, enjoy exclusive deals,<br>and savor a luxury dining experience.</p>
+            
+            <!-- Feature Icons Grid Matching Image Reference -->
+            <div class="modal-features">
+                <div class="feature-item">
+                    <div class="feature-icon-box">🍽️</div>
+                    <div class="feature-label">Exclusive<br>Menu</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">🏷️</div>
+                    <div class="feature-label">Special<br>Offers</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">📅</div>
+                    <div class="feature-label">Table<br>Booking</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-box">⭐</div>
+                    <div class="feature-label">Premium<br>Experience</div>
+                </div>
+            </div>
+
+            <button class="modal-btn" onclick="closeModal()">
+                CONTINUE <span>→</span>
+            </button>
         </div>
     </div>
 
     <script>
         let generatedOtp = "";
 
-        // Professional Alert Function
-        function showCustomAlert(message, callback = null, title = "GOLDEN SPOON", subtitle = "Notification") {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalSub').innerText = subtitle;
-            document.getElementById('modalMessage').innerText = message;
+        // Professional Luxury Modal Function
+        function showWelcomeModal(username, callback = null) {
+            document.getElementById('modalUsername').innerText = (username || "Customer") + "!";
             document.getElementById('customModal').classList.remove('hidden');
             window.modalCallback = callback;
+        }
+
+        // Standard Alert Function for Errors / OTP
+        function showCustomAlert(message, callback = null, title = "GOLDEN SPOON", subtitle = "Notification") {
+            // Reusing basic alert style or routing to standard notification if needed
+            alert(message);
+            if (callback) callback();
         }
 
         function closeModal() {
@@ -254,9 +384,24 @@
             }
         }
 
+        // Toggle Password Visibility Function
+        function togglePassVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('togglePassword');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.style.fill = '#ffffff';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.style.fill = '#d4af37';
+            }
+        }
+
         async function login() {
+            const phoneVal = document.getElementById('phone').value;
             const data = { 
-                phone: document.getElementById('phone').value, 
+                phone: phoneVal, 
                 password: document.getElementById('password').value 
             };
             
@@ -268,9 +413,13 @@
             
             const result = await res.json();
             if(result.success) { 
-                window.location.href = 'order.html'; 
+                // Pull username from backend response if available, fallback to phone
+                const userName = result.name || result.username || phoneVal;
+                showWelcomeModal(userName, () => { 
+                    window.location.href = 'order.html'; 
+                }); 
             } else { 
-                showCustomAlert("Login Failed! Please check your credentials.", null, "LOGIN ERROR", "Authentication Failed"); 
+                alert("Login Failed! Please check your credentials."); 
             }
         }
 
@@ -287,11 +436,11 @@
         function sendOtp() {
             const phone = document.getElementById('resetPhone').value;
             if(!phone) {
-                showCustomAlert("Please enter your phone number first!", null, "INPUT REQUIRED", "Phone Number Missing");
+                alert("Please enter your phone number first!");
                 return;
             }
             generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-            showCustomAlert("Demo OTP sent to " + phone + "\nYour OTP is: " + generatedOtp, null, "VERIFICATION CODE", "Secure OTP Generated");
+            alert("Demo OTP sent to " + phone + "\nYour OTP is: " + generatedOtp);
             
             document.getElementById('otpBlock').classList.remove('hidden');
             document.getElementById('sendOtpBtn').style.display = 'none';
@@ -303,12 +452,12 @@
             const newPassword = document.getElementById('newPassword').value;
 
             if (userOtp !== generatedOtp) {
-                showCustomAlert("Invalid OTP! Please try again.", null, "INVALID OTP", "Verification Failed");
+                alert("Invalid OTP! Please try again.");
                 return;
             }
 
             if (!newPassword) {
-                showCustomAlert("Please enter a new password!", null, "PASSWORD REQUIRED", "Missing Information");
+                alert("Please enter a new password!");
                 return;
             }
 
@@ -320,11 +469,10 @@
 
             const result = await res.json();
             if(result.success) {
-                showCustomAlert("Password updated successfully! Please login now.", () => {
-                    showLogin();
-                }, "SUCCESS", "Password Changed");
+                alert("Password updated successfully! Please login now.");
+                showLogin();
             } else {
-                showCustomAlert("Error: " + result.message, null, "UPDATE FAILED", "System Error");
+                alert("Error: " + result.message);
             }
         }
     </script>
