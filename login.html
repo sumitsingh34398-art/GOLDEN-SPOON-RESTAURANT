@@ -415,14 +415,18 @@
             });
             
             const result = await res.json();
-            if(result.success) { 
-                // Updated to correctly pull username/name from backend instead of phone number
+            
+            // UPDATED: Properly checking for 403 Forbidden status or block message for blocked users
+            if (res.status === 403 || (result.message && result.message.toLowerCase().includes('block'))) {
+                alert(result.message || "Your account has been blocked by the administrator.");
+            } 
+            else if(result.success) { 
                 const userName = result.name || result.username || "Valued Guest";
                 showWelcomeModal(userName, () => { 
                     window.location.href = 'order.html'; 
                 }); 
             } else { 
-                alert("Login Failed! Please check your credentials."); 
+                alert(result.message || "Login Failed! Please check your credentials."); 
             }
         }
 
