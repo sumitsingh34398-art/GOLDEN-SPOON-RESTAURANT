@@ -171,7 +171,6 @@ def get_orders():
     filter_type = request.args.get('filter', 'all')
     query = {}
     
-    # Strictly filtering orders based on current IST date for today's summary view
     if filter_type == 'today':
         ist = pytz.timezone('Asia/Kolkata')
         today_date = datetime.now(ist).strftime("%Y-%m-%d")
@@ -257,8 +256,6 @@ def get_receipt(order_id):
     date = order.get('date')
     
     items = json.loads(items_str.replace("'", '"'))
-    
-    # --- UPDATED: GST and Service Charge removed, final total equals base total ---
     final_total = total
     
     items_html = "".join([f"<tr><td style='text-align:left;'>{i['name']}</td><td>{i['qty']}</td><td>{i['price']}</td><td>{int(i['qty'])*int(i['price'])}</td></tr>" for i in items])
@@ -495,6 +492,7 @@ def delete_menu_item(id):
 @app.route('/add-review', methods=['POST'])
 def add_review():
     name = request.form.get('name')
+    email = request.form.get('email')  # <-- Gmail capture kar liya gaya hai backend ke liye
     rating = int(request.form.get('rating'))
     comment = request.form.get('comment')
     
@@ -512,6 +510,7 @@ def add_review():
     
     review_data = {
         "name": name,
+        "email": email,  # <-- Database mein ab email bhi save ho jayegi
         "rating": rating,
         "comment": comment,
         "image": image_url,
@@ -531,7 +530,8 @@ def get_reviews():
             review.get('rating'),
             review.get('comment'),
             review.get('image'),
-            review.get('date')
+            review.get('date'),
+            review.get('email', '')  # <-- Backend / Admin view ke liye email bhi list mein bhej di gayi hai
         ])
     return jsonify(reviews_list)
 
