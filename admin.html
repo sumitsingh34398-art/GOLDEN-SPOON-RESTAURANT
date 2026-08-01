@@ -71,8 +71,14 @@
         .menu-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
         .menu-card { border: 1px solid #d4af37; padding: 12px; border-radius: 8px; width: 180px; background: rgba(0,0,0,0.8); text-align: center; position: relative; }
         .menu-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 5px; }
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 8px; font-weight: bold; }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .delete-btn:hover { background: #cc0000; }
+        
+        .block-btn { background: #e67e22; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-right: 4px; }
+        .block-btn:hover { background: #cf6d17; }
+        .unblock-btn { background: #2ecc71; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-right: 4px; }
+        .unblock-btn:hover { background: #27ae60; }
+
         .clear-all-btn { background: #ff4d4d !important; color: white !important; border: 1px solid #ff4d4d !important; }
         .clear-all-btn:hover { background: #cc0000 !important; color: white !important; }
 
@@ -129,7 +135,6 @@
                 <div class="summary-row"><span>Total Orders</span><span id="sumTotal">0</span></div>
                 <div class="summary-row"><span>Delivered</span><span id="sumDelivered">0</span></div>
                 <div class="summary-row"><span>Out for Delivery</span><span id="sumOut">0</span></div>
-                <!-- Pending text updated with Red Color -->
                 <div class="summary-row"><span>Pending</span><span id="sumPending" style="color: #e74c3c;">0</span></div>
             </div>
         </div>
@@ -221,7 +226,7 @@
             <div class="table-responsive">
                 <table>
                     <thead>
-                        <tr><th>User ID</th><th>Customer Name</th><th>Phone Number</th></tr>
+                        <tr><th>User ID</th><th>Customer Name</th><th>Phone Number</th><th>Status</th><th>Actions</th></tr>
                     </thead>
                     <tbody id="usersTableBody"></tbody>
                 </table>
@@ -246,7 +251,6 @@
         <div id="section-settings" class="admin-section">
             <h2 style="color: #d4af37; margin-bottom: 20px;">Admin Settings</h2>
             
-            <!-- High Professional Admin Profile Card with Updated Suit-Boot Guy Image -->
             <div class="admin-profile-card">
                 <div class="admin-avatar-container">
                     <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=80" alt="Sumit Singh" class="admin-avatar" id="adminAvatarImg">
@@ -260,7 +264,6 @@
                 </div>
             </div>
 
-            <!-- Upload Custom Profile Picture Box -->
             <div class="settings-box">
                 <h3 style="color: #fff; margin-top: 0; font-size: 16px;">Update Profile Picture</h3>
                 <label style="font-size: 13px; color: #aaa;">Choose your photo</label>
@@ -268,7 +271,6 @@
                 <button class="login-btn" onclick="updateAdminProfile()" style="width: 100%;">Upload & Update Photo</button>
             </div>
 
-            <!-- Reset Password Box -->
             <div class="settings-box">
                 <h3 style="color: #fff; margin-top: 0; font-size: 16px;">Reset Admin Password</h3>
                 <label style="font-size: 13px; color: #aaa;">New Admin Password</label>
@@ -279,7 +281,6 @@
     </div>
 
     <script>
-        // Professional Header Live Clock & Date Script
         function updateClock() {
             const now = new Date();
             const timeString = now.toLocaleTimeString();
@@ -291,7 +292,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Mobile Sidebar Toggle
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('appSidebar');
             sidebar.classList.toggle('mobile-open');
@@ -303,7 +303,6 @@
             .then(res => res.ok ? (document.getElementById("loginModal").style.display = "none", loadDashboardStats()) : alert("❌ Wrong Password!"));
         }
 
-        // --- 1. LOAD SIDEBAR TODAY'S SUMMARY ---
         function loadSidebarTodaySummary() {
             fetch('/get-orders?filter=today')
             .then(res => res.json())
@@ -332,7 +331,6 @@
             .catch(err => console.error("Error loading today's summary:", err));
         }
 
-        // --- 2. LOAD DASHBOARD ALL-TIME / LIFETIME STATS ---
         function loadDashboardLifetimeStats() {
             fetch('/get-orders?filter=all')
             .then(res => res.json())
@@ -377,9 +375,7 @@
                 if (Array.isArray(itemsArray)) {
                     return itemsArray.map(item => `${item.name} (${item.qty || 1})`).join(', ');
                 }
-            } catch (e) {
-                // Fallback for non-JSON string
-            }
+            } catch (e) {}
             return itemStr.replace(/₹\d+/g, '').replace(/\(\s*\)/g, '');
         }
 
@@ -461,11 +457,80 @@
                 let tbody = document.getElementById('usersTableBody');
                 tbody.innerHTML = '';
                 users.forEach(u => {
+                    // Maan lijiye user[3] mein status aata hai ('Active' ya 'Blocked')
+                    let userStatus = u[3] || 'Active';
+                    let statusColor = userStatus === 'Blocked' ? '#e74c3c' : '#2ecc71';
+
+                    let blockUnblockBtn = userStatus === 'Blocked' 
+                        ? `<button class="unblock-btn" onclick="toggleBlockUser('${u[0]}', 'Active')">Unblock</button>` 
+                        : `<button class="block-btn" onclick="toggleBlockUser('${u[0]}', 'Blocked')">Block</button>`;
+
                     let tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${u[0]}</td><td>${u[1]}</td><td>${u[2]}</td>`;
+                    tr.innerHTML = `
+                        <td>${u[0]}</td>
+                        <td>${u[1]}</td>
+                        <td>${u[2]}</td>
+                        <td><span style="color: ${statusColor}; font-weight: bold;">${userStatus}</span></td>
+                        <td>
+                            ${blockUnblockBtn}
+                            <button class="delete-btn" onclick="deleteUser('${u[0]}')">Delete</button>
+                        </td>
+                    `;
                     tbody.appendChild(tr);
                 });
             });
+        }
+
+        // Toggle Block / Unblock User Function
+        function toggleBlockUser(userId, newStatus) {
+            let msg = newStatus === 'Blocked' ? "Kya aap is customer ko block karna chahte hain?" : "Kya aap is customer ko unblock karna chahte hain?";
+            if(confirm(msg)) {
+                fetch(`/update-user-status/${userId}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || "Status successfully update ho gaya!");
+                    loadRegisteredUsers();
+                })
+                .catch(err => {
+                    alert("Error updating status!");
+                    console.error(err);
+                });
+            }
+        }
+
+        // Delete Individual User Function
+        function deleteUser(userId) {
+            if(confirm("Kya aap sach mein is customer ko delete karna chahte hain?")) {
+                fetch(`/delete-user/${userId}`, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || "User successfully delete ho gaya!");
+                    loadRegisteredUsers();
+                })
+                .catch(err => {
+                    alert("Error deleting user!");
+                    console.error(err);
+                });
+            }
+        }
+
+        function clearAllUsers() {
+            if(confirm("Are you sure you want to clear all registered users?")) {
+                fetch('/clear-users', {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || "All users cleared successfully!");
+                    loadRegisteredUsers();
+                })
+                .catch(err => {
+                    alert("Error clearing users!");
+                    console.error(err);
+                });
+            }
         }
 
         function loadAdminMenu() {
@@ -533,7 +598,6 @@
             }
         }
 
-        // Custom Admin Profile Image Upload Function
         function updateAdminProfile() {
             let fileInput = document.getElementById('adminProfileImgFile');
             if(!fileInput.files[0]) return alert("Please select an image file first!");
@@ -636,7 +700,6 @@
             document.getElementById('appSidebar').classList.remove('mobile-open');
         }
 
-        // Auto load summary stats on page load
         loadDashboardStats();
     </script>
 </body>
