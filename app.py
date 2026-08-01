@@ -106,7 +106,8 @@ def register():
             "name": data.get('name'),
             "phone": phone,
             "email": email,
-            "password": data.get('password')
+            "password": data.get('password'),
+            "status": "Active"
         }
         mongo_db.users.insert_one(user_data)
         return jsonify({"success": True, "message": "Registration successful! Welcome to our family."})
@@ -121,6 +122,8 @@ def login_user():
     
     user = mongo_db.users.find_one({"phone": phone, "password": password})
     if user:
+        if user.get('status') == 'Blocked':
+            return jsonify({"success": False, "message": "Your account has been blocked by the administrator."}), 403
         session['user'] = phone
         return jsonify({"success": True, "message": "Login successful! Enjoy your dining experience."})
     return jsonify({"success": False, "message": "Incorrect phone number or password. Please try again."}), 401
@@ -351,9 +354,40 @@ def get_users():
         users_list.append([
             str(user.get('_id')),
             user.get('name'),
-            user.get('phone')
+            user.get('phone'),
+            user.get('status', 'Active')
         ])
     return jsonify(users_list)
+
+@app.route('/update-user-status/<string:id>', methods=['POST'])
+def update_user_status(id):
+    data = request.json or request.form
+    new_status = data.get('status')
+    if not new_status:
+        return jsonify({"success": False, "message": "Status not provided!"}), 400
+    try:
+        mongo_db.users.update_one({"_id": ObjectId(id)}, {"$set": {"status": new_status}})
+    except Exception:
+        mongo_db.users.update_one({"_id": id}, {"$set": {"status": new_status}})
+    return jsonify({"success": True, "message": f"User status updated to {new_status}!"})
+
+@app.route('/delete-user/<string:id>', methods=['POST'])
+def delete_user(id):
+    try:
+        result = mongo_db.users.delete_one({"_id": ObjectId(id)})
+        if result.deleted_count == 0:
+            mongo_db.users.delete_one({"_id": id})
+    except Exception:
+        mongo_db.users.delete_one({"_id": id})
+    return jsonify({"success": True, "message": "User deleted successfully!"})
+
+@app.route('/clear-all-users', methods=['POST'])
+def clear_all_users():
+    try:
+        mongo_db.users.delete_many({})
+        return jsonify({"success": True, "message": "All users cleared successfully!"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 @app.route('/download-users-csv')
 def download_users_csv():
@@ -361,12 +395,13 @@ def download_users_csv():
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(['ID', 'Name', 'Phone'])
+    writer.writerow(['ID', 'Name', 'Phone', 'Status'])
     for user in users:
         writer.writerow([
             str(user.get('_id')),
             user.get('name'),
-            user.get('phone')
+            user.get('phone'),
+            user.get('status', 'Active')
         ])
     
     response = make_response(output.getvalue())
@@ -390,15 +425,17 @@ def download_users_pdf():
     y = 695
     c.setFont("Helvetica-Bold", 11)
     c.drawString(50, y, "User ID")
-    c.drawString(200, y, "Customer Name")
-    c.drawString(400, y, "Phone Number")
+    c.drawString(180, y, "Customer Name")
+    c.drawString(350, y, "Phone Number")
+    c.drawString(480, y, "Status")
     y -= 20
     
     c.setFont("Helvetica", 10)
     for u in users:
         c.drawString(50, y, str(u.get('_id')))
-        c.drawString(200, y, str(u.get('name', '')))
-        c.drawString(400, y, str(u.get('phone', '')))
+        c.drawString(180, y, str(u.get('name', '')))
+        c.drawString(350, y, str(u.get('phone', '')))
+        c.drawString(480, y, str(u.get('status', 'Active')))
         y -= 20
         if y < 50:
             c.showPage()
@@ -536,4 +573,3 @@ def clear_all_orders():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-    
