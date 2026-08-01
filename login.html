@@ -321,7 +321,7 @@
     <!-- Custom Professional Luxury Modal Container (Default Hidden) -->
     <div id="customModal" class="custom-modal hidden">
         <div class="modal-content">
-            <div class="modal-brand-header">
+            <div class="modal-brand-header" id="modalBrandHeader">
                 <h4 class="brand-title">GOLDEN SPOON</h4>
                 <div class="brand-sub">RESTAURANT</div>
             </div>
@@ -366,7 +366,7 @@
     <script>
         let generatedOtp = "";
 
-        // Professional Luxury Modal Function for Success
+        // Professional Luxury Modal Function for Success (Restored & Perfected)
         function showWelcomeModal(username, callback = null) {
             document.getElementById('modalBrandHeader').style.display = 'block';
             document.getElementById('modalAvatarBox').style.display = 'flex';
@@ -381,6 +381,8 @@
 
         // Luxury Alert Modal for Errors/Warnings (Replacing ugly browser alert)
         function showLuxuryAlert(message, callback = null, title = "GOLDEN SPOON", subtitle = "NOTICE") {
+            document.getElementById('modalBrandHeader').style.display = 'block';
+            document.getElementById('modalAvatarBox').style.display = 'flex';
             document.getElementById('modalWelcomeLabel').style.display = 'none';
             document.getElementById('modalFeaturesGrid').style.display = 'none';
             document.getElementById('modalUsername').innerText = title;
@@ -427,17 +429,18 @@
             
             const result = await res.json();
             
-            // UPDATED: Check for 403 Forbidden or block message and show Luxury Alert popup
+            // Check for Blocked User (403 or block message)
             if (res.status === 403 || (result.message && result.message.toLowerCase().includes('block'))) {
-                showLuxuryAlert(result.message || "Your account has been blocked by the administrator.");
+                showLuxuryAlert(result.message || "Your account has been blocked by the administrator.", null, "ACCESS DENIED");
             } 
             else if(result.success) { 
                 const userName = result.name || result.username || "Valued Guest";
+                // Show Gorgeous Welcome Modal, then redirect to order.html when CONTINUE is clicked
                 showWelcomeModal(userName, () => { 
                     window.location.href = 'order.html'; 
                 }); 
             } else { 
-                showLuxuryAlert(result.message || "Incorrect phone number or password. Please try again."); 
+                showLuxuryAlert(result.message || "Incorrect phone number or password. Please try again.", null, "LOGIN FAILED"); 
             }
         }
 
@@ -458,7 +461,7 @@
                 return;
             }
             generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-            showLuxuryAlert("Demo OTP sent to " + phone + "<br>Your OTP is: <b>" + generatedOtp + "</b>");
+            showLuxuryAlert("Demo OTP sent to " + phone + "<br>Your OTP is: <b>" + generatedOtp + "</b>", null, "OTP SENT");
             
             document.getElementById('otpBlock').classList.remove('hidden');
             document.getElementById('sendOtpBtn').style.display = 'none';
@@ -489,7 +492,7 @@
             if(result.success) {
                 showLuxuryAlert("Password updated successfully! Please login now.", () => {
                     showLogin();
-                });
+                }, "SUCCESS");
             } else {
                 showLuxuryAlert("Error: " + result.message);
             }
