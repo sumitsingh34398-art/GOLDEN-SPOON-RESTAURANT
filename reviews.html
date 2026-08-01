@@ -71,6 +71,43 @@
         .close-modal { background: #ff4d4d !important; color: #fff !important; margin-top: 5px; }
         .close-modal:hover { background: #ff1a1a !important; }
 
+        /* Luxury Custom Alert Modal Styling */
+        .custom-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center; z-index: 3000; padding: 20px; box-sizing: border-box;
+        }
+        .custom-modal-content {
+            background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%);
+            border: 2px solid #d4af37; padding: 30px 25px; border-radius: 20px;
+            text-align: center; width: 100%; max-width: 420px;
+            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            color: white; box-sizing: border-box;
+        }
+        .modal-brand-header .brand-title {
+            font-family: 'Playfair Display', serif; font-size: 18px; color: #d4af37; letter-spacing: 2px; font-weight: 700; margin: 0;
+        }
+        .modal-brand-header .brand-sub {
+            font-size: 9px; color: #bbb; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; margin-bottom: 15px;
+        }
+        .modal-user-avatar {
+            width: 50px; height: 50px; border: 2px solid #d4af37; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; margin: 0 auto 12px auto; background: rgba(212, 175, 55, 0.1);
+        }
+        .modal-user-avatar svg { width: 24px; height: 24px; fill: #d4af37; }
+        .modal-username {
+            font-family: 'Playfair Display', serif; color: #d4af37; font-size: 22px; font-weight: 700; margin: 0 0 10px 0;
+        }
+        .custom-modal-content p {
+            font-size: 13px; margin: 0 auto 20px auto; line-height: 1.5; color: #cccccc;
+        }
+        .modal-btn {
+            background: linear-gradient(135deg, #d4af37, #aa8c2c); border: none; padding: 12px 20px;
+            font-weight: bold; border-radius: 8px; cursor: pointer; color: #000; width: 100%; font-size: 15px; transition: all 0.3s ease;
+        }
+        .modal-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); }
+        .hidden { display: none !important; }
+
         /* Interactive Clickable Stars ki Styling */
         .star-rating { font-size: 30px; color: #555; cursor: pointer; margin: 5px 0; display: inline-block; letter-spacing: 5px; }
         .star-rating span { transition: color 0.2s; }
@@ -108,6 +145,24 @@
             <textarea id="revComment" placeholder="Write your experience..." rows="3"></textarea>
             <button onclick="submitReview()">Submit Review</button>
             <button class="close-modal" onclick="closeReviewModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Luxury Custom Alert Modal Container (Default Hidden) -->
+    <div id="customAlertModal" class="custom-modal hidden">
+        <div class="custom-modal-content">
+            <div class="modal-brand-header">
+                <h4 class="brand-title">GOLDEN SPOON</h4>
+                <div class="brand-sub">RESTAURANT</div>
+            </div>
+            <div class="modal-user-avatar">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </div>
+            <h3 class="modal-username" id="alertTitle">LOGIN REQUIRED</h3>
+            <p id="alertMessage">Please login first to add your review!</p>
+            <button class="modal-btn" id="alertActionBtn" onclick="closeCustomAlert()">OKAY</button>
         </div>
     </div>
 
@@ -240,17 +295,32 @@
             });
         }
 
+        // Luxury Custom Alert Display Function
+        function showCustomAlert(title, message, callback = null) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerHTML = message;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+            window.alertCallback = callback;
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+            if (window.alertCallback) {
+                window.alertCallback();
+                window.alertCallback = null;
+            }
+        }
+
         // Updated Authentication Check Before Opening Review Modal
         function openReviewModal() {
             // Check karein ki user logged-in hai ya nahi (Session/Local storage ya aapke authentication flag ke mutabiq)
-            // Aap apne backend session ya frontend login state ke hisab se ise adjust kar sakte hain
             const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'); 
             
-            // Note: Agar aapka backend login state handle karta hai, toh aap yahan check laga sakte hain. 
-            // Filhal standard session storage/local storage token check use kiya gaya hai:
             if (!isLoggedIn) {
-                alert("Please login first to add your review!");
-                window.location.href = 'login.html'; // Seedha login page khulega
+                // Default boring alert ki jagah ab gorgeous luxury custom modal open hoga
+                showCustomAlert("LOGIN REQUIRED", "Please login first to add your review!", () => {
+                    window.location.href = 'login.html'; // OKAY click karne par login page khulega
+                });
                 return;
             }
 
@@ -269,7 +339,7 @@
             let imageInput = document.getElementById('revImage');
 
             if(!name || rating == "0" || !comment) {
-                alert("Please fill all fields and select stars!");
+                showCustomAlert("INCOMPLETE FORM", "Please fill all fields and select stars!");
                 return;
             }
 
@@ -289,21 +359,22 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    alert("Review Added Successfully!");
-                    closeReviewModal();
-                    document.getElementById('revName').value = '';
-                    document.getElementById('revComment').value = '';
-                    document.getElementById('revImage').value = '';
-                    setRating(0);
-                    // Page refresh karke latest review database se load karne ke liye
-                    location.reload();
+                    showCustomAlert("SUCCESS", "Review Added Successfully!", () => {
+                        closeReviewModal();
+                        document.getElementById('revName').value = '';
+                        document.getElementById('revComment').value = '';
+                        document.getElementById('revImage').value = '';
+                        setRating(0);
+                        // Page refresh karke latest review database se load karne ke liye
+                        location.reload();
+                    });
                 } else {
-                    alert("Failed to submit review.");
+                    showCustomAlert("ERROR", "Failed to submit review.");
                 }
             })
             .catch(err => {
                 console.error("Error:", err);
-                alert("Something went wrong!");
+                showCustomAlert("ERROR", "Something went wrong!");
             });
         }
     </script>
