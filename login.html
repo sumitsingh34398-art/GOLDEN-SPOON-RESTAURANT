@@ -326,19 +326,19 @@
                 <div class="brand-sub">RESTAURANT</div>
             </div>
 
-            <div class="modal-user-avatar">
-                <svg viewBox="0 0 24 24">
+            <div class="modal-user-avatar" id="modalAvatarBox">
+                <svg viewBox="0 0 24 24" id="modalAvatarSvg">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
             </div>
 
-            <div class="modal-welcome-text">Welcome,</div>
+            <div class="modal-welcome-text" id="modalWelcomeLabel">Welcome,</div>
             <h3 class="modal-username" id="modalUsername">Sahil!</h3>
             
             <p id="modalMessage">We're thrilled to have you back.<br>Explore our menu, enjoy exclusive deals,<br>and savor a luxury dining experience.</p>
             
             <!-- Feature Icons Grid Matching Image Reference -->
-            <div class="modal-features">
+            <div class="modal-features" id="modalFeaturesGrid">
                 <div class="feature-item">
                     <div class="feature-icon-box">🍽️</div>
                     <div class="feature-label">Exclusive<br>Menu</div>
@@ -357,7 +357,7 @@
                 </div>
             </div>
 
-            <button class="modal-btn" onclick="closeModal()">
+            <button class="modal-btn" id="modalActionBtn" onclick="closeModal()">
                 CONTINUE <span>→</span>
             </button>
         </div>
@@ -366,17 +366,28 @@
     <script>
         let generatedOtp = "";
 
-        // Professional Luxury Modal Function
+        // Professional Luxury Modal Function for Success
         function showWelcomeModal(username, callback = null) {
+            document.getElementById('modalBrandHeader').style.display = 'block';
+            document.getElementById('modalAvatarBox').style.display = 'flex';
+            document.getElementById('modalWelcomeLabel').style.display = 'block';
+            document.getElementById('modalFeaturesGrid').style.display = 'flex';
             document.getElementById('modalUsername').innerText = (username || "Valued Guest") + "!";
+            document.getElementById('modalMessage').innerHTML = "We're thrilled to have you back.<br>Explore our menu, enjoy exclusive deals,<br>and savor a luxury dining experience.";
+            document.getElementById('modalActionBtn').innerHTML = 'CONTINUE <span>→</span>';
             document.getElementById('customModal').classList.remove('hidden');
             window.modalCallback = callback;
         }
 
-        // Standard Alert Function for Errors / OTP
-        function showCustomAlert(message, callback = null, title = "GOLDEN SPOON", subtitle = "Notification") {
-            alert(message);
-            if (callback) callback();
+        // Luxury Alert Modal for Errors/Warnings (Replacing ugly browser alert)
+        function showLuxuryAlert(message, callback = null, title = "GOLDEN SPOON", subtitle = "NOTICE") {
+            document.getElementById('modalWelcomeLabel').style.display = 'none';
+            document.getElementById('modalFeaturesGrid').style.display = 'none';
+            document.getElementById('modalUsername').innerText = title;
+            document.getElementById('modalMessage').innerHTML = message;
+            document.getElementById('modalActionBtn').innerHTML = 'OKAY';
+            document.getElementById('customModal').classList.remove('hidden');
+            window.modalCallback = callback;
         }
 
         function closeModal() {
@@ -416,9 +427,9 @@
             
             const result = await res.json();
             
-            // UPDATED: Properly checking for 403 Forbidden status or block message for blocked users
+            // UPDATED: Check for 403 Forbidden or block message and show Luxury Alert popup
             if (res.status === 403 || (result.message && result.message.toLowerCase().includes('block'))) {
-                alert(result.message || "Your account has been blocked by the administrator.");
+                showLuxuryAlert(result.message || "Your account has been blocked by the administrator.");
             } 
             else if(result.success) { 
                 const userName = result.name || result.username || "Valued Guest";
@@ -426,7 +437,7 @@
                     window.location.href = 'order.html'; 
                 }); 
             } else { 
-                alert(result.message || "Login Failed! Please check your credentials."); 
+                showLuxuryAlert(result.message || "Incorrect phone number or password. Please try again."); 
             }
         }
 
@@ -443,11 +454,11 @@
         function sendOtp() {
             const phone = document.getElementById('resetPhone').value;
             if(!phone) {
-                alert("Please enter your phone number first!");
+                showLuxuryAlert("Please enter your phone number first!");
                 return;
             }
             generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-            alert("Demo OTP sent to " + phone + "\nYour OTP is: " + generatedOtp);
+            showLuxuryAlert("Demo OTP sent to " + phone + "<br>Your OTP is: <b>" + generatedOtp + "</b>");
             
             document.getElementById('otpBlock').classList.remove('hidden');
             document.getElementById('sendOtpBtn').style.display = 'none';
@@ -459,12 +470,12 @@
             const newPassword = document.getElementById('newPassword').value;
 
             if (userOtp !== generatedOtp) {
-                alert("Invalid OTP! Please try again.");
+                showLuxuryAlert("Invalid OTP! Please try again.");
                 return;
             }
 
             if (!newPassword) {
-                alert("Please enter a new password!");
+                showLuxuryAlert("Please enter a new password!");
                 return;
             }
 
@@ -476,10 +487,11 @@
 
             const result = await res.json();
             if(result.success) {
-                alert("Password updated successfully! Please login now.");
-                showLogin();
+                showLuxuryAlert("Password updated successfully! Please login now.", () => {
+                    showLogin();
+                });
             } else {
-                alert("Error: " + result.message);
+                showLuxuryAlert("Error: " + result.message);
             }
         }
     </script>
