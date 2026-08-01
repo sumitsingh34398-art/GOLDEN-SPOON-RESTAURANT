@@ -86,7 +86,7 @@
         <button class="add-review-btn" onclick="openReviewModal()">✍️ Add Your Review</button>
     </div>
 
-    <!-- Review Submit karne ka Pop-up Modal with Gmail and Image Upload -->
+    <!-- Review Submit karne ka Pop-up Modal -->
     <div id="reviewModal" class="review-modal">
         <div class="review-box">
             <h2 style="color: #d4af37; margin-bottom: 15px; font-family: 'Playfair Display', serif;">Write a Review</h2>
@@ -177,7 +177,7 @@
         <div class="card">
             <img src="assets/lamb-chops.jpg" alt="Dish">
             <div class="card-body">
-                <div class="title">lamb-chops</div>
+                <div class="title5">lamb-chops</div>
                 <div class="rating">★★★★★ 2139 reviews</div>
                 <p class="details">Fusion • $$$ • Venice</p>
                 <div class="btn-group">
@@ -207,6 +207,9 @@
                     let comment = review[3];
                     let imgSrc = review[4] ? review[4] : 'assets/default.jpg';
                     let date = review[5];
+                    // Note: review[6] ya jo bhi email index backend se aayega, 
+                    // use yahan card template mein print NAHI kiya gaya hai, 
+                    // isliye frontend par email bilkul nahi dikhegi!
 
                     let newCard = document.createElement('div');
                     newCard.className = 'card';
@@ -238,7 +241,6 @@
             });
         }
 
-        // Direct Modal Open (Login Check Removed)
         function openReviewModal() {
             document.getElementById('reviewModal').style.display = 'flex';
         }
@@ -262,7 +264,7 @@
 
             let formData = new FormData();
             formData.append('name', name);
-            formData.append('email', email);
+            formData.append('email', email); // Yeh backend par safely chala jayega
             formData.append('rating', rating);
             formData.append('comment', comment);
             if(imageInput.files[0]) {
