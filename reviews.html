@@ -49,7 +49,7 @@
 
         .add-review-container { text-align: center; margin-bottom: 30px; }
         .add-review-btn { 
-            background: linear-gradient(135deg, #d4af37, #aa8-c2c); background: linear-gradient(135deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 12px 25px; font-weight: bold; border-radius: 25px; cursor: pointer; font-size: 14px; letter-spacing: 1px; 
+            background: linear-gradient(135deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 12px 25px; font-weight: bold; border-radius: 25px; cursor: pointer; font-size: 14px; letter-spacing: 1px; 
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); transition: all 0.3s ease;
         }
         .add-review-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5); }
@@ -60,7 +60,7 @@
             padding: 30px; border: 2px solid #d4af37; border-radius: 16px; width: 380px; text-align: center; color: #fff; 
             box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3);
         }
-        .review-box input[type="text"], .review-box textarea, .review-box input[type="file"] { 
+        .review-box input[type="text"], .review-box input[type="email"], .review-box textarea, .review-box input[type="file"] { 
             width: 100%; padding: 12px 15px; margin: 10px 0; border: 1px solid #d4af37; background: rgba(255, 255, 255, 0.05); color: #fff; border-radius: 6px; outline: none; font-family: 'Poppins', sans-serif;
         }
         .review-box input:focus, .review-box textarea:focus { border-color: #f3e5ab; background: rgba(255, 255, 255, 0.1); }
@@ -70,43 +70,6 @@
         .review-box button:hover { background: linear-gradient(135deg, #e6c547, #d4af37); }
         .close-modal { background: #ff4d4d !important; color: #fff !important; margin-top: 5px; }
         .close-modal:hover { background: #ff1a1a !important; }
-
-        /* Luxury Custom Alert Modal Styling */
-        .custom-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
-            display: flex; justify-content: center; align-items: center; z-index: 3000; padding: 20px; box-sizing: border-box;
-        }
-        .custom-modal-content {
-            background: radial-gradient(circle at center, #181818 0%, #0c0c0c 100%);
-            border: 2px solid #d4af37; padding: 30px 25px; border-radius: 20px;
-            text-align: center; width: 100%; max-width: 420px;
-            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.1);
-            color: white; box-sizing: border-box;
-        }
-        .modal-brand-header .brand-title {
-            font-family: 'Playfair Display', serif; font-size: 18px; color: #d4af37; letter-spacing: 2px; font-weight: 700; margin: 0;
-        }
-        .modal-brand-header .brand-sub {
-            font-size: 9px; color: #bbb; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; margin-bottom: 15px;
-        }
-        .modal-user-avatar {
-            width: 50px; height: 50px; border: 2px solid #d4af37; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; margin: 0 auto 12px auto; background: rgba(212, 175, 55, 0.1);
-        }
-        .modal-user-avatar svg { width: 24px; height: 24px; fill: #d4af37; }
-        .modal-username {
-            font-family: 'Playfair Display', serif; color: #d4af37; font-size: 22px; font-weight: 700; margin: 0 0 10px 0;
-        }
-        .custom-modal-content p {
-            font-size: 13px; margin: 0 auto 20px auto; line-height: 1.5; color: #cccccc;
-        }
-        .modal-btn {
-            background: linear-gradient(135deg, #d4af37, #aa8c2c); border: none; padding: 12px 20px;
-            font-weight: bold; border-radius: 8px; cursor: pointer; color: #000; width: 100%; font-size: 15px; transition: all 0.3s ease;
-        }
-        .modal-btn:hover { background: linear-gradient(135deg, #e6c547, #d4af37); }
-        .hidden { display: none !important; }
 
         /* Interactive Clickable Stars ki Styling */
         .star-rating { font-size: 30px; color: #555; cursor: pointer; margin: 5px 0; display: inline-block; letter-spacing: 5px; }
@@ -123,11 +86,12 @@
         <button class="add-review-btn" onclick="openReviewModal()">✍️ Add Your Review</button>
     </div>
 
-    <!-- Review Submit karne ka Pop-up Modal with Image Upload -->
+    <!-- Review Submit karne ka Pop-up Modal with Gmail and Image Upload -->
     <div id="reviewModal" class="review-modal">
         <div class="review-box">
             <h2 style="color: #d4af37; margin-bottom: 15px; font-family: 'Playfair Display', serif;">Write a Review</h2>
             <input type="text" id="revName" placeholder="Enter Your Dish/Your Name">
+            <input type="email" id="revEmail" placeholder="Enter Your Gmail">
             
             <div style="font-size: 13px; color: #aaa; text-align: left; margin-top: 5px;">Select Rating:</div>
             <div class="star-rating" id="starContainer">
@@ -148,26 +112,8 @@
         </div>
     </div>
 
-    <!-- Luxury Custom Alert Modal Container (Default Hidden) -->
-    <div id="customAlertModal" class="custom-modal hidden">
-        <div class="custom-modal-content">
-            <div class="modal-brand-header">
-                <h4 class="brand-title">GOLDEN SPOON</h4>
-                <div class="brand-sub">RESTAURANT</div>
-            </div>
-            <div class="modal-user-avatar">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-            </div>
-            <h3 class="modal-username" id="alertTitle">LOGIN REQUIRED</h3>
-            <p id="alertMessage">Please login first to add your review!</p>
-            <button class="modal-btn" id="alertActionBtn" onclick="closeCustomAlert()">OKAY</button>
-        </div>
-    </div>
-
     <div class="grid-container" id="gridContainer">
-        <!-- Static / Default Cards (Jaise Pani Puri, Spaghetti, etc.) -->
+        <!-- Static / Default Cards -->
         <div class="card">
             <img src="assets/pani puri.jpg" alt="Dish">
             <div class="card-body">
@@ -245,7 +191,6 @@
     <script>
         let selectedRating = 0;
 
-        // Page load hone par database se reviews load karne ke liye function
         window.onload = function() {
             fetchReviews();
         };
@@ -255,9 +200,7 @@
             .then(res => res.json())
             .then(data => {
                 let container = document.getElementById('gridContainer');
-                // Database wale reviews ko grid mein append/prepend karna
                 data.forEach(review => {
-                    // review format: [id, name, rating, comment, image, date]
                     let revId = review[0];
                     let name = review[1];
                     let rating = review[2];
@@ -295,35 +238,8 @@
             });
         }
 
-        // Luxury Custom Alert Display Function
-        function showCustomAlert(title, message, callback = null) {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMessage').innerHTML = message;
-            document.getElementById('customAlertModal').classList.remove('hidden');
-            window.alertCallback = callback;
-        }
-
-        function closeCustomAlert() {
-            document.getElementById('customAlertModal').classList.add('hidden');
-            if (window.alertCallback) {
-                window.alertCallback();
-                window.alertCallback = null;
-            }
-        }
-
-        // Updated Authentication Check Before Opening Review Modal
+        // Direct Modal Open (Login Check Removed)
         function openReviewModal() {
-            // Check karein ki user logged-in hai ya nahi (Session/Local storage ya aapke authentication flag ke mutabiq)
-            const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn'); 
-            
-            if (!isLoggedIn) {
-                // Default boring alert ki jagah ab gorgeous luxury custom modal open hoga
-                showCustomAlert("LOGIN REQUIRED", "Please login first to add your review!", () => {
-                    window.location.href = 'login.html'; // OKAY click karne par login page khulega
-                });
-                return;
-            }
-
             document.getElementById('reviewModal').style.display = 'flex';
         }
 
@@ -334,24 +250,25 @@
 
         function submitReview() {
             let name = document.getElementById('revName').value;
+            let email = document.getElementById('revEmail').value;
             let rating = document.getElementById('revRating').value;
             let comment = document.getElementById('revComment').value;
             let imageInput = document.getElementById('revImage');
 
-            if(!name || rating == "0" || !comment) {
-                showCustomAlert("INCOMPLETE FORM", "Please fill all fields and select stars!");
+            if(!name || !email || rating == "0" || !comment) {
+                alert("Please fill all fields, enter your Gmail, and select stars!");
                 return;
             }
 
             let formData = new FormData();
             formData.append('name', name);
+            formData.append('email', email);
             formData.append('rating', rating);
             formData.append('comment', comment);
             if(imageInput.files[0]) {
                 formData.append('image', imageInput.files[0]);
             }
 
-            // Backend par review save karne ki request (FormData ke sath)
             fetch('/add-review', {
                 method: 'POST',
                 body: formData
@@ -359,22 +276,21 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    showCustomAlert("SUCCESS", "Review Added Successfully!", () => {
-                        closeReviewModal();
-                        document.getElementById('revName').value = '';
-                        document.getElementById('revComment').value = '';
-                        document.getElementById('revImage').value = '';
-                        setRating(0);
-                        // Page refresh karke latest review database se load karne ke liye
-                        location.reload();
-                    });
+                    alert("Review Added Successfully!");
+                    closeReviewModal();
+                    document.getElementById('revName').value = '';
+                    document.getElementById('revEmail').value = '';
+                    document.getElementById('revComment').value = '';
+                    document.getElementById('revImage').value = '';
+                    setRating(0);
+                    location.reload();
                 } else {
-                    showCustomAlert("ERROR", "Failed to submit review.");
+                    alert("Failed to submit review.");
                 }
             })
             .catch(err => {
                 console.error("Error:", err);
-                showCustomAlert("ERROR", "Something went wrong!");
+                alert("Something went wrong!");
             });
         }
     </script>
